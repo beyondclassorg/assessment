@@ -17,6 +17,7 @@
 .bc-nav-link:hover,.bc-nav-link.active { color:#C8A96E; }
 .bc-nav-cta { font-size:13px;font-weight:600;background:#C8A96E;color:#0F1F3D;padding:8px 16px;text-decoration:none; }
 @media(max-width:600px){.bc-nav-links{display:none;}}
+.chip-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}.chip{background:var(--cream,#faf8f4);border:1.5px solid rgba(0,0,0,0.12);border-radius:20px;padding:8px 16px;font-size:13px;font-family:"DM Sans",sans-serif;color:var(--text-mid,#5f5e5a);cursor:pointer;transition:all 0.15s;user-select:none;display:inline-block;line-height:1.4}.chip:hover{border-color:var(--gold,#C8A96E);color:var(--navy,#0F1F3D)}.chip.selected{border-color:var(--gold,#C8A96E);background:rgba(200,169,110,0.12);color:var(--navy,#0F1F3D);font-weight:600}
 </style>
 
 <script>
@@ -800,7 +801,9 @@ function updateCompletionNote() {
 
 function prevSection() { renderSection(currentSection - 1); }
 function nextSection() {
-  saveIntake(); // ensure latest intake data
+  try {
+    saveCollegeFit(); // save chip selections too
+    saveIntake();
   if (currentSection === 0) {
     IS_MIDDLE_SCHOOL = detectGradeLevel();
     if (IS_MIDDLE_SCHOOL) {
@@ -820,7 +823,8 @@ function nextSection() {
       return;
     }
   }
-  renderSection(currentSection + 1);
+    renderSection(currentSection + 1);
+  } catch(e) { console.error("nextSection error:", e); }
 }
 function submitAssessment() { showScreen('screen-loading'); runLoadingSequence(); }
 
