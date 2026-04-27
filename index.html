@@ -1256,7 +1256,12 @@ async function renderResults(r) {
     generateOpportunities(archProfile, loc, pArch, intake).catch(function(e){ console.warn('opps:',e); }),
     generateClubs(archProfile, pArch, intake).catch(function(e){ console.warn('clubs:',e); }),
     generateScholarships(archProfile, pArch, intake, cfPrefs).catch(function(e){ console.warn('scholarships:',e); }),
-    generateCourses(archProfile, pArch, intake).catch(function(e){ console.warn('courses:',e); })
+    generateCourses(archProfile, pArch, intake).catch(function(e){ console.warn('courses:',e); }),
+    generateEssayAngles(archProfile, pArch, intake).catch(function(e){ console.warn('essays:',e); }),
+    generateCareerProfiles(archProfile, pArch, intake).catch(function(e){ console.warn('careers:',e); }),
+    generateActivities(archProfile, pArch, intake).catch(function(e){ console.warn('activities:',e); }),
+    generateMentorMatch(archProfile, pArch, intake).catch(function(e){ console.warn('mentor:',e); }),
+    generateShadowWorkbook(archProfile, pArch, intake).catch(function(e){ console.warn('shadow:',e); })
   ]);
 
   // Send lead data
@@ -2916,6 +2921,9 @@ function renderCopyrightFooter() {
     generateCareerProfiles(archProfile,pArch,intake).catch(function(){});
     generateActivities(archProfile,pArch,intake).catch(function(){});
     generateMentorMatch(archProfile,pArch,intake).catch(function(){});
+    var shadowEl = document.getElementById('wrap-shadow');
+    if (shadowEl) shadowEl.style.display = '';
+    generateShadowWorkbook(archProfile,pArch,intake).catch(function(){});
   }
 
   // Legacy alias
@@ -3218,6 +3226,192 @@ function saveOpen(qId, val) {
   updateCompletionNote();
 }
 
+
+async function generateMajors(archProfile, pArch, intake) {
+  const el = document.getElementById('section-majors');
+  const arch = archProfile.split(' ')[0];
+  const data = REPORT_DATA[arch] || REPORT_DATA['Builder'];
+  const sportsMode = detectSportsInterest(intake);
+  const sportsData = sportsMode ? getSportsInjection(arch) : null;
+  const interests = intake.interests ? `<div style="background:var(--purple-light);border-left:3px solid var(--purple);padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--purple)"><strong>Your stated interests:</strong> "${intake.interests}"  -  these have been factored into the recommendations below.</div>` : '';
+  el.innerHTML = `<div class="ai-badge">✦ Matched to your ${arch} archetype</div>
+    ${sportsData ? sportsData.majorsNote : ''}
+    <div class="ai-content">
+      ${interests}
+      <h4>Primary majors  -  strongest alignment</h4>
+      <ul style="padding-left:0;list-style:none;display:flex;flex-direction:column;gap:12px">
+        ${data.majors.map(m => `<li style="padding:16px;background:white;border:1px solid rgba(0,0,0,0.07);border-top:3px solid var(--gold)">
+          <strong style="font-size:14px;color:var(--navy);display:block;margin-bottom:6px">${m.title}</strong>
+          <span style="font-size:13px;color:var(--text-mid);display:block;margin-bottom:6px">${m.why}</span>
+          <span style="font-size:12px;color:var(--text-light);font-style:italic">Leads to: ${m.careers}</span>
+        </li>`).join('')}
+      </ul>
+      <h4 style="margin-top:20px">Powerful combinations & double majors</h4>
+      <ul style="padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px">
+        ${data.combo.map(c => `<li style="display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--text-mid);line-height:1.5"><span style="color:var(--gold);flex-shrink:0;margin-top:2px">✦</span>${c}</li>`).join('')}
+      </ul>
+      <p style="font-size:12px;color:var(--text-light);margin-top:16px;line-height:1.6;font-style:italic">Remember: most top colleges don't require you to declare a major until sophomore year. Choosing a college for its culture and archetype fit is often more important than finding the perfect major name.</p>
+    </div>`;
+}
+
+async function generateOpportunities(archProfile, location, pArch, intake) {
+  const el = document.getElementById('section-opportunities');
+  const arch = archProfile.split(' ')[0];
+  const data = REPORT_DATA[arch] || REPORT_DATA['Builder'];
+  const locNote = location && location !== 'your area' ? `<div class="ai-badge" style="margin-bottom:12px">✦ Opportunities tailored to ${location} & the ${arch} archetype</div>` : `<div class="ai-badge" style="margin-bottom:12px">✦ Tailored to the ${arch} archetype</div>`;
+  const typeColors = { Club:'#185FA5', Competition:'#0F6E56', Project:'#854F0B', Internship:'#993556', Volunteer:'#3B6D11', Program:'#534AB7', Work:'#5F5E5A', Research:'#993C1D', Leadership:'#0F6E56', Community:'#1A6B6B', Skill:'#3C3489' };
+  el.innerHTML = `${locNote}
+    <div class="ai-content">
+      <p style="font-size:14px;color:var(--text-mid);margin-bottom:16px;line-height:1.6">The activities below are specifically chosen for the ${arch} archetype. The most important thing isn't doing all of them  -  it's choosing 2–3 and committing deeply enough to have a real story to tell.</p>
+      <ul style="padding-left:0;list-style:none;display:flex;flex-direction:column;gap:12px">
+        ${data.activities.map(a => {
+          const col = typeColors[a.type] || '#888';
+          return `<li style="padding:16px;background:white;border:1px solid rgba(0,0,0,0.07)">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+              <span style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;background:${col}18;color:${col};padding:3px 8px">${a.type}</span>
+              <strong style="font-size:14px;color:var(--navy)">${a.title}</strong>
+            </div>
+            <span style="font-size:13px;color:var(--text-mid);line-height:1.6">${a.description}</span>
+          </li>`;
+        }).join('')}
+      </ul>
+      <div style="background:var(--navy);padding:16px;margin-top:20px">
+        <p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6"><strong style="color:var(--gold-light)">Local search tip:</strong> To find specific internships, volunteer sites, and programs near ${location !== 'your area' ? location : 'you'}, search <strong style="color:white">VolunteerMatch.org</strong>, <strong style="color:white">Idealist.org</strong>, and <strong style="color:white">LinkedIn</strong> for your city + the type of organization that matches your archetype. Your counselor can also help identify specific local organizations.</p>
+      </div>
+    </div>`;
+}
+
+async function generateClubs(archProfile, pArch, intake) {
+  const el = document.getElementById('section-clubs');
+  const arch = archProfile.split(' ')[0];
+  const data = REPORT_DATA[arch] || REPORT_DATA['Builder'];
+  const clubActivities = data.activities.filter(a => ['Club','Competition','Leadership','Community'].includes(a.type));
+  const allActivities = data.activities;
+  el.innerHTML = `<div class="ai-badge">✦ Aligned to your ${arch} archetype</div>
+    <div class="ai-content">
+      <h4>Clubs & activities to pursue now</h4>
+      <ul style="padding-left:0;list-style:none;display:flex;flex-direction:column;gap:10px">
+        ${allActivities.map(a => `<li style="display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:white;border:1px solid rgba(0,0,0,0.07)">
+          <span style="color:var(--gold);flex-shrink:0;font-size:14px;margin-top:1px">✦</span>
+          <span style="font-size:14px;color:var(--text-mid);line-height:1.5"><strong style="color:var(--navy)">${a.title}</strong>  -  ${a.description}</span>
+        </li>`).join('')}
+      </ul>
+      <div style="background:var(--cream-dark);border-left:3px solid var(--gold);padding:16px;margin-top:20px">
+        <p style="font-size:13px;color:var(--text-mid);line-height:1.6"><strong style="color:var(--navy)">The deeper principle:</strong> Admissions officers aren't counting your activities  -  they're looking for evidence of who you are. Two or three activities pursued with genuine depth and leadership over multiple years are worth far more than eight surface-level involvements. Choose what matches your archetype and go deep.</p>
+      </div>
+    </div>`;
+}
+
+async function generateScholarships(archProfile, pArch, intake, cfPrefs) {
+  const el = document.getElementById('section-scholarships');
+  const arch = archProfile.split(' ')[0];
+  const data = REPORT_DATA[arch] || REPORT_DATA['Builder'];
+  const state = intake.state ? `<p style="font-size:13px;color:var(--text-mid);margin-bottom:16px;line-height:1.6">In addition to the scholarships below, search <strong>your state's scholarship database</strong>  -  most states have a higher education scholarship portal. Search "<strong>${intake.state} scholarships for high school students</strong>" and your state education department's website.</p>` : '';
+  el.innerHTML = `<div class="ai-badge">✦ Matched to your ${arch} archetype & profile</div>
+    <div class="ai-content">
+      ${state}
+      <ul style="padding-left:0;list-style:none;display:flex;flex-direction:column;gap:12px">
+        ${data.scholarships.map(s => `<li style="padding:16px;background:white;border:1px solid rgba(0,0,0,0.07);border-left:3px solid var(--gold)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:6px;flex-wrap:wrap">
+            <strong style="font-size:14px;color:var(--navy)">${s.name}</strong>
+            <span style="font-size:12px;font-weight:600;color:var(--green);white-space:nowrap">${s.amount}</span>
+          </div>
+          <span style="font-size:13px;color:var(--text-mid);line-height:1.5">${s.notes}</span>
+        </li>`).join('')}
+      </ul>
+      <div style="background:var(--navy);padding:16px;margin-top:20px">
+        <p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6;margin-bottom:10px"><strong style="color:var(--gold-light)">Scholarship search strategy:</strong></p>
+        <ul style="padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px">
+          <li style="font-size:13px;color:rgba(255,255,255,0.6);display:flex;gap:8px"><span style="color:var(--gold)">✦</span>Start searching in 10th grade  -  many scholarships require years of consistent activity to be competitive</li>
+          <li style="font-size:13px;color:rgba(255,255,255,0.6);display:flex;gap:8px"><span style="color:var(--gold)">✦</span>Use <strong style="color:white">Fastweb.com</strong>, <strong style="color:white">Scholarships.com</strong>, and <strong style="color:white">Bold.org</strong> for searchable databases</li>
+          <li style="font-size:13px;color:rgba(255,255,255,0.6);display:flex;gap:8px"><span style="color:var(--gold)">✦</span>Check your parent's employer  -  many corporations offer employee-dependent scholarships that go unclaimed</li>
+          <li style="font-size:13px;color:rgba(255,255,255,0.6);display:flex;gap:8px"><span style="color:var(--gold)">✦</span>Local community foundations and Rotary clubs often give $500–$2,500 awards with very little competition</li>
+          <li style="font-size:13px;color:rgba(255,255,255,0.6);display:flex;gap:8px"><span style="color:var(--gold)">✦</span>Your counselor can help identify scholarships specific to your archetype, location, and background</li>
+        </ul>
+      </div>
+    </div>`;
+}
+
+async function generateCourses(archProfile, pArch, intake) {
+    var el = document.getElementById('section-courses');
+    if (!el) return;
+    var arch = (pArch && pArch.name) ? pArch.name.replace('The ','') : 'Builder';
+    var gradYear = parseInt(intake.gradyear) || 2026;
+    var now = new Date();
+    var schoolYear = now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1;
+    var currentGrade = Math.max(6, Math.min(12, 12 - (gradYear - schoolYear - 1)));
+    var tagStyle = {ap:'background:rgba(201,168,76,0.15);color:#8b6914;',honors:'background:rgba(91,155,213,0.15);color:#1565c0;',dual:'background:rgba(92,184,92,0.15);color:#2e7d32;',elective:'background:rgba(0,0,0,0.06);color:#4a4a6a;',required:'background:rgba(15,15,36,0.08);color:#0f0f24;'};
+    var borderColor = {priority:'var(--gold)',recommended:'#5b9bd5',optional:'rgba(0,0,0,0.1)'};
+    var courseData = {
+      Builder:{focus:'entrepreneurship, technology, and systems-building',years:[
+        {grade:9,label:'9th Grade',courses:[{name:'Algebra II / Pre-Calculus',tag:'required',type:'priority',why:'Math fluency is non-negotiable for Builders. Get ahead now.'},{name:'Intro to Computer Science',tag:'elective',type:'priority',why:'Code is the language of builders. Start early.'},{name:'English / Creative Writing',tag:'required',type:'recommended',why:'Builders must learn to pitch and persuade.'},{name:'Intro to Business / Entrepreneurship',tag:'elective',type:'recommended',why:'Gives you the vocabulary and mindset of a founder.'}],tip:'Join or start a club to get your first build experience on your resume.'},
+        {grade:10,label:'10th Grade',courses:[{name:'AP Computer Science Principles',tag:'ap',type:'priority',why:'The gateway AP for builders. Learn computational thinking.'},{name:'Pre-Calculus / Calculus',tag:'honors',type:'priority',why:'Builders going into tech need calculus before senior year.'},{name:'Physics or Chemistry (Honors)',tag:'honors',type:'recommended',why:'Science builds systems thinking.'},{name:'Marketing / Digital Media',tag:'elective',type:'recommended',why:'Builders need to know how to get attention for what they build.'}],tip:'10th grade is the year to launch something small  -  a club, app, or event.'},
+        {grade:11,label:'11th Grade',courses:[{name:'AP Calculus AB or BC',tag:'ap',type:'priority',why:'Essential for engineering, CS, and business at selective schools.'},{name:'AP Computer Science A',tag:'ap',type:'priority',why:'Shows technical depth. Colleges and companies both notice.'},{name:'AP Economics',tag:'ap',type:'recommended',why:'Builders who understand markets build better products.'},{name:'AP Statistics',tag:'ap',type:'recommended',why:'Data literacy is essential for modern builders.'}],tip:'11th grade is your highest-stakes academic year. Push yourself with rigor.'},
+        {grade:12,label:'12th Grade',courses:[{name:'AP Physics C or AP Chemistry',tag:'ap',type:'priority',why:'If engineering-bound, AP Physics C is the gold standard.'},{name:'Dual Enrollment: Business or Engineering',tag:'dual',type:'recommended',why:'Earn real college credit. Shows ambition.'},{name:'Independent Study / Capstone Project',tag:'elective',type:'recommended',why:'The best Builder senior project is something you actually shipped.'},{name:'Senior Seminar / Research',tag:'elective',type:'optional',why:'Document your independent project work formally.'}],tip:'Your application should tell the story of something you created, not just courses you took.'}
+      ]},
+      Shepherd:{focus:'human services, healthcare, education, and community care',years:[
+        {grade:9,label:'9th Grade',courses:[{name:'English / Language Arts (Honors)',tag:'honors',type:'priority',why:'Shepherds are communicators. Strong writing is the bedrock.'},{name:'Biology (Honors)',tag:'honors',type:'priority',why:'Foundation for healthcare and human development pathways.'},{name:'Introduction to Psychology',tag:'elective',type:'recommended',why:'The highest-alignment elective for a Shepherd if offered.'},{name:'World Languages',tag:'required',type:'recommended',why:'Bilingual Shepherds are extraordinarily valuable in healthcare.'}],tip:'Start volunteer or service work outside school. Build real helping hours.'},
+        {grade:10,label:'10th Grade',courses:[{name:'AP Psychology',tag:'ap',type:'priority',why:'The most archetype-aligned AP for Shepherds. Maps directly to social work.'},{name:'Health Science / Anatomy',tag:'elective',type:'priority',why:'Essential background for nursing and healthcare.'},{name:'AP English Language',tag:'ap',type:'recommended',why:'Develops the analytical writing every graduate program requires.'},{name:'Sociology or Social Issues',tag:'elective',type:'recommended',why:'Shepherds need to understand systems. Sociology provides the structural lens.'}],tip:'Your service record needs shape. Aim for a consistent meaningful role.'},
+        {grade:11,label:'11th Grade',courses:[{name:'AP Biology',tag:'ap',type:'priority',why:'Required prerequisite for nursing, pre-med, and health science programs.'},{name:'AP Statistics',tag:'ap',type:'priority',why:'Healthcare programs require data literacy. The right math for Shepherds.'},{name:'Child Development / Early Childhood Ed',tag:'elective',type:'recommended',why:'Direct preparation for education and counseling pathways.'},{name:'AP Environmental Science',tag:'ap',type:'optional',why:'A manageable AP showing science commitment without Calculus.'}],tip:'Avoid loading up on STEM APs to appear well-rounded. Shepherds win with depth.'},
+        {grade:12,label:'12th Grade',courses:[{name:'Dual Enrollment: Sociology or Human Development',tag:'dual',type:'recommended',why:'Earn college credit in your actual field of interest.'},{name:'AP English Literature',tag:'ap',type:'recommended',why:'Strengthens the empathetic reading at the core of helping professions.'},{name:'Senior Internship or Practicum',tag:'elective',type:'priority',why:'A supervised placement in a care setting is the gold standard.'},{name:'Research Methods / Independent Study',tag:'elective',type:'optional',why:'Start building research experience if graduate school is in your future.'}],tip:'Your essay should center on a specific person you helped and what you learned.'}
+      ]},
+      Architect:{focus:'systems design, engineering, mathematics, and analytical problem-solving',years:[
+        {grade:9,label:'9th Grade',courses:[{name:'Honors Algebra II or Pre-Calculus',tag:'honors',type:'priority',why:'Architects need mathematical confidence above all. Accelerate early.'},{name:'Honors Chemistry or Physics',tag:'honors',type:'priority',why:'Strong foundation for AP coursework ahead.'},{name:'Introduction to Computer Science',tag:'elective',type:'recommended',why:'Computational thinking is the Architect\'s native language.'},{name:'Logic / Philosophy (if offered)',tag:'elective',type:'recommended',why:'Architects thrive with formal reasoning.'}],tip:'Identify which systems fascinate you: physical, digital, biological, or financial.'},
+        {grade:10,label:'10th Grade',courses:[{name:'AP Calculus AB',tag:'ap',type:'priority',why:'Start calculus by 10th grade. Engineering programs expect this.'},{name:'AP Computer Science A',tag:'ap',type:'priority',why:'Builds the structured thinking that defines Architect-type engineers.'},{name:'AP Chemistry or AP Physics 1',tag:'ap',type:'recommended',why:'Build your science depth. The AP signals your engineering specialty.'},{name:'Statistics',tag:'honors',type:'recommended',why:'Data is the material Architects work with.'}],tip:'10th grade: build something. Architects who only take courses are less compelling.'},
+        {grade:11,label:'11th Grade',courses:[{name:'AP Calculus BC',tag:'ap',type:'priority',why:'The gold standard for engineering-bound students.'},{name:'AP Physics C: Mechanics',tag:'ap',type:'priority',why:'The physics AP that matters for engineering. Calculus-based and rigorous.'},{name:'AP Statistics',tag:'ap',type:'recommended',why:'Architects need both continuous and probabilistic reasoning.'},{name:'AP Computer Science A or Principles',tag:'ap',type:'recommended',why:'Add a second CS AP. Computational depth is a differentiator.'}],tip:'Your grade trajectory here is scrutinized more than any other year by selective engineering programs.'},
+        {grade:12,label:'12th Grade',courses:[{name:'AP Physics C: E&M or AP Chemistry',tag:'ap',type:'priority',why:'Demonstrates scientific range alongside Mechanics.'},{name:'Multivariable Calculus (college course)',tag:'dual',type:'recommended',why:'If you\'ve completed BC Calculus, take college-level multivariable.'},{name:'Engineering Design / Robotics Capstone',tag:'elective',type:'priority',why:'Hands-on building is the best senior showcase for an Architect.'},{name:'AP Economics',tag:'ap',type:'optional',why:'Business context makes engineers more competitive later.'}],tip:'Write about the system you designed or the thing you built that failed and taught you everything.'}
+      ]},
+      Catalyst:{focus:'leadership, communication, social entrepreneurship, and change-making',years:[
+        {grade:9,label:'9th Grade',courses:[{name:'English / Speech and Debate',tag:'elective',type:'priority',why:'Catalysts move people with words. Public speaking is your most important skill.'},{name:'AP Human Geography',tag:'ap',type:'recommended',why:'Accessible AP with high alignment for Catalysts interested in global systems.'},{name:'Intro to Business / Entrepreneurship',tag:'elective',type:'recommended',why:'Translate energy into structured plans.'},{name:'World Languages',tag:'required',type:'priority',why:'Change-makers who speak multiple languages have wider impact.'}],tip:'Join student government, debate team, or start a club. Catalysts need an organizational home.'},
+        {grade:10,label:'10th Grade',courses:[{name:'AP Government and Politics',tag:'ap',type:'priority',why:'Learn how systems work to change them.'},{name:'AP Language and Composition',tag:'ap',type:'priority',why:'Argumentation is the Catalyst\'s core tool. This AP trains it directly.'},{name:'Marketing / Communications',tag:'elective',type:'recommended',why:'Catalysts who understand audiences are more effective change-makers.'},{name:'Economics (Honors)',tag:'honors',type:'recommended',why:'Understanding resource allocation helps Catalysts design solutions that scale.'}],tip:'Identify your cause. Catalysts who can name one issue they are working on write the best applications.'},
+        {grade:11,label:'11th Grade',courses:[{name:'AP English Literature',tag:'ap',type:'priority',why:'Adds analytical depth to the Catalyst\'s persuasive instincts.'},{name:'AP Macroeconomics',tag:'ap',type:'recommended',why:'Social entrepreneurship and policy change require economic fluency.'},{name:'AP US History or AP World History',tag:'ap',type:'recommended',why:'Historical context makes Catalysts more effective advocates for change.'},{name:'Statistics',tag:'honors',type:'recommended',why:'Data makes Catalysts more credible. Arguments built on evidence, not just passion.'}],tip:'The biggest risk for a Catalyst applicant: perceived as all energy and no depth. Load up on rigor.'},
+        {grade:12,label:'12th Grade',courses:[{name:'AP Psychology',tag:'ap',type:'recommended',why:'Understanding human motivation makes Catalysts more effective leaders.'},{name:'Dual Enrollment: Leadership or Sociology',tag:'dual',type:'recommended',why:'College-level courses validate what you already practice.'},{name:'Independent Social Enterprise Project',tag:'elective',type:'priority',why:'Formalize your initiative with documented metrics and outcomes.'},{name:'Film / Media Production',tag:'elective',type:'optional',why:'Catalysts who tell stories visually have outsized influence.'}],tip:'Your essay should quantify impact. How many people did your initiative reach? Translate passion into evidence.'}
+      ]},
+      Advocate:{focus:'law, justice, public policy, social change, and human rights',years:[
+        {grade:9,label:'9th Grade',courses:[{name:'English / Debate or Rhetoric',tag:'elective',type:'priority',why:'Advocates live and die by their ability to argue. Formal debate sharpens it.'},{name:'AP Human Geography',tag:'ap',type:'recommended',why:'High alignment for Advocates interested in global justice.'},{name:'World Languages (start or accelerate)',tag:'required',type:'priority',why:'Advocates who speak multiple languages can represent more people.'},{name:'U.S. History (Honors)',tag:'honors',type:'recommended',why:'Understanding how injustice has been fought before is essential context.'}],tip:'9th grade: find your issue. The best Advocate applications center on one specific injustice.'},
+        {grade:10,label:'10th Grade',courses:[{name:'AP Government and Politics: U.S.',tag:'ap',type:'priority',why:'Advocates need to know exactly how political systems work to change them.'},{name:'AP Language and Composition',tag:'ap',type:'priority',why:'Argument, evidence, rhetoric. Training for an Advocate\'s life work.'},{name:'Sociology or Intro to Law',tag:'elective',type:'priority',why:'Systems-level thinking about how laws and norms are made and changed.'},{name:'Psychology (Honors)',tag:'honors',type:'recommended',why:'Understanding how humans respond to injustice makes Advocates more effective.'}],tip:'10th grade: start writing. Op-eds, letters to officials, community testimonies.'},
+        {grade:11,label:'11th Grade',courses:[{name:'AP U.S. History',tag:'ap',type:'priority',why:'Deep historical grounding in how social change has happened in America.'},{name:'AP English Literature',tag:'ap',type:'priority',why:'Literature develops the moral imagination that makes great advocates.'},{name:'AP Comparative Government',tag:'ap',type:'recommended',why:'Compare justice systems across the world for internationally-focused Advocates.'},{name:'AP Statistics',tag:'ap',type:'recommended',why:'The most credible advocates use data to build evidence-based arguments.'}],tip:'11th grade: deepen your expertise in your specific area. Depth distinguishes Advocates.'},
+        {grade:12,label:'12th Grade',courses:[{name:'AP Psychology',tag:'ap',type:'recommended',why:'Social influence, cognitive bias, group dynamics  -  all directly applicable to advocacy.'},{name:'Dual Enrollment: Political Science or Pre-Law',tag:'dual',type:'priority',why:'Pre-law electives at community colleges are available and impressive.'},{name:'Senior Independent Research: Policy Brief',tag:'elective',type:'priority',why:'Write a real policy brief. Both a capstone and an application artifact.'},{name:'Ethics / Philosophy',tag:'elective',type:'recommended',why:'Formal ethical reasoning is the infrastructure of legal and advocacy careers.'}],tip:'Show you can argue both sides of a position  -  not just the one you believe in.'}
+      ]},
+      Cultivator:{focus:'education, mentorship, developmental science, and nurturing growth in others',years:[
+        {grade:9,label:'9th Grade',courses:[{name:'Biology (Honors)',tag:'honors',type:'priority',why:'Foundation for human development and education pathways.'},{name:'English / Creative Writing',tag:'required',type:'priority',why:'Cultivators shape others with words. Strong writing is at the core.'},{name:'Psychology (Intro, if offered)',tag:'elective',type:'recommended',why:'Understanding how people learn and grow is the Cultivator\'s core interest.'},{name:'World Languages (start or continue)',tag:'required',type:'recommended',why:'Bilingual educators serve broader communities and earn more.'}],tip:'Start tutoring, coaching, or mentoring in any capacity right away.'},
+        {grade:10,label:'10th Grade',courses:[{name:'AP Psychology',tag:'ap',type:'priority',why:'The most archetype-aligned AP for Cultivators. Learning, memory, development.'},{name:'Child Development / Family Studies',tag:'elective',type:'priority',why:'Direct preparation for education and counseling. Shows intellectual commitment.'},{name:'AP English Language',tag:'ap',type:'recommended',why:'Communication and argumentation skills are fundamental to every education pathway.'},{name:'Statistics (Honors)',tag:'honors',type:'recommended',why:'Educational research and assessment design require statistical literacy.'}],tip:'Ask to assist a teacher or youth program leader in an official capacity.'},
+        {grade:11,label:'11th Grade',courses:[{name:'AP Biology',tag:'ap',type:'priority',why:'For Cultivators in healthcare or therapy: AP Bio is the required foundation.'},{name:'AP Statistics',tag:'ap',type:'priority',why:'Educational research and counseling all require strong data skills.'},{name:'Philosophy / Ethics',tag:'elective',type:'recommended',why:'Cultivators make profound ethical decisions daily. Formal training sharpens this.'},{name:'AP Language (Spanish or other)',tag:'ap',type:'recommended',why:'Bilingual Cultivators are among the most sought-after professionals.'}],tip:'Cultivator applications are made by the quality of the relationship story in the essay.'},
+        {grade:12,label:'12th Grade',courses:[{name:'Senior Teaching Practicum or Internship',tag:'elective',type:'priority',why:'Supervised classroom experience is the gold standard senior credential.'},{name:'Dual Enrollment: Education Foundations',tag:'dual',type:'recommended',why:'Many community colleges offer intro education courses. Earn credit while committing.'},{name:'AP English Literature',tag:'ap',type:'recommended',why:'Literature develops the empathetic reading educators rely on throughout careers.'},{name:'Research Methods / Independent Study',tag:'elective',type:'optional',why:'Start building research experience if graduate school is in your future.'}],tip:'The most powerful move: co-teach a unit with younger students. Document it.'}
+      ]},
+      Peacemaker:{focus:'conflict resolution, international relations, communication, diplomacy, and bridge-building',years:[
+        {grade:9,label:'9th Grade',courses:[{name:'World Languages (accelerate)',tag:'required',type:'priority',why:'Peacemakers who speak multiple languages can stand between cultures. Develop this superpower.'},{name:'World History (Honors)',tag:'honors',type:'priority',why:'Understanding how conflicts begin, escalate, and resolve is foundational knowledge.'},{name:'English / Debate or Model UN Prep',tag:'elective',type:'recommended',why:'Formal argument training teaches structure and perspective-taking.'},{name:'Philosophy / Intro Ethics',tag:'elective',type:'recommended',why:'Peacemakers need moral frameworks. Ethical reasoning is the infrastructure of mediation.'}],tip:'Join Model UN, peer mediation, or an international interest club.'},
+        {grade:10,label:'10th Grade',courses:[{name:'AP World History: Modern',tag:'ap',type:'priority',why:'Global historical perspective is essential for diplomacy and international relations.'},{name:'AP Language and Composition',tag:'ap',type:'priority',why:'Peacemakers need to write with precision. Rhetoric is a core skill.'},{name:'Sociology or Cultural Anthropology',tag:'elective',type:'recommended',why:'Understanding cultural systems is the foundation of cross-cultural bridge-building.'},{name:'AP Spanish / French / Other Language',tag:'ap',type:'recommended',why:'Reach AP-level fluency in a second language by junior year.'}],tip:'Look for international experience. Peacemakers transformed by cultural immersion write exceptional applications.'},
+        {grade:11,label:'11th Grade',courses:[{name:'AP Government: U.S. and Comparative',tag:'ap',type:'priority',why:'Understanding both domestic and international political systems is essential for diplomacy.'},{name:'AP Psychology',tag:'ap',type:'priority',why:'Conflict resolution and mediation are rooted in psychological understanding.'},{name:'AP Statistics',tag:'ap',type:'recommended',why:'International relations and policy careers increasingly require quantitative reasoning.'},{name:'AP English Literature',tag:'ap',type:'recommended',why:'Cross-cultural literature develops the empathetic imagination Peacemakers need.'}],tip:'11th grade: document a real mediation or conflict-resolution moment you navigated.'},
+        {grade:12,label:'12th Grade',courses:[{name:'Second Language AP',tag:'ap',type:'priority',why:'Add a second language AP if possible. Multilingual Peacemakers are rare and valuable.'},{name:'Dual Enrollment: International Relations',tag:'dual',type:'recommended',why:'Many community colleges offer intro IR. Exactly the right dual enrollment.'},{name:'Senior Research: Cross-Cultural Study',tag:'elective',type:'priority',why:'Research a cross-cultural conflict or resolution process and write it up formally.'},{name:'Philosophy / Ethics (Advanced)',tag:'elective',type:'recommended',why:'Senior-level ethics validates the moral reasoning at the heart of peacemaking work.'}],tip:'Peacemaker essays center on a specific moment of tension you navigated. Specificity wins.'}
+      ]}
+    };
+    var data = courseData[arch] || courseData['Builder'];
+    var html = '<div class="ai-badge">\u2746 Course plan for the ' + arch + ' archetype \u00b7 ' + data.focus + '</div>';
+    html += '<div class="course-roadmap">';
+    data.years.forEach(function(yr) {
+      var isCurrent = (yr.grade === currentGrade);
+      var isPast = (yr.grade < currentGrade);
+      var nodeClass = isCurrent ? 'current' : (isPast ? 'past' : 'future');
+      var gradYearForGrade = gradYear - (12 - yr.grade);
+      html += '<div class="course-year"><div class="course-year-spine"><div class="course-year-node ' + nodeClass + '">' + yr.grade + '</div><div class="course-year-line"></div></div>';
+      html += '<div class="course-year-content"><div class="course-year-label">' + yr.label + ' \u00b7 ' + gradYearForGrade + '\u2013' + (gradYearForGrade+1).toString().slice(2);
+      if (isCurrent) html += ' <span class="course-here-tag">YOU ARE HERE</span>';
+      if (isPast)    html += ' <span class="course-done-tag">Completed</span>';
+      html += '</div><div class="course-cards">';
+      yr.courses.forEach(function(c) {
+        var ts = tagStyle[c.tag] || tagStyle.elective;
+        var bc = borderColor[c.type] || 'rgba(0,0,0,0.1)';
+        html += '<div class="course-card ' + c.type + (isPast?' past-card':'') + '" style="border-left-color:' + bc + '">';
+        html += '<div class="course-tag-chip course-tag-' + c.tag + '" style="' + ts + '">' + c.tag.toUpperCase() + '</div>';
+        html += '<div class="course-name">' + c.name + '</div><div class="course-why">' + c.why + '</div></div>';
+      });
+      html += '</div><div class="course-tip"><strong>Year focus:</strong> ' + yr.tip + '</div></div></div>';
+    });
+    html += '</div>';
+    html += '<div style="margin-top:20px;padding:16px 20px;background:var(--navy);border-radius:12px;border:1px solid rgba(201,168,76,0.2);"><p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.7;margin:0;"><strong style="color:var(--gold-light);">\uD83D\uDCCC A note:</strong> This roadmap is a starting point. Talk to your school counselor about what is available at your school and what your teachers recommend for your specific situation.</p></div>';
+    el.innerHTML = html;
+  }
 /* ── Make all onclick-used functions globally accessible ── */
 window.nextSection             = nextSection;
 window.prevSection             = prevSection;
