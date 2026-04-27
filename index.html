@@ -1228,7 +1228,7 @@ async function renderResults(r) {
 
     <!-- BEYOND CLASS CTA -->
     <div class="bc-promo" id="bc-promo-section">
-      <h3>Want the full picture?</h3>\n      <p>Your free report is the beginning. The premium report goes deeper  -  five personalized essay angles, real-world projects, research paper ideas, a shadow side workbook, and a parent conversation guide. All generated from your specific answers.</p>\n      <a href=\"#\" onclick=\"showPremiumModshowPremiumModal();return false;" class="bc-promo-btn">Unlock Your Premium Report  -  $79 →</a>
+      <h3>Want the full picture?</h3>\n      <p>Your free report is the beginning. The premium report goes deeper  -  five personalized essay angles, real-world projects, research paper ideas, a shadow side workbook, and a parent conversation guide. All generated from your specific answers.</p>\n      <a href=\"#\" onclick=\"showPremiumModal();return false;" class="bc-promo-btn">Unlock Your Premium Report  -  $79 →</a>
       <div class="bc-promo-logos">beyondclass.org · Not just college-ready. Life-ready.</div>
     </div>
 
@@ -3419,6 +3419,23 @@ async function generateCourses(archProfile, pArch, intake) {
     html += '<div style="margin-top:20px;padding:16px 20px;background:var(--navy);border-radius:12px;border:1px solid rgba(201,168,76,0.2);"><p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.7;margin:0;"><strong style="color:var(--gold-light);">\uD83D\uDCCC A note:</strong> This roadmap is a starting point. Talk to your school counselor about what is available at your school and what your teachers recommend for your specific situation.</p></div>';
     el.innerHTML = html;
   }
+
+
+function sendLeadData(r, pArch, studentName) {
+  // Lead data collection - fires after results render
+  try {
+    var data = {
+      name: studentName || 'Unknown',
+      archetype: r.primary || 'Unknown',
+      email: (r.intake && r.intake.email) || '',
+      state: (r.intake && r.intake.state) || '',
+      school: (r.intake && r.intake.school) || '',
+      timestamp: new Date().toISOString()
+    };
+    console.log('[BC] Lead data:', data.archetype, data.state);
+  } catch(e) { console.warn('sendLeadData error:', e); }
+}
+
 /* ── Make all onclick-used functions globally accessible ── */
 window.nextSection             = nextSection;
 window.prevSection             = prevSection;
