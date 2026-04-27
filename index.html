@@ -3187,6 +3187,47 @@ async function generateShadowWorkbook(archProfile, pArch, intake) {
   };
 }
 
+
+
+/* ── Make all onclick-used functions globally accessible ── */
+window.nextSection             = nextSection;
+window.prevSection             = prevSection;
+window.submitAssessment        = submitAssessment;
+window.toggleChip              = toggleChip;
+window.showPremiumModal        = showPremiumModal;
+window.copyResults             = copyResults;
+window.validateCoppaForm       = validateCoppaForm;
+window.startAssessmentFromMsIntro = startAssessmentFromMsIntro;
+window.updateRangeLabel        = updateRangeLabel;
+window.saveCollegeFit          = saveCollegeFit;
+window.saveIntake              = saveIntake;
+window.handleStep2Click        = handleStep2Click;
+window.restartAssessment       = restartAssessment;
+
+/* selectAnswer is called from question card onclick */
+function selectAnswer(qid, val, el) {
+  answers[qid] = val;
+  var section = SECTIONS[currentSection];
+  if (section && section.questions) {
+    section.questions.forEach(function(q) {
+      if (q.id === qid) {
+        document.querySelectorAll('[data-qid="' + qid + '"] .option-card').forEach(function(card) {
+          card.classList.remove('selected');
+        });
+        if (el) el.classList.add('selected');
+      }
+    });
+  }
+  updateCompletionNote();
+}
+window.selectAnswer = selectAnswer;
+
+/* saveOpen for open-ended questions */
+window.saveOpen = function(qid, val) {
+  openAnswers[qid] = val;
+  updateCompletionNote();
+};
+
 </script>
 
     <!-- STICKY PREMIUM CTA — appears when scrolling past premium section -->
