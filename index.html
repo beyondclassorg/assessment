@@ -65,7 +65,7 @@
     <a href="#" onclick="window.top.location.href='https://www.beyondclass.org/our-approach';return false;" class="bc-nav-link">Our Approach</a>
     <a href="#" onclick="window.top.location.href='https://www.beyondclass.org/about';return false;" class="bc-nav-link">About</a>
   </div>
-  <a href="#" onclick="window.top.location.href='https://www.beyondclass.org/assessment';return false;" class="bc-nav-cta active">Take the Assessment →</a>
+  <a href="#" onclick="window.top.location.href='https://beyondclassorg.github.io/assessment';return false;" class="bc-nav-cta active">Take the Assessment →</a>
 </nav>
 
 <!-- LANDING -->
@@ -464,6 +464,8 @@ var IS_MIDDLE_SCHOOL = false;
 var parentConsentGiven = false;
 let answers = {};
 let openAnswers = {};
+// Module-level vars for premium reveal (set in renderResults)
+var _archProfile = '', _pArch = '', _intake = {}, _cfPrefs = {};
 let intakeData = {};
 let collegeFitData = { priorities: [], envPrefs: [], sizes: [], locations: [], athletics: 'no_preference', budget: 3, faith: 'no_preference' };
 
@@ -1243,6 +1245,11 @@ async function renderResults(r) {
 
   // Now fire AI calls in parallel
   const archProfile = `${r.primary} (primary) + ${r.secondary} (secondary)`;
+  // Store at module level for revealPremiumContent
+  _archProfile = archProfile;
+  _pArch = pArch;
+  _intake = intake;
+  _cfPrefs = cfPrefs;
   const cfPrefs = collegeFitData;
   const loc = location;
   const intake = r.intake;
@@ -2917,13 +2924,13 @@ function renderCopyrightFooter() {
     ['wrap-essays','wrap-careers','wrap-activities','wrap-mentor'].forEach(function(id){
       var el=document.getElementById(id); if(el) el.style.display='';
     });
-    generateEssayAngles(archProfile,pArch,intake).catch(function(){});
-    generateCareerProfiles(archProfile,pArch,intake).catch(function(){});
-    generateActivities(archProfile,pArch,intake).catch(function(){});
-    generateMentorMatch(archProfile,pArch,intake).catch(function(){});
+    generateEssayAngles(_archProfile,_pArch,_intake).catch(function(){});
+    generateCareerProfiles(_archProfile,_pArch,_intake).catch(function(){});
+    generateActivities(_archProfile,_pArch,_intake).catch(function(){});
+    generateMentorMatch(_archProfile,_pArch,_intake).catch(function(){});
     var shadowEl = document.getElementById('wrap-shadow');
     if (shadowEl) shadowEl.style.display = '';
-    generateShadowWorkbook(archProfile,pArch,intake).catch(function(){});
+    generateShadowWorkbook(_archProfile,_pArch,_intake).catch(function(){});
   }
 
   // Legacy alias
@@ -3250,7 +3257,7 @@ async function generateMajors(archProfile, pArch, intake) {
       <ul style="padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px">
         ${data.combo.map(c => `<li style="display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--text-mid);line-height:1.5"><span style="color:var(--gold);flex-shrink:0;margin-top:2px">✦</span>${c}</li>`).join('')}
       </ul>
-      <p style="font-size:12px;color:var(--text-light);margin-top:16px;line-height:1.6;font-style:italic">Remember: most top colleges don't require you to declare a major until sophomore year. Choosing a college for its culture and archetype fit is often more important than finding the perfect major name.</p>
+      <p style="font-size:12px;color:var(--text-light);margin-top:16px;line-height:1.6;font-style:italic">Remember: most top colleges do not require you to declare a major until sophomore year. Choosing a college for its culture and archetype fit is often more important than finding the perfect major name.</p>
     </div>`;
 }
 
@@ -3428,6 +3435,8 @@ window.handleStep2Click        = handleStep2Click;
 window.restartAssessment       = restartAssessment;
 window.selectAnswer            = selectAnswer;
 window.saveOpen                = saveOpen;
+window.renderResults           = renderResults;
+window.calculateResults        = calculateResults;
 
 /* selectAnswer is called from question card onclick */
 /* selectAnswer restored from backup below */
