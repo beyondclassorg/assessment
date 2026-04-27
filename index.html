@@ -1246,13 +1246,13 @@ async function renderResults(r) {
   // Now fire AI calls in parallel
   const archProfile = `${r.primary} (primary) + ${r.secondary} (secondary)`;
   // Store at module level for revealPremiumContent
+  const cfPrefs = collegeFitData;
+  const loc = [r.intake.city, r.intake.state].filter(Boolean).join(', ') || 'your area';
+  const intake = r.intake;
   _archProfile = archProfile;
   _pArch = pArch;
   _intake = intake;
   _cfPrefs = cfPrefs;
-  const cfPrefs = collegeFitData;
-  const loc = location;
-  const intake = r.intake;
 
   showScreen('screen-results');
   setTimeout(initScrollIndicator, 300);
