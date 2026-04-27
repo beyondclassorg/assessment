@@ -3189,6 +3189,35 @@ async function generateShadowWorkbook(archProfile, pArch, intake) {
 
 
 
+
+
+function renderQuestion(q, qi, dimClass) {
+  // Use simplified language for middle school / early high school students
+  var qText = (IS_MIDDLE_SCHOOL && q.ms_text) ? q.ms_text : q.text;
+  var qOpts = (IS_MIDDLE_SCHOOL && q.ms_options) ? q.ms_options : q.options;
+  if(q.type === 'choice') {
+    const letters = 'ABCDEFG';
+    return '<div class="question-block ' + (answers[q.id]!==undefined?'answered':'') + '" id="qblock-' + q.id + '"><div class="q-number">Question ' + (qi+1) + '</div><div class="q-dimension-tag ' + dimClass + '">' + dimClass.replace('dim-','') + '</div><div class="q-text">' + qText + '</div><div class="options-list">' + qOpts.map(function(opt,oi){ return '<button class="option-btn ' + (answers[q.id]===oi?'selected':'') + '" onclick="selectAnswer(\'' + q.id + '\',' + oi + ')"><span class="option-letter">' + letters[oi] + '</span><span>' + opt.label + '</span></button>'; }).join('') + '</div></div>';
+  } else {
+    var placeholder = IS_MIDDLE_SCHOOL ? 'Write whatever feels true for you right now...' : 'Write your honest answer here...';
+    return '<div class="question-block ' + (openAnswers[q.id]?'answered':'') + '" id="qblock-' + q.id + '"><div class="q-number">Question ' + (qi+1) + '</div><div class="q-dimension-tag dim-open">reflection</div><div class="q-text">' + qText + '</div><textarea class="open-textarea" placeholder="' + placeholder + '" oninput="saveOpen(\'' + q.id + '\',this.value)">' + (openAnswers[q.id]||'') + '</textarea></div>';
+  }
+}
+
+function selectAnswer(qId, optIdx) {
+  answers[qId] = optIdx;
+  const block = document.getElementById('qblock-'+qId);
+  if(block) { block.classList.add('answered'); block.querySelectorAll('.option-btn').forEach((b,i) => b.classList.toggle('selected', i===optIdx)); }
+  updateCompletionNote();
+}
+
+function saveOpen(qId, val) {
+  openAnswers[qId] = val;
+  const block = document.getElementById('qblock-'+qId);
+  if(block) block.classList.toggle('answered', val.trim().length > 0);
+  updateCompletionNote();
+}
+
 /* ── Make all onclick-used functions globally accessible ── */
 window.nextSection             = nextSection;
 window.prevSection             = prevSection;
@@ -3203,30 +3232,13 @@ window.saveCollegeFit          = saveCollegeFit;
 window.saveIntake              = saveIntake;
 window.handleStep2Click        = handleStep2Click;
 window.restartAssessment       = restartAssessment;
+window.selectAnswer            = selectAnswer;
+window.saveOpen                = saveOpen;
 
 /* selectAnswer is called from question card onclick */
-function selectAnswer(qid, val, el) {
-  answers[qid] = val;
-  var section = SECTIONS[currentSection];
-  if (section && section.questions) {
-    section.questions.forEach(function(q) {
-      if (q.id === qid) {
-        document.querySelectorAll('[data-qid="' + qid + '"] .option-card').forEach(function(card) {
-          card.classList.remove('selected');
-        });
-        if (el) el.classList.add('selected');
-      }
-    });
-  }
-  updateCompletionNote();
-}
-window.selectAnswer = selectAnswer;
+/* selectAnswer restored from backup below */
 
-/* saveOpen for open-ended questions */
-window.saveOpen = function(qid, val) {
-  openAnswers[qid] = val;
-  updateCompletionNote();
-};
+/* saveOpen restored from backup below */
 
 </script>
 
