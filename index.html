@@ -875,7 +875,9 @@ async function renderResults(r) {
   window._bcArchetypeResult = r.primary || '';
   const content = document.getElementById('results-content');
   content.innerHTML = `
-  <div class="results-hero">
+<!-- 1. ARCHETYPE PROFILE -->
+<!-- 1. ARCHETYPE PROFILE -->
+<div class="results-hero">
     <div class="results-hero-bg"></div>
     <div class="results-hero-inner">
       <div class="student-name-tag">Report prepared for ${studentName}</div>
@@ -897,24 +899,44 @@ async function renderResults(r) {
       <p style="font-size:13px;color:var(--text-light);margin-top:16px;line-height:1.6">Your primary archetype (<strong>${r.primary}</strong>) and secondary (<strong>${r.secondary}</strong>) form a unique combination. Together they describe how you naturally show up and contribute in the world.</p>
     </div>
 
-    <!-- GIFTS -->
+<!-- 2. CORE GIFTS -->
+<!-- 2. CORE GIFTS -->
+<!-- GIFTS -->
     <div class="results-section">
       <div class="results-section-title"><span class="rs-icon">✨</span> Your Core Gifts</div>
       <div class="gifts-grid">${pArch.gifts.map(g=>`<div class="gift-card"><div class="gift-icon">${g.icon}</div><div class="gift-title">${g.title}</div><div class="gift-desc">${g.desc}</div></div>`).join('')}${sArch.gifts.slice(0,2).map(g=>`<div class="gift-card" style="border-top-color:var(--navy-light)"><div class="gift-icon">${g.icon}</div><div class="gift-title">${g.title} <span style="font-size:10px;color:var(--text-light)">(secondary)</span></div><div class="gift-desc">${g.desc}</div></div>`).join('')}</div>
     </div>
 
-    <!-- SHADOW SIDE -->
+<!-- 3. SHADOW SIDE -->
+<!-- 3. SHADOW SIDE -->
+<!-- SHADOW SIDE -->
     <div class="results-section">
       <div class="results-section-title"><span class="rs-icon">🪞</span> Your Shadow Side</div>
       <div class="shadow-card"><div class="shadow-title">⚠️ Watch for this in yourself</div><div class="shadow-desc">${pArch.shadow}</div></div>
     </div>
 
-    <!-- UNIVERSITIES -->
-    <!-- EARLY PREMIUM CTA — appears early in free report -->
-      <div id="early-premium-cta" class="results-section" style="background:rgba(200,169,110,0.08);border:1px solid rgba(200,169,110,0.25);border-radius:12px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
-        <div>
-          <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:4px">✦ Premium Report Available</div>
-          <div style="font-size:14px;font-weight:600;color:var(--navy)">Get your essay angles, projects, shadow workbook, and more.</div>
+<!-- 4. CALLING STATEMENT — NEW -->
+    <div class="results-section">
+      <div class="results-section-title"><span class="rs-icon">🧭</span> Your Calling Statement</div>
+      <div class="ai-section" id="prem-calling"><div class="ai-loading"><div class="ai-spinner"></div><span>Building your calling statement...</span></div></div>
+    </div>
+
+<!-- 5. BURDEN STATEMENT — NEW -->
+    <div class="results-section">
+      <div class="results-section-title"><span class="rs-icon">💎</span> Your Burden Statement</div>
+      <div class="ai-section" id="prem-burden"><div class="ai-loading"><div class="ai-spinner"></div><span>Finding your burden...</span></div></div>
+    </div>
+
+<!-- 6. COMBINATION PROFILE — NEW -->
+    <div class="results-section">
+      <div class="results-section-title"><span class="rs-icon">⚡</span> Your Archetype Combination Profile</div>
+      <div class="ai-section" id="prem-combination"><div class="ai-loading"><div class="ai-spinner"></div><span>Building your combination profile...</span></div></div>
+    </div>
+
+<!-- 7. COLLEGES & UNIVERSITIES -->
+<!-- 4. COLLEGES & UNIVERSITIES -->
+<!-- UNIVERSITIES -->
+    <div style="font-size:14px;font-weight:600;color:var(--navy)">Get your essay angles, projects, shadow workbook, and more.</div>
           <div style="font-size:12px;color:var(--text-mid);margin-top:3px">Personalized to your archetype and interests. One-time $79.</div>
         </div>
         <button onclick="showPremiumModal()" style="flex-shrink:0;background:var(--navy);color:var(--gold);font-family:var(--sans);font-size:13px;font-weight:700;padding:11px 20px;border-radius:8px;border:1px solid rgba(200,169,110,0.3);cursor:pointer;white-space:nowrap">
@@ -937,12 +959,15 @@ async function renderResults(r) {
       </div>
     </div>
 
-    <div class="results-section" id="wrap-essays" style="display:none"><div class="results-section-title"><span class="rs-icon">&#9998;</span> Essay Angles</div><div class="ai-section" id="section-essays"><div class="ai-loading"><div class="ai-spinner"></div><span>Generating essay angles...</span></div></div></div>
-    <div class="results-section" id="wrap-careers" style="display:none"><div class="results-section-title"><span class="rs-icon">&#128188;</span> Career Paths</div><div class="ai-section" id="section-careers"><div class="ai-loading"><div class="ai-spinner"></div><span>Mapping career paths...</span></div></div></div>
-    <div class="results-section" id="wrap-activities" style="display:none"><div class="results-section-title"><span class="rs-icon">&#127807;</span> Local Activities</div><div class="ai-section" id="section-activities"><div class="ai-loading"><div class="ai-spinner"></div><span>Finding activities in your area...</span></div></div></div>
-    <div class="results-section" id="wrap-mentor" style="display:none"><div class="results-section-title"><span class="rs-icon">&#129309;</span> Mentor Match</div><div class="ai-section" id="section-mentor"><div class="ai-loading"><div class="ai-spinner"></div><span>Building your mentor profile...</span></div></div></div>
-    <div class="results-section" id="wrap-shadow" style="display:none"><div class="results-section-title"><span class="rs-icon">&#127807;</span> Shadow Side Workbook</div><div class="ai-section" id="section-shadow"><div class="ai-loading"><div class="ai-spinner"></div><span>Loading shadow workbook...</span></div></div></div>
-    <!-- MAJORS -->
+    <div class="results-section" id="wrap-essays-free" style="display:none"><div class="results-section-title"><span class="rs-icon">&#9998;</span> Essay Angles</div><div class="ai-section" id="section-essays-free"><div class="ai-loading"><div class="ai-spinner"></div><span>Generating essay angles...</span></div></div></div>
+    <div class="results-section" id="wrap-careers-free" style="display:none"><div class="results-section-title"><span class="rs-icon">&#128188;</span> Career Paths</div><div class="ai-section" id="section-careers-free"><div class="ai-loading"><div class="ai-spinner"></div><span>Mapping career paths...</span></div></div></div>
+    <div class="results-section" id="wrap-activities-free" style="display:none"><div class="results-section-title"><span class="rs-icon">&#127807;</span> Local Activities</div><div class="ai-section" id="section-activities-free"><div class="ai-loading"><div class="ai-spinner"></div><span>Finding activities in your area...</span></div></div></div>
+    <div class="results-section" id="wrap-mentor-free" style="display:none"><div class="results-section-title"><span class="rs-icon">&#129309;</span> Mentor Match</div><div class="ai-section" id="section-mentor-free"><div class="ai-loading"><div class="ai-spinner"></div><span>Building your mentor profile...</span></div></div></div>
+    <div class="results-section" id="wrap-shadow-free" style="display:none"><div class="results-section-title"><span class="rs-icon">&#127807;</span> Shadow Side Workbook</div><div class="ai-section" id="section-shadow-free"><div class="ai-loading"><div class="ai-spinner"></div><span>Loading shadow workbook...</span></div></div></div>
+
+<!-- 8. MAJORS TO CONSIDER -->
+<!-- 5. MAJORS TO CONSIDER -->
+<!-- MAJORS -->
     <div class="results-section">
       <div class="results-section-title"><span class="rs-icon">📚</span> Majors to Consider</div>
       <div class="ai-section" id="section-majors">
@@ -950,37 +975,24 @@ async function renderResults(r) {
       </div>
     </div>
 
-    <!-- LOCAL OPPORTUNITIES -->
-    <div class="results-section">
-      <div class="results-section-title"><span class="rs-icon">🗺️</span> Local Opportunities Near ${location}</div>
-      <div class="ai-section" id="section-opportunities">
-        <div class="ai-loading"><div class="ai-spinner"></div><span>Searching for internships, volunteer opportunities, and experience builders near you...</span></div>
-      </div>
+<!-- 9. CAREER PATHS -->
+<!-- 6. CAREER PATHS — new generator -->
+    <div class="results-section" id="wrap-careers" style="display:none">
+      <div class="results-section-title"><span class="rs-icon">💼</span> Career Paths</div>
+      <div class="ai-section" id="section-careers"><div class="ai-loading"><div class="ai-spinner"></div><span>Mapping career paths matched to your archetype...</span></div></div>
     </div>
 
-    <!-- CLUBS -->
+<!-- 10. EXAMPLES OF ROLES -->
+<!-- 7. EXAMPLES OF ROLES -->
+<!-- ROLES -->
     <div class="results-section">
-      <div class="results-section-title"><span class="rs-icon">🏫</span> Clubs & Organizations for Your High School Years</div>
-      <div class="ai-section" id="section-clubs">
-        <div class="ai-loading"><div class="ai-spinner"></div><span>Identifying clubs to join or start...</span></div>
-      </div>
+      <div class="results-section-title"><span class="rs-icon">💼</span> Example Roles Aligned With Your Archetype</div>
+      <div class="roles-wrap">${pArch.roles.map(role=>`<div class="role-tag">${role}</div>`).join('')}</div>
     </div>
 
-    <!-- SCHOLARSHIPS -->
-    <div class="results-section">
-      <div class="results-section-title"><span class="rs-icon">💰</span> Scholarships to Explore</div>
-      <div class="ai-section" id="section-scholarships">
-        <div class="ai-loading"><div class="ai-spinner"></div><span>Surfacing relevant scholarships for your profile...</span></div>
-      </div>
-
-    <!-- COURSE ROADMAP -->
-    <div class="results-section">
-      <div class="results-section-title"><span class="rs-icon">📖</span> Your High School Course Roadmap</div>
-      <p style="font-size:14px;color:var(--text-mid);margin-bottom:24px;line-height:1.7;">The courses you choose signal who you are before you write a single essay. Here is a personalized course plan built around your <strong style="color:var(--navy)">${r.primary} archetype</strong> and graduation year.</p>
-      <div id="section-courses"><div class="ai-loading"><div class="ai-spinner"></div><span>Building your personalized course roadmap...</span></div></div>
-    </div>
-
-    <!-- FUTURE OF WORK -->
+<!-- 11. FUTURE OF WORK READINESS -->
+<!-- 8. FUTURE OF WORK READINESS -->
+<!-- FUTURE OF WORK -->
     <div class="results-section">
       <div class="results-section-title"><span class="rs-icon">🤖</span> Future of Work Readiness</div>
       <div class="readiness-grid">
@@ -991,26 +1003,64 @@ async function renderResults(r) {
       <div style="background:var(--navy);border-radius:12px;padding:20px;margin-top:16px;border:1px solid rgba(201,168,76,0.2)"><p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6">🤖 <strong style="color:var(--gold-light)">AI Era Fit for ${r.primary}s:</strong> ${pArch.futureFit}</p></div>
     </div>
 
-    <!-- ROLES -->
+<!-- 12. SCHOLARSHIPS -->
+<!-- 9. SCHOLARSHIPS -->
+<!-- SCHOLARSHIPS -->
     <div class="results-section">
-      <div class="results-section-title"><span class="rs-icon">💼</span> Example Roles Aligned With Your Archetype</div>
-      <div class="roles-wrap">${pArch.roles.map(role=>`<div class="role-tag">${role}</div>`).join('')}</div>
+      <div class="results-section-title"><span class="rs-icon">💰</span> Scholarships to Explore</div>
+      <div class="ai-section" id="section-scholarships">
+        <div class="ai-loading"><div class="ai-spinner"></div><span>Surfacing relevant scholarships for your profile...</span></div>
+      </div>
+
+<!-- 13. LOCAL OPPORTUNITIES -->
+<!-- 10. LOCAL OPPORTUNITIES -->
+<!-- LOCAL OPPORTUNITIES -->
+    <div class="results-section">
+      <div class="results-section-title"><span class="rs-icon">🗺️</span> Local Opportunities Near ${location}</div>
+      <div class="ai-section" id="section-opportunities">
+        <div class="ai-loading"><div class="ai-spinner"></div><span>Searching for internships, volunteer opportunities, and experience builders near you...</span></div>
+      </div>
     </div>
 
-    <!-- MENTORS -->
+<!-- 14. CLUBS & ORGANIZATIONS -->
+<!-- 11. CLUBS & ORGANIZATIONS -->
+<!-- CLUBS -->
+    <div class="results-section">
+      <div class="results-section-title"><span class="rs-icon">🏫</span> Clubs & Organizations for Your High School Years</div>
+      <div class="ai-section" id="section-clubs">
+        <div class="ai-loading"><div class="ai-spinner"></div><span>Identifying clubs to join or start...</span></div>
+      </div>
+    </div>
+
+<!-- 15. HIGH SCHOOL ROADMAP -->
+<!-- 12. HIGH SCHOOL ROADMAP -->
+<!-- COURSE ROADMAP -->
+    <div class="results-section">
+      <div class="results-section-title"><span class="rs-icon">📖</span> Your High School Course Roadmap</div>
+      <p style="font-size:14px;color:var(--text-mid);margin-bottom:24px;line-height:1.7;">The courses you choose signal who you are before you write a single essay. Here is a personalized course plan built around your <strong style="color:var(--navy)">${r.primary} archetype</strong> and graduation year.</p>
+      <div id="section-courses"><div class="ai-loading"><div class="ai-spinner"></div><span>Building your personalized course roadmap...</span></div></div>
+    </div>
+
+<!-- 16. MENTORS -->
+<!-- 13. MENTORS -->
+<!-- MENTORS -->
     <div class="results-section">
       <div class="results-section-title"><span class="rs-icon">🧭</span> Mentors You Should Learn From</div>
       <p style="font-size:14px;color:var(--text-mid);margin-bottom:16px;line-height:1.6">Career clarity often comes from conversations more than research. These are the professionals whose perspective would be most valuable for your archetype.</p>
       <div class="mentor-grid">${pArch.mentors.map(m=>`<div class="mentor-card"><div class="mentor-type">${m.type}</div><div class="mentor-desc">${m.desc}</div><div class="mentor-question">${m.q}</div></div>`).join('')}</div>
     </div>
 
-    <!-- ACTION PLAN -->
+<!-- 17. ACTION PLAN -->
+<!-- 14. ACTION PLAN -->
+<!-- ACTION PLAN -->
     <div class="results-section">
       <div class="results-section-title"><span class="rs-icon">🚀</span> Your Action Plan</div>
       <div class="actions-timeline">${pArch.actions.map(a=>`<div class="action-item"><div class="action-node ${a.timing}">${a.icon}</div><div class="action-content"><div class="action-phase">${a.phase}</div><div class="action-title">${a.title}</div><div class="action-desc">${a.desc}</div></div></div>`).join('')}</div>
     </div>
 
-    <!-- REFLECTION -->
+<!-- 18. REFLECTION QUESTIONS -->
+<!-- 15. REFLECTION QUESTIONS -->
+<!-- REFLECTION -->
     <div class="results-section">
       <div class="results-section-title"><span class="rs-icon">💭</span> Reflection Questions</div>
       <div class="reflection-list">
@@ -1022,226 +1072,101 @@ async function renderResults(r) {
       </div>
     </div>
 
-    <!-- PARENT SECTION -->
-    
-    <!-- PREMIUM REPORT SECTIONS  -  blurred preview -->
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- PREMIUM SECTIONS — hidden until counselor code     -->
+<!-- ═══════════════════════════════════════════════════ -->
+    <div id="premium-report-section" style="display:none">
 
-    <!-- PREMIUM REPORT  -  content rendered inline, revealed on payment -->
-    <!-- PREMIUM TEASER BAR — appears before premium section -->
-    <div class="results-section" style="background:linear-gradient(135deg,#0F0F24,#1a1a3e);border:none;border-radius:16px;padding:28px 32px;text-align:center;margin-bottom:0">
-      <div style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:12px">✦ Premium Report — Included Below</div>
-      <div style="font-family:'Playfair Display',serif;font-size:24px;color:white;font-weight:500;line-height:1.3;margin-bottom:12px">The college is the chapter.<br><em style="color:var(--gold)">The calling is the book.</em></div>
-      <p style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.7;max-width:480px;margin:0 auto 20px">Your free report gives you the who. Your premium report gives you the what — exactly what to build, write, and say to stand out as who you are.</p>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:520px;margin:0 auto 24px">
-        <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:12px 8px;border:1px solid rgba(200,169,110,0.2)">
-          <div style="font-size:20px;margin-bottom:4px">✍️</div>
-          <div style="font-size:11px;font-weight:600;color:white">5 Essay Angles</div>
-          <div style="font-size:10px;color:rgba(255,255,255,0.4)">Your story, your way</div>
-        </div>
-        <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:12px 8px;border:1px solid rgba(200,169,110,0.2)">
-          <div style="font-size:20px;margin-bottom:4px">🚀</div>
-          <div style="font-size:11px;font-weight:600;color:white">3 Real Projects</div>
-          <div style="font-size:10px;color:rgba(255,255,255,0.4)">Start this week</div>
-        </div>
-        <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:12px 8px;border:1px solid rgba(200,169,110,0.2)">
-          <div style="font-size:20px;margin-bottom:4px">🪞</div>
-          <div style="font-size:11px;font-weight:600;color:white">Shadow Workbook</div>
-          <div style="font-size:10px;color:rgba(255,255,255,0.4)">Know your blind spots</div>
-        </div>
-        <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:12px 8px;border:1px solid rgba(200,169,110,0.2)">
-          <div style="font-size:20px;margin-bottom:4px">🤝</div>
-          <div style="font-size:11px;font-weight:600;color:white">Group Dynamics</div>
-          <div style="font-size:10px;color:rgba(255,255,255,0.4)">Lead from your archetype</div>
-        </div>
-        <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:12px 8px;border:1px solid rgba(200,169,110,0.2)">
-          <div style="font-size:20px;margin-bottom:4px">👨‍👩‍👧</div>
-          <div style="font-size:11px;font-weight:600;color:white">Parent Guide</div>
-          <div style="font-size:10px;color:rgba(255,255,255,0.4)">Script for the talk</div>
-        </div>
-        <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:12px 8px;border:1px solid rgba(200,169,110,0.2)">
-          <div style="font-size:20px;margin-bottom:4px">💼</div>
-          <div style="font-size:11px;font-weight:600;color:white">Career Readiness</div>
-          <div style="font-size:10px;color:rgba(255,255,255,0.4)">AI-proof your future</div>
-        </div>
+      <!-- P1. ESSAY ANGLES -->
+      <div class="results-section" id="wrap-essays">
+        <div class="results-section-title"><span class="rs-icon">✍️</span> Your Essay Angles</div>
+        <div class="ai-section" id="section-essays"><div class="ai-loading"><div class="ai-spinner"></div><span>Generating your personalized essay angles...</span></div></div>
       </div>
-      <button onclick="showPremiumModal()" style="background:linear-gradient(135deg,#C8A96E,#D4B87A);color:var(--navy);font-family:var(--sans);font-size:15px;font-weight:700;padding:14px 32px;border-radius:8px;border:none;cursor:pointer;letter-spacing:.02em">
-        See My Premium Report — $79 →
-      </button>
-      <p style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:12px">One-time · Generated from your specific answers · Scroll down to preview</p>
-    </div>
 
-<div id="premium-report-section" class="results-section" style="position:relative;background:linear-gradient(135deg,rgba(15,15,36,0.04),rgba(200,169,110,0.06));border:1px solid rgba(200,169,110,0.25);border-radius:16px;padding:28px;overflow:hidden;">
-
-      <!-- PREMIUM CONTENT — filled by JS, always in DOM -->
-      <div id="premium-content-inner" style="opacity:0.25;filter:blur(4px);pointer-events:none;user-select:none;">
-
-        <!-- Premium header -->
-        <div style="text-align:center;padding:24px 0 32px;border-bottom:1px solid rgba(200,169,110,0.15);margin-bottom:40px">
-          <div style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">✦ Your Premium Report</div>
-          <div style="font-family:'Playfair Display',serif;font-size:28px;color:var(--navy);font-weight:500;line-height:1.2;margin-bottom:8px">Everything you need to stand out.</div>
-          <p style="font-size:13px;color:var(--text-light);max-width:480px;margin:0 auto;line-height:1.7">Six sections built from your specific archetype, your interests, and your answers. This is not a template — it is yours.</p>
-        </div>
-
-        <!-- Each section filled by JS -->
-        <div id="prem-essays"></div>
-        <div id="prem-projects"></div>
-        <div id="prem-research"></div>
-        <div id="prem-shadow"></div>
-        <div id="prem-group"></div>
-        <div id="prem-parent"></div>
-        <div id="prem-career"></div>
-
-      </div><!-- end premium-content-inner -->
-
-      <!-- OVERLAY  -  removed on payment -->
-      <div id="premium-overlay" style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(250,248,243,0) 0%,rgba(250,248,243,0) 15%,rgba(250,248,243,0.7) 30%,rgba(250,248,243,0.97) 45%,rgba(250,248,243,1) 55%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:24px 24px 32px;border-radius:16px;">
-
-        <!-- Lock icon -->
-        <div style="width:48px;height:48px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:16px;box-shadow:0 4px 20px rgba(15,15,36,0.2)">
-          <span style="font-size:20px">🔒</span>
-        </div>
-
-        <!-- Heading -->
-        <div style="text-align:center;max-width:520px;width:100%">
-          <div style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">✦ Premium Report</div>
-          <div style="font-family:'Playfair Display',serif;font-size:26px;color:var(--navy);font-weight:500;line-height:1.25;margin-bottom:10px">Your full personalized report<br>is ready to unlock.</div>
-          <p style="font-size:13px;color:var(--text-mid);line-height:1.7;margin-bottom:20px">Everything above  -  plus 5 essay angles, 3 real-world projects, 3 research paper ideas, a shadow side workbook, group dynamics guide, career readiness profile, and parent conversation guide  -  all matched to your specific answers.</p>
-
-          <!-- Feature grid -->
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;text-align:left">
-            <div style="background:white;border-radius:8px;padding:10px 14px;border:1px solid rgba(200,169,110,0.2);display:flex;align-items:center;gap:8px">
-              <span style="color:var(--gold);font-size:14px">✍️</span>
-              <div>
-                <div style="font-size:11px;font-weight:700;color:var(--navy)">5 Essay Angles</div>
-                <div style="font-size:10px;color:var(--text-light)">With opening lines</div>
-              </div>
-            </div>
-            <div style="background:white;border-radius:8px;padding:10px 14px;border:1px solid rgba(200,169,110,0.2);display:flex;align-items:center;gap:8px">
-              <span style="color:var(--gold);font-size:14px">🚀</span>
-              <div>
-                <div style="font-size:11px;font-weight:700;color:var(--navy)">3 Real Projects</div>
-                <div style="font-size:10px;color:var(--text-light)">Matched to your interests</div>
-              </div>
-            </div>
-            <div style="background:white;border-radius:8px;padding:10px 14px;border:1px solid rgba(200,169,110,0.2);display:flex;align-items:center;gap:8px">
-              <span style="color:var(--gold);font-size:14px">📝</span>
-              <div>
-                <div style="font-size:11px;font-weight:700;color:var(--navy)">3 Research Ideas</div>
-                <div style="font-size:10px;color:var(--text-light)">Academic angles for you</div>
-              </div>
-            </div>
-            <div style="background:white;border-radius:8px;padding:10px 14px;border:1px solid rgba(200,169,110,0.2);display:flex;align-items:center;gap:8px">
-              <span style="color:var(--gold);font-size:14px">🪞</span>
-              <div>
-                <div style="font-size:11px;font-weight:700;color:var(--navy)">Shadow Workbook</div>
-                <div style="font-size:10px;color:var(--text-light)">Reflection & exercises</div>
-              </div>
-            </div>
-            <div style="background:white;border-radius:8px;padding:10px 14px;border:1px solid rgba(200,169,110,0.2);display:flex;align-items:center;gap:8px">
-              <span style="color:var(--gold);font-size:14px">🤝</span>
-              <div>
-                <div style="font-size:11px;font-weight:700;color:var(--navy)">Group Dynamics</div>
-                <div style="font-size:10px;color:var(--text-light)">Team role & interview answer</div>
-              </div>
-            </div>
-            <div style="background:white;border-radius:8px;padding:10px 14px;border:1px solid rgba(200,169,110,0.2);display:flex;align-items:center;gap:8px">
-              <span style="color:var(--gold);font-size:14px">👨‍👩‍👧</span>
-              <div>
-                <div style="font-size:11px;font-weight:700;color:var(--navy)">Parent Guide</div>
-                <div style="font-size:10px;color:var(--text-light)">Conversation script</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Price + CTA -->
-          <div style="background:var(--navy);border-radius:12px;padding:20px 24px;margin-bottom:12px">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-              <div>
-                <div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(200,169,110,0.7);margin-bottom:3px">One-time payment</div>
-                <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:500;color:white;line-height:1">$79</div>
-              </div>
-              <div style="text-align:right">
-                <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:2px">✓ Instant reveal after payment</div>
-                <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:2px">✓ Your content is already generated</div>
-                <div style="font-size:11px;color:rgba(255,255,255,0.5)">✓ No account required</div>
-              </div>
-            </div>
-            <button class="premium-unlock-cta" onclick="showPremiumModal()"
-              style="width:100%;padding:15px;font-size:15px;font-weight:700;background:linear-gradient(135deg,#C8A96E,#D4B87A);color:var(--navy);border:none;border-radius:8px;cursor:pointer;letter-spacing:.02em;font-family:var(--sans)">
-              Unlock My Full Report  -  $79 →
-            </button>
-          </div>
-
-          <!-- Counselor note -->
-          <p style="font-size:11px;color:var(--text-light);line-height:1.6">Working with a school counselor? Ask them for your school code  -  licensed counselors include the full premium report free for their students.</p>
-        </div>
-      </div><!-- end premium-overlay -->
-
-    <div id="premium-print-btn" style="display:none;margin-top:20px;text-align:center">
-        <button onclick="window.print()" style="background:var(--navy);color:var(--gold-light);font-family:var(--sans);font-size:13px;font-weight:600;padding:11px 24px;border-radius:8px;border:none;cursor:pointer;margin-right:10px">📄 Save as PDF / Print</button>
-        <p style="font-size:11px;color:var(--text-light);margin-top:8px">Use your browser's print dialog → Save as PDF to download your report</p>
+      <!-- P2. REAL WORLD EXPERIENCE PROJECTS -->
+      <div class="results-section" id="wrap-activities">
+        <div class="results-section-title"><span class="rs-icon">🌱</span> Real World Experience Projects</div>
+        <div class="ai-section" id="section-activities"><div class="ai-loading"><div class="ai-spinner"></div><span>Building your real-world project ideas...</span></div></div>
       </div>
+
+      <!-- P3. RESEARCH PAPER IDEAS -->
+      <div class="results-section">
+        <div class="results-section-title"><span class="rs-icon">🔬</span> Research Paper Ideas</div>
+        <div class="ai-section" id="prem-research"><div class="ai-loading"><div class="ai-spinner"></div><span>Generating research paper ideas...</span></div></div>
+      </div>
+
+      <!-- P4. SHADOW SIDE WORKBOOK -->
+      <div class="results-section" id="wrap-shadow">
+        <div class="results-section-title"><span class="rs-icon">🌒</span> Shadow Side Workbook</div>
+        <div class="ai-section" id="section-shadow"><div class="ai-loading"><div class="ai-spinner"></div><span>Loading your shadow workbook...</span></div></div>
+      </div>
+
+      <!-- P5. GROUP DYNAMICS -->
+      <div class="results-section">
+        <div class="results-section-title"><span class="rs-icon">🤝</span> Group Dynamics</div>
+        <div class="ai-section" id="prem-group"><div class="ai-loading"><div class="ai-spinner"></div><span>Mapping your group dynamics profile...</span></div></div>
+      </div>
+
+      <!-- P6. PEER ARCHETYPES — NEW -->
+      <div class="results-section">
+        <div class="results-section-title"><span class="rs-icon">🔄</span> How You Work With Every Archetype</div>
+        <div class="ai-section" id="prem-peer"><div class="ai-loading"><div class="ai-spinner"></div><span>Mapping your peer archetype dynamics...</span></div></div>
+      </div>
+
+      <!-- P7. INTERVIEW PREPARATION — NEW -->
+      <div class="results-section">
+        <div class="results-section-title"><span class="rs-icon">🎤</span> College Interview Preparation</div>
+        <div class="ai-section" id="prem-interview"><div class="ai-loading"><div class="ai-spinner"></div><span>Building your interview preparation...</span></div></div>
+      </div>
+
+      <!-- P8. RECOMMENDATION LETTER GUIDE — NEW -->
+      <div class="results-section">
+        <div class="results-section-title"><span class="rs-icon">📝</span> Letters of Recommendation Guide</div>
+        <div class="ai-section" id="prem-recletter"><div class="ai-loading"><div class="ai-spinner"></div><span>Building your recommendation letter guide...</span></div></div>
+      </div>
+
+      <!-- P9. SUMMER PROGRAMS — NEW -->
+      <div class="results-section">
+        <div class="results-section-title"><span class="rs-icon">☀️</span> Summer Programs Matched to Your Archetype</div>
+        <div class="ai-section" id="prem-summer"><div class="ai-loading"><div class="ai-spinner"></div><span>Finding summer programs...</span></div></div>
+      </div>
+
+      <!-- P10. PARENT GUIDE -->
+      <div class="results-section">
+        <div class="results-section-title"><span class="rs-icon">👪</span> Parent's Guide</div>
+        <div class="ai-section" id="prem-parent"><div class="ai-loading"><div class="ai-spinner"></div><span>Building your parent's guide...</span></div></div>
+      </div>
+
+      <!-- P11. MENTOR MATCH & CAREER READINESS -->
+      <div class="results-section" id="wrap-mentor">
+        <div class="results-section-title"><span class="rs-icon">🚀</span> Mentor Match &amp; Career Readiness</div>
+        <div class="ai-section" id="section-mentor"><div class="ai-loading"><div class="ai-spinner"></div><span>Building your mentor profile...</span></div></div>
+      </div>
+
+      <!-- P12. COUNSELOR SESSION GUIDE — NEW -->
+      <div class="results-section">
+        <div class="results-section-title"><span class="rs-icon">📋</span> Counselor Session Guide</div>
+        <div class="ai-section" id="prem-counselor-guide"><div class="ai-loading"><div class="ai-spinner"></div><span>Building your counselor session guide...</span></div></div>
+      </div>
+
     </div><!-- end premium-report-section -->
 
-<!-- PREMIUM MODAL -->
-    <div id="premium-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:999;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px 0;">
-      <div style="background:var(--cream);max-width:480px;width:90%;border-radius:16px;padding:36px 32px;position:relative;text-align:center;margin:auto;">
-        <button onclick="document.getElementById('premium-modal').style.display='none'" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-light)">×</button>
+<!-- PREMIUM OVERLAY — hidden for counselor code users -->
+    <div id="premium-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,31,61,0.5);z-index:999;align-items:center;justify-content:center">
+      <div style="background:white;border-radius:16px;padding:32px;max-width:400px;text-align:center;margin:20px">
         <div style="font-size:32px;margin-bottom:12px">✦</div>
-        <div style="font-family:'Playfair Display',serif;font-size:24px;color:var(--navy);margin-bottom:8px;line-height:1.2">Your Full Personalized Report</div>
-        <p style="font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:24px">Essay angles, real-world projects, research ideas, shadow side workbook, team guide, and a parent conversation script  -  all generated from your specific answers.</p>
-        <div style="background:white;border-radius:10px;padding:16px;margin-bottom:20px;text-align:left">
-          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--navy);margin-bottom:8px"><span style="color:var(--gold)">✦</span> 5 personalized essay angles with sample opening lines</div>
-          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--navy);margin-bottom:8px"><span style="color:var(--gold)">✦</span> 3 real-world projects tailored to your interests</div>
-          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--navy);margin-bottom:8px"><span style="color:var(--gold)">✦</span> 3 research paper ideas specific to you</div>
-          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--navy);margin-bottom:8px"><span style="color:var(--gold)">✦</span> Shadow side workbook with reflection prompts</div>
-          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--navy);margin-bottom:8px"><span style="color:var(--gold)">✦</span> Group dynamics & coached interview answer</div>
-          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--navy)"><span style="color:var(--gold)">✦</span> Parent conversation guide & script</div>
-        </div>
-        <a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" onclick="trackPremiumClick()" style="display:block;background:var(--navy);color:white;text-decoration:none;padding:16px 24px;border-radius:8px;font-size:15px;font-weight:600;margin-bottom:12px;font-family:var(--sans)" onclick="window._bcPaymentClicked=true;">Step 1  -  Pay securely →</a>
-        <p style="font-size:11px;color:var(--text-light)">Opens in a new tab · One-time $79 · No account required</p>
-        <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(0,0,0,0.06)">
-          <p style="font-size:12px;color:var(--navy);font-weight:600;margin-bottom:8px">Step 2  -  After paying, click here to open your report:</p>
-          <button id="step2-btn" onclick="handleStep2Click()" style="display:block;width:100%;background:rgba(200,169,110,0.15);color:var(--navy);border:1.5px solid var(--gold);font-family:var(--sans);font-size:14px;font-weight:600;padding:13px 24px;border-radius:8px;cursor:pointer;margin-bottom:10px;transition:all 0.3s;">✦ Open My Full Premium Report →</button>
-          <p style="font-size:11px;color:var(--text-light)">Your report was generated when you completed the assessment and is ready to open immediately after payment.</p>
-        </div>
-        <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.06)">
-          <p style="font-size:12px;color:var(--text-light)">Working with a counselor? Ask them for access  -  licensed counselors include the full premium report for their students.</p>
-        </div>
-      </div>
-    </div></div>
-    </div>
-
-<div class="parent-banner">
-      <div class="parent-icon">👨‍👩‍👧</div>
-      <div class="parent-text">
-        <h3>A Note for Parents</h3>
-        <p>${studentName} has identified as <strong style="color:var(--gold-light)">${pArch.name}</strong>  -  someone whose calling is: <em>"${pArch.calling}"</em> Understanding this can help you support rather than redirect their development.</p>
-        <div class="parent-tips">
-          <div class="parent-tip"><div class="parent-tip-dot"></div><span><strong style="color:rgba(255,255,255,0.8)">Affirm the calling, not just the career.</strong> Ask "Where do you see yourself already doing this?" rather than "What job will you get?"</span></div>
-          <div class="parent-tip"><div class="parent-tip-dot"></div><span><strong style="color:rgba(255,255,255,0.8)">Help them find mentors</strong> from the types listed above. One great informational interview can be more formative than a year of classroom learning.</span></div>
-          <div class="parent-tip"><div class="parent-tip-dot"></div><span><strong style="color:rgba(255,255,255,0.8)">Watch for shadow side patterns</strong> gently. The shadow side isn't a flaw  -  it's a strength not yet fully developed.</span></div>
-          <div class="parent-tip"><div class="parent-tip-dot"></div><span><strong style="color:rgba(255,255,255,0.8)">In an AI-changing world,</strong> the most important thing you can give your student is a clear sense of identity  -  who they are that no technology can replicate.</span></div>
-        </div>
+        <h3 style="font-size:20px;color:var(--navy);margin-bottom:8px">Unlock Premium Report</h3>
+        <p style="font-size:14px;color:var(--text-mid);margin-bottom:20px">Enter your counselor school code or purchase access to unlock all premium sections.</p>
+        <input id="premium-code-input" style="width:100%;padding:10px 14px;border:1px solid rgba(0,0,0,0.15);border-radius:8px;font-size:14px;margin-bottom:12px;box-sizing:border-box" placeholder="Enter counselor code..." oninput="window.checkPremiumCode&&checkPremiumCode(this.value)">
+        <a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" style="display:block;background:var(--gold);color:var(--navy);padding:12px 24px;border-radius:8px;font-weight:700;font-size:14px;text-decoration:none;margin-bottom:8px">Purchase Access — $79 →</a>
+        <button onclick="document.getElementById('premium-overlay').style.display='none'" style="background:none;border:none;color:var(--text-light);font-size:13px;cursor:pointer">Close</button>
       </div>
     </div>
 
-    <!-- BEYOND CLASS CTA -->
-    <div class="bc-promo" id="bc-promo-section">
-      <h3>Want the full picture?</h3>\n      <p>Your free report is the beginning. The premium report goes deeper  -  five personalized essay angles, real-world projects, research paper ideas, a shadow side workbook, and a parent conversation guide. All generated from your specific answers.</p>\n      <a href=\"#\" onclick=\"showPremiumModal();return false;" class="bc-promo-btn">Unlock Your Premium Report  -  $79 →</a>
-      <div class="bc-promo-logos">beyondclass.org · Not just college-ready. Life-ready.</div>
-    </div>
-
-    <div class="results-actions">
-      <button class="btn-outline" onclick="window.print()">📄 Print Report</button>
-      <button class="btn-outline" onclick="copyResults(${JSON.stringify(r).replace(/"/g,'&quot;')})">📋 Copy Summary</button>
-      <button class="btn-restart" onclick="restartAssessment()">↺ Retake Assessment</button>
-    </div>
-
-  <div id="counselor-slot"></div>
-
-  </div>
-  <div id="assessment-copyright-footer"></div>`;
+    <div id="premium-modal" style="display:none"></div>
+    <div id="counselor-slot"></div>
+    <div id="assessment-copyright-footer"></div>
+`;
 
   // Now fire AI calls in parallel
   const archProfile = `${r.primary} (primary) + ${r.secondary} (secondary)`;
@@ -1268,7 +1193,10 @@ async function renderResults(r) {
     generateCareerProfiles(archProfile, pArch, intake).catch(function(e){ console.warn('careers:',e); }),
     generateActivities(archProfile, pArch, intake).catch(function(e){ console.warn('activities:',e); }),
     generateMentorMatch(archProfile, pArch, intake).catch(function(e){ console.warn('mentor:',e); }),
-    generateShadowWorkbook(archProfile, pArch, intake).catch(function(e){ console.warn('shadow:',e); })
+    generateShadowWorkbook(archProfile, pArch, intake).catch(function(e){ console.warn('shadow:',e); }),
+    generateCallingStatement(archProfile, pArch, intake).catch(function(e){ console.warn('calling:',e); }),
+    generateBurdenStatement(archProfile, pArch, intake).catch(function(e){ console.warn('burden:',e); }),
+    generateCombinationProfile(archProfile, pArch, intake).catch(function(e){ console.warn('combo:',e); })
   ]);
 
   // Send lead data
@@ -2897,41 +2825,40 @@ function renderCopyrightFooter() {
 
   // ── REVEAL PREMIUM CONTENT  -  removes overlay, content already in DOM ──
   function revealPremiumContent() {
-    var overlay = document.getElementById('premium-overlay');
-    if (overlay) {
-      overlay.style.transition = 'opacity 0.5s ease';
-      overlay.style.opacity = '0';
-      setTimeout(function() { overlay.style.display = 'none'; }, 500);
-    }
-    var inner = document.getElementById('premium-content-inner');
-    if (inner) {
-      inner.style.transition = 'all 0.5s ease';
-      inner.style.opacity = '1';
-      inner.style.filter = 'none';
-      inner.style.pointerEvents = 'auto';
-      inner.style.userSelect = 'auto';
-    }
-    // Hide bc-promo and counselor capture
-    var promo = document.getElementById('bc-promo-section');
-    if (promo) promo.style.display = 'none';
-    var capture = document.getElementById('counselor-capture-section');
-    if (capture) capture.style.display = 'none';
-    // Show print button
-    var printBtn = document.getElementById('premium-print-btn');
-    if (printBtn) printBtn.style.display = 'block';
-    window._bcPremiumUnlocked = true;
-    // Show new comprehensive sections
-    ['wrap-essays','wrap-careers','wrap-activities','wrap-mentor'].forEach(function(id){
-      var el=document.getElementById(id); if(el) el.style.display='';
-    });
-    generateEssayAngles(_archProfile,_pArch,_intake).catch(function(){});
-    generateCareerProfiles(_archProfile,_pArch,_intake).catch(function(){});
-    generateActivities(_archProfile,_pArch,_intake).catch(function(){});
-    generateMentorMatch(_archProfile,_pArch,_intake).catch(function(){});
-    var shadowEl = document.getElementById('wrap-shadow');
-    if (shadowEl) shadowEl.style.display = '';
-    generateShadowWorkbook(_archProfile,_pArch,_intake).catch(function(){});
-  }
+  if (window._bcPremiumUnlocked) return;
+  window._bcPremiumUnlocked = true;
+
+  // Hide overlay and upsell elements
+  ['premium-overlay','early-premium-cta'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+
+  // Show premium report section
+  var prs = document.getElementById('premium-report-section');
+  if (prs) prs.style.display = '';
+
+  // Show wrap- sections
+  ['wrap-essays','wrap-careers','wrap-activities','wrap-shadow','wrap-mentor'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = '';
+  });
+
+  // Show counselor badge
+  var slot = document.getElementById('counselor-slot');
+  if (slot) slot.innerHTML = '<div style="background:rgba(45,106,79,0.08);border:1px solid rgba(45,106,79,0.2);border-radius:8px;padding:12px 16px;margin:16px 0;font-size:13px;color:#2d6a4f;display:flex;align-items:center;gap:10px"><span style="font-size:18px">✓</span><div><strong>Counselor Premium Report Unlocked</strong><br><span style="font-size:12px;opacity:.8">Full 23-section report — school code verified</span></div></div>';
+
+  // Fire premium generators
+  var arch = _archProfile || '';
+  var pa   = _pArch || {};
+  var int  = _intake || {};
+  generateEssayAngles(arch, pa, int).catch(function(){});
+  generateCareerProfiles(arch, pa, int).catch(function(){});
+  generateActivities(arch, pa, int).catch(function(){});
+  generateMentorMatch(arch, pa, int).catch(function(){});
+  generateShadowWorkbook(arch, pa, int).catch(function(){});
+  generatePremiumFromBank(arch, pa, int).catch(function(){});
+}
 
   // Legacy alias
   function unlockPremiumSections() { revealPremiumContent(); }
@@ -3435,6 +3362,683 @@ function sendLeadData(r, pArch, studentName) {
     console.log('[BC] Lead data:', data.archetype, data.state);
   } catch(e) { console.warn('sendLeadData error:', e); }
 }
+
+
+
+/* ══════════════════════════════════════════════════════════════
+   NEW PREMIUM GENERATORS — 8 additional sections
+   ══════════════════════════════════════════════════════════════ */
+
+// ── 1. CALLING STATEMENT BUILDER ─────────────────────────────
+async function generateCallingStatement(archProfile, pArch, intake) {
+  var el = document.getElementById('prem-calling');
+  if (!el) return;
+  var arch = archProfile.split(' ')[0];
+  var name = (intake && intake.firstname) ? intake.firstname : 'You';
+
+  var drafts = {
+    Builder: {
+      draft: 'I am someone who builds things that don\'t exist yet.',
+      refined: 'I am called to create systems, products, and organizations that solve problems other people have learned to live with.',
+      final: 'My calling is to build what the world needs — to see the gap between what is and what could be, and to close it.',
+      prompt: 'A calling statement is not a job title. It is one sentence that stays true no matter what career you pursue. It describes the direction your energy moves when you are operating from your deepest self.'
+    },
+    Shepherd: {
+      draft: 'I am someone who cares for the people others overlook.',
+      refined: 'I am called to create conditions where people who are struggling can find their footing — in classrooms, clinics, communities, or wherever I am.',
+      final: 'My calling is to tend the people the world moves past too quickly — to stay when others leave and to see what others miss.',
+      prompt: 'Your calling statement is not about your career. It is about what you cannot stop doing even when no one asks you to.'
+    },
+    Architect: {
+      draft: 'I am someone who understands how systems work.',
+      refined: 'I am called to design the frameworks, policies, and structures that allow complex systems to serve the people inside them.',
+      final: 'My calling is to find the hidden structure in hard problems and design solutions that hold — not just for today, but for what comes next.',
+      prompt: 'Your calling statement should name the specific mechanism of your contribution — not just what you care about, but how you engage.'
+    },
+    Catalyst: {
+      draft: 'I am someone who gets people moving.',
+      refined: 'I am called to activate the belief and energy that make collective action possible — to be the person who makes the room believe something can change.',
+      final: 'My calling is to ignite what is possible — to move people from passive agreement to active commitment, one conversation and one campaign at a time.',
+      prompt: 'The best Catalyst calling statements name both the activation AND what it is for. Sparks without direction are just noise.'
+    },
+    Advocate: {
+      draft: 'I am someone who fights for what is right.',
+      refined: 'I am called to make the invisible visible — to name the injustices that have been normalized and to build the case for why they do not have to stay that way.',
+      final: 'My calling is to fight for the people who cannot fight for themselves — through argument, evidence, story, and whatever the moment requires.',
+      prompt: 'The most powerful Advocate calling statements name a specific category of injustice, not injustice in general.'
+    },
+    Cultivator: {
+      draft: 'I am someone who helps things grow.',
+      refined: 'I am called to invest in the long-term development of people, ecosystems, and ideas — to tend what others abandon when results take longer than expected.',
+      final: 'My calling is to grow things that take time — to plant what I may never harvest and to trust that slow, patient investment produces what urgency cannot.',
+      prompt: 'Your calling statement should capture the long arc. Cultivators often understate their contribution because it is quiet and cumulative.'
+    },
+    Peacemaker: {
+      draft: 'I am someone who brings people together.',
+      refined: 'I am called to build the bridges between people and communities that cannot yet see what they share — to hold the space where genuine dialogue becomes possible.',
+      final: 'My calling is to unify — to stand in the middle of what divides and build, patiently and persistently, the connections that make reconciliation real.',
+      prompt: 'Your calling statement should name the specific kind of division you are called to address. "Bringing people together" is the method. Name the divide.'
+    }
+  };
+
+  var d = drafts[arch] || drafts.Builder;
+
+  el.innerHTML = '<div class="ai-badge">✦ Your Calling Statement — three versions</div>'
+    + '<div class="ai-content">'
+    + '<p style="font-size:13px;color:var(--text-mid);line-height:1.7;margin-bottom:20px">' + d.prompt + '</p>'
+    + '<div style="display:flex;flex-direction:column;gap:14px">'
+    + '<div style="background:rgba(15,31,61,0.03);border:1px solid rgba(0,0,0,0.07);border-radius:8px;padding:16px 20px">'
+    + '<div style="font-size:10px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Version 1 — First Draft (9th grade)</div>'
+    + '<div style="font-family:\'Playfair Display\',serif;font-size:17px;color:var(--navy);line-height:1.5;font-style:italic">"' + d.draft + '"</div>'
+    + '</div>'
+    + '<div style="background:rgba(200,169,110,0.06);border:1px solid rgba(200,169,110,0.2);border-radius:8px;padding:16px 20px">'
+    + '<div style="font-size:10px;font-weight:700;color:var(--gold-dark);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Version 2 — Refined (11th grade)</div>'
+    + '<div style="font-family:\'Playfair Display\',serif;font-size:17px;color:var(--navy);line-height:1.5;font-style:italic">"' + d.refined + '"</div>'
+    + '</div>'
+    + '<div style="background:var(--navy);border-radius:8px;padding:16px 20px">'
+    + '<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Version 3 — Final (12th grade)</div>'
+    + '<div style="font-family:\'Playfair Display\',serif;font-size:18px;color:white;line-height:1.5;font-style:italic">"' + d.final + '"</div>'
+    + '</div>'
+    + '</div>'
+    + '<div style="background:#f8f7f4;border-radius:8px;padding:14px 16px;margin-top:16px">'
+    + '<div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px">Write ' + name + '\'s version here</div>'
+    + '<textarea style="width:100%;min-height:80px;padding:10px 14px;font-size:14px;font-family:\'Playfair Display\',serif;border:1px solid rgba(0,0,0,0.1);border-radius:6px;resize:vertical;color:var(--navy);font-style:italic;line-height:1.6" placeholder="My calling is to..."></textarea>'
+    + '<div style="font-size:11px;color:var(--text-light);margin-top:6px">This statement will evolve. Return to it each year. The final version comes from living it, not thinking it.</div>'
+    + '</div>'
+    + '</div>';
+}
+window.generateCallingStatement = generateCallingStatement;
+
+// ── 2. BURDEN STATEMENT ───────────────────────────────────────
+async function generateBurdenStatement(archProfile, pArch, intake) {
+  var el = document.getElementById('prem-burden');
+  if (!el) return;
+  var arch = archProfile.split(' ')[0];
+
+  var burdens = {
+    Builder: {
+      definition: 'A burden is the specific problem in the world that you cannot walk past without feeling responsible for it. It is not chosen — it chooses you. For the Builder, the burden is usually a gap: something that should exist and does not.',
+      examples: ['The inefficiency that everyone accepts but you cannot stop thinking about how to fix','The community that lacks something you keep imagining building for them','The problem people say cannot be solved that you keep designing solutions to in your head','The organization that should exist but does not — and that you think about starting'],
+      questions: ['What problem have you noticed repeatedly over the past 3 years that other people seem to accept?','What do you find yourself researching or thinking about even when nobody asks you to?','What gap in the world makes you feel something close to personal responsibility?'],
+      prompt: 'The burden is what separates a calling from a preference. You might enjoy building — but your burden is the specific thing you feel called to build FOR.'
+    },
+    Shepherd: {
+      definition: 'A burden is the specific category of suffering that you cannot witness without feeling personally responsible for addressing it. For the Shepherd, the burden is almost always a specific person or population that others walk past.',
+      examples: ['The student who everyone has decided is a lost cause','The elderly neighbor who has no visitors','The peer who is struggling in ways that are invisible to everyone else','The community that lacks someone to simply stay and be present'],
+      questions: ['Who in your life — or in the world — do you find yourself returning to even when it is exhausting?','What category of suffering do you feel you cannot ignore even when it would be easier to?','When you hear about a particular type of person struggling, does something in you respond differently than to other news?'],
+      prompt: 'The Shepherd\'s burden is almost always a person before it is a cause. Start with the person you cannot stop thinking about.'
+    },
+    Architect: {
+      definition: 'A burden is the specific system or structure that you cannot observe being broken without feeling compelled to redesign it. For the Architect, the burden is usually something that is accepted as fixed when you can see clearly that it does not have to be.',
+      examples: ['The policy that is creating harm that everyone has learned to work around','The organization whose structure is preventing it from doing what it was designed to do','The educational system that is teaching the wrong things in the wrong ways','The infrastructure that is failing the communities who depend on it most'],
+      questions: ['What system do you find yourself mentally redesigning when you encounter it?','What structure — in your school, your community, or the world — do you find yourself explaining to others in terms of what is wrong with it and what it should look like instead?','What broken thing have people told you is just "the way it is" that you cannot accept?'],
+      prompt: 'The Architect\'s burden is usually a system before it is a problem. Name the system that most frustrates you with its unnecessarily broken design.'
+    },
+    Catalyst: {
+      definition: 'A burden is the specific inertia that you cannot witness without feeling compelled to break it. For the Catalyst, the burden is often a community or cause that is stuck — capable of more but not moving.',
+      examples: ['The community that has given up on a change that you can see is possible','The cause that has the evidence but lacks the storytelling to move people','The group that is capable of collective action but has not yet believed it is possible','The conversation that nobody will start that you feel compelled to initiate'],
+      questions: ['What community or group do you find yourself wanting to energize even when it is not your formal role to do so?','What change do you believe is possible that most people around you have stopped believing in?','When do you find yourself stepping into a room and immediately seeing what needs to shift?'],
+      prompt: 'The Catalyst\'s burden is almost always about a specific stuck thing — not just "making change" but a particular change that feels urgent to you specifically.'
+    },
+    Advocate: {
+      definition: 'A burden is the specific injustice that you cannot witness without feeling obligated to respond. For the Advocate, the burden is the wrong that has been normalized — that others have learned to accept and that you cannot.',
+      examples: ['The population whose rights are being violated in ways that are invisible to most people','The policy that creates harm that is accepted as a side effect rather than a failure','The story that is not being told because the people who could tell it do not have access to the platform','The system that is designed to protect some people while quietly harming others'],
+      questions: ['What injustice, when you encounter it, produces in you something that feels less like anger and more like obligation?','What wrong have people told you is "just the way things are" that you cannot accept as inevitable?','Who is being harmed in ways that most people around you do not notice — and what do you feel when you notice it?'],
+      prompt: 'The Advocate\'s burden is specific, not general. "Injustice" is not a burden — a specific category of people being treated wrongly in a specific way is a burden.'
+    },
+    Cultivator: {
+      definition: 'A burden is the specific underdeveloped thing that you cannot observe without feeling called to tend it. For the Cultivator, the burden is often a person, ecosystem, or idea that has potential nobody else is investing in.',
+      examples: ['The student whose potential everyone else has given up on','The ecosystem that is being degraded while everyone looks away','The community program that is producing results but losing funding because the results take too long','The idea that has never been given the sustained attention it needs to fully develop'],
+      questions: ['What person, project, or place have you invested in over a long period of time even when the returns were not visible?','What do you find yourself returning to — tending, developing, investing in — even when others have moved on?','What underdeveloped thing in your world feels like your responsibility specifically?'],
+      prompt: 'The Cultivator\'s burden is almost always something slow. If the thing can be fixed quickly, it is probably not your burden. Your burden requires patience.'
+    },
+    Peacemaker: {
+      definition: 'A burden is the specific division that you cannot witness without feeling called to bridge it. For the Peacemaker, the burden is the conflict or separation between people or communities that you feel personally responsible for addressing.',
+      examples: ['The two communities in your school that will not talk to each other','The family conflict that has been left unresolved for years','The political divide in your community that everyone has accepted as permanent','The conversation that nobody will have because it feels too dangerous'],
+      questions: ['What division — between people, communities, or ideas — do you find yourself wanting to address even when it is not your conflict?','Where do you find yourself being the bridge between groups that are not communicating with each other?','What unresolved conflict in your community or family feels like your responsibility to address?'],
+      prompt: 'The Peacemaker\'s burden is almost always a specific relationship or community — not "conflict in general" but a particular rupture that you cannot stop thinking about.'
+    }
+  };
+
+  var b = burdens[arch] || burdens.Builder;
+
+  var exampleItems = b.examples.map(function(e) {
+    return '<li style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:6px;padding-left:4px">' + e + '</li>';
+  }).join('');
+  var questionItems = b.questions.map(function(q, i) {
+    return '<div style="margin-bottom:12px">'
+      + '<div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:4px">Question ' + (i+1) + '</div>'
+      + '<div style="font-size:13px;color:var(--text-mid);line-height:1.6;font-style:italic;margin-bottom:6px">' + q + '</div>'
+      + '<textarea style="width:100%;min-height:60px;padding:8px 12px;font-size:13px;font-family:var(--sans);border:1px solid rgba(0,0,0,0.1);border-radius:6px;resize:vertical;color:var(--text-mid)" placeholder="Write your answer..."></textarea>'
+      + '</div>';
+  }).join('');
+
+  el.innerHTML = '<div class="ai-badge">✦ Your Burden Statement — the most honest thing in this report</div>'
+    + '<div class="ai-content">'
+    + '<div style="background:rgba(15,31,61,0.04);border-radius:8px;padding:16px 20px;margin-bottom:16px">'
+    + '<div style="font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">What is a Burden?</div>'
+    + '<p style="font-size:13px;color:var(--text-mid);line-height:1.7">' + b.definition + '</p>'
+    + '</div>'
+    + '<div style="margin-bottom:16px">'
+    + '<div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:8px">What it might look like for a ' + arch + ':</div>'
+    + '<ul style="padding-left:16px;margin:0">' + exampleItems + '</ul>'
+    + '</div>'
+    + '<div style="background:#f8f7f4;border-radius:8px;padding:16px 20px;margin-bottom:16px">'
+    + '<div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px">The counselor\'s note</div>'
+    + '<p style="font-size:13px;color:var(--text-mid);line-height:1.65;font-style:italic">' + b.prompt + '</p>'
+    + '</div>'
+    + '<div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:12px">Answer these to find your burden:</div>'
+    + questionItems
+    + '<div style="background:var(--navy);border-radius:8px;padding:16px 20px;margin-top:4px">'
+    + '<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">My burden statement</div>'
+    + '<textarea style="width:100%;min-height:80px;padding:10px 14px;font-size:15px;font-family:\'Playfair Display\',serif;border:none;border-radius:6px;resize:vertical;color:var(--navy);font-style:italic;line-height:1.6;background:rgba(255,255,255,0.95)" placeholder="The thing I cannot walk past is..."></textarea>'
+    + '</div>'
+    + '</div>';
+}
+window.generateBurdenStatement = generateBurdenStatement;
+
+// ── 3. ARCHETYPE COMBINATION PROFILE ─────────────────────────
+async function generateCombinationProfile(archProfile, pArch, intake) {
+  var el = document.getElementById('prem-combination');
+  if (!el) return;
+
+  var parts = archProfile.split(' ');
+  var primary = parts[0];
+  var secondaryMatch = archProfile.match(/\+ (\w+) /);
+  var secondary = secondaryMatch ? secondaryMatch[1] : 'Architect';
+
+  var combinations = {
+    'Builder+Architect': {name:'The Blueprint Builder',tagline:'You don\'t just build — you design.',desc:'This is one of the rarest and most powerful combinations in the Calling Archetype Framework. The Builder\'s drive to create meets the Architect\'s obsession with structure and systems thinking. Where most Builders ship fast and iterate, you plan more carefully — which means what you build tends to hold. The risk: you can get trapped in the planning phase and never ship.',strengths:['You build things that actually work, not just things that launch','Your systems are designed to scale before they need to','You can see both the vision and the detailed plan simultaneously','People trust your builds because they are thoughtful, not just fast'],shadows:['You can wait too long to launch in pursuit of the perfect design','You may undervalue people who think less systematically than you','The planning can become a substitute for the doing','Your shadow as a Builder (not finishing) is amplified when the Architect says the plan is not ready yet'],collegeNote:'Look for colleges where entrepreneurship and systems thinking co-exist. Georgia Tech\'s CREATE-X, MIT\'s Media Lab, Stanford\'s d.school. Programs that build things AND require rigorous design thinking.'},
+    'Builder+Shepherd': {name:'The People Builder',tagline:'You build for specific people, not abstract markets.',desc:'The Builder\'s drive to create is grounded by the Shepherd\'s deep attunement to people. Where many Builders build solutions looking for problems, you start with the person who is suffering and build toward them. This makes your work more impactful and more sustainable — you are less likely to abandon something because you can see who needs it.',strengths:['Your builds are genuinely user-centered in ways most Builders\' are not','You retain the people you work with because you actually care about them','You are able to build trust alongside products','Your work tends to address real human needs, not just interesting problems'],shadows:['You may over-invest in people at the cost of shipping','The Shepherd\'s avoidance of hard conversations can slow down your builds','You may hold on to team members too long when the project needs different people','The Builder\'s tendency to abandon things is counterbalanced here, which is good — but can become stagnation'],collegeNote:'Look for colleges with strong social entrepreneurship programs. Tulane\'s Levy-Rosenblum Institute, Northeastern\'s social enterprise track, Fordham\'s social justice mission. You build best when you know who you are building for.'},
+    'Builder+Catalyst': {name:'The Launch Builder',tagline:'You start things AND get people to follow.',desc:'This combination produces the Builder most likely to build a movement rather than just a product. The Catalyst\'s ability to activate and inspire fills in the Builder\'s blind spot around people, while the Builder\'s drive to create gives the Catalyst something real to activate people around. Together: you can build something and make people believe in it.',strengths:['You can create the product AND the community around it','You generate momentum that attracts others to your builds','You are less likely to give up on a build because your energy is contagious','You naturally recruit — you make people want to be part of what you are building'],shadows:['The Catalyst shadow (energy without tending) amplifies the Builder shadow (starting without finishing)','You can create a lot of hype around things that are not yet ready','The combined energy can burn out teams who cannot keep up','You may confuse activation with completion'],collegeNote:'Look for universities with strong startup culture AND public communication programs. Babson, Northwestern, USC. You need to be around people who can match your pace AND people who will slow you down when needed.'},
+    'Builder+Advocate': {name:'The Justice Builder',tagline:'You build to change what is wrong.',desc:'The Builder\'s drive to create is powered by the Advocate\'s deep sense of what is unjust and what should exist instead. This combination produces some of the most impactful social entrepreneurs, policy designers, and nonprofit founders. You do not build for markets — you build for justice.',strengths:['Your builds address real injustices, not just market inefficiencies','You have a clear sense of who your work is for and why it matters','You are less likely to be distracted by profitable but meaningless opportunities','Your conviction makes your projects harder to abandon'],shadows:['The Advocate\'s tendency toward moral absolutism can make collaboration hard','You may be less willing to compromise on a build even when compromise would make it more effective','The Builder shadow (not finishing) may show up in projects where the injustice feels too big to address','You may burn bridges with people who share 80% of your vision but not 100%'],collegeNote:'Look for universities with strong social justice AND entrepreneurship programs. Howard University\'s new entrepreneurship programs, American University\'s social impact focus, Tulane\'s post-Katrina justice ethos.'},
+    'Builder+Cultivator': {name:'The Long Builder',tagline:'You build things that are meant to last.',desc:'The Builder\'s drive to create is tempered and deepened by the Cultivator\'s patience and long-term orientation. Where most Builders optimize for launch speed, you optimize for durability. You are willing to invest more time in the foundation because you intend the building to outlast you.',strengths:['You build for long-term impact, not just short-term results','You develop the people on your team rather than just using them','Your projects are more likely to survive you because you build for succession','You are less susceptible to the Builder\'s shadow of abandonment — you tend your builds'],shadows:['The Cultivator\'s patience can slow the Builder\'s urgency beyond what is useful','You may over-invest in the foundation when the build is ready to launch','The long-term thinking can become an excuse not to ship','You may hold onto projects that should be let go because you have invested so much'],collegeNote:'Look for colleges with a strong institutional culture of patient investment. Liberal arts colleges with entrepreneurship programs. Furman, Bowdoin\'s entrepreneurship offerings, Colby. You thrive in cultures that value depth over speed.'},
+    'Builder+Peacemaker': {name:'The Bridge Builder',tagline:'You build things that bring people together.',desc:'The Builder\'s drive to create is oriented by the Peacemaker\'s commitment to unity and connection. You are drawn to build the infrastructure of community — the platforms, programs, and systems that help divided people find common ground. Your builds are often relational as much as technical.',strengths:['You build things that serve everyone, not just one community','You are able to get diverse stakeholders to support your builds','You design for inclusion in ways most Builders do not think about','Your builds tend to create community, not just utility'],shadows:['The Peacemaker\'s avoidance of conflict can prevent you from making hard calls on your builds','You may try to build something for everyone and end up with something for no one','The Builder\'s drive to ship can conflict with the Peacemaker\'s need for everyone to be on board first','You may hold on to team members too long to avoid the conflict of letting them go'],collegeNote:'Look for universities with strong community-building AND entrepreneurship cultures. University of Denver\'s social impact programs, Gonzaga\'s service orientation, Notre Dame\'s community-centered entrepreneurship.'}
+  };
+
+  var comboKey = primary + '+' + secondary;
+  var reverseKey = secondary + '+' + primary;
+  var combo = combinations[comboKey] || combinations[reverseKey] || {
+    name: primary + ' + ' + secondary,
+    tagline: 'A powerful and rare combination.',
+    desc: 'Your primary calling is ' + primary + ' and your secondary orientation is ' + secondary + '. These two archetypes create a specific combination of gifts and growing edges that shapes how you contribute.',
+    strengths: ['The ' + primary + ' drive is informed by the ' + secondary + ' orientation', 'You bring both ' + primary.toLowerCase() + ' and ' + secondary.toLowerCase() + ' gifts to your work', 'Your combination is relatively rare and therefore distinctively valuable'],
+    shadows: ['The shadow of each archetype can amplify the other\'s shadow when unexamined', 'Your growing edge lives at the intersection of both archetypes\' blind spots'],
+    collegeNote: 'Look for colleges that honor both orientations in their culture and programs.'
+  };
+
+  var strengths = combo.strengths.map(function(s) {
+    return '<li style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:6px"><span style="color:var(--green);margin-right:6px">✦</span>' + s + '</li>';
+  }).join('');
+  var shadows = combo.shadows.map(function(s) {
+    return '<li style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:6px"><span style="color:var(--red,#9b2226);margin-right:6px">▲</span>' + s + '</li>';
+  }).join('');
+
+  el.innerHTML = '<div class="ai-badge">✦ ' + combo.name + ' — ' + primary + ' primary / ' + secondary + ' secondary</div>'
+    + '<div class="ai-content">'
+    + '<div style="text-align:center;padding:20px 0 24px;border-bottom:1px solid rgba(0,0,0,0.06);margin-bottom:20px">'
+    + '<div style="font-size:24px;font-weight:700;font-family:\'Playfair Display\',serif;color:var(--navy);margin-bottom:6px">' + combo.name + '</div>'
+    + '<div style="font-size:15px;color:var(--gold-dark,#A07840);font-style:italic">' + combo.tagline + '</div>'
+    + '</div>'
+    + '<p style="font-size:14px;color:var(--text-mid);line-height:1.75;margin-bottom:20px">' + combo.desc + '</p>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">'
+    + '<div style="background:rgba(45,106,79,0.05);border-radius:8px;padding:16px">'
+    + '<div style="font-size:11px;font-weight:700;color:var(--green,#2d6a4f);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Combination Strengths</div>'
+    + '<ul style="list-style:none;padding:0;margin:0">' + strengths + '</ul>'
+    + '</div>'
+    + '<div style="background:rgba(155,34,38,0.05);border-radius:8px;padding:16px">'
+    + '<div style="font-size:11px;font-weight:700;color:var(--red,#9b2226);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Combined Shadow Risks</div>'
+    + '<ul style="list-style:none;padding:0;margin:0">' + shadows + '</ul>'
+    + '</div>'
+    + '</div>'
+    + '<div style="background:rgba(200,169,110,0.08);border:1px solid rgba(200,169,110,0.2);border-radius:8px;padding:14px 18px">'
+    + '<div style="font-size:11px;font-weight:700;color:var(--gold-dark,#A07840);margin-bottom:6px">College search note for this combination</div>'
+    + '<p style="font-size:13px;color:var(--text-mid);line-height:1.65">' + combo.collegeNote + '</p>'
+    + '</div>'
+    + '</div>';
+}
+window.generateCombinationProfile = generateCombinationProfile;
+
+// ── 4. COLLEGE INTERVIEW PREPARATION ─────────────────────────
+async function generateInterviewPrep(archProfile, pArch, intake) {
+  var el = document.getElementById('prem-interview');
+  if (!el) return;
+  var arch = archProfile.split(' ')[0];
+
+  var interviewData = {
+    Builder: {
+      questions: [
+        {q:'Tell me about something you\'ve built — a project, program, or idea you brought to life.',why:'Admissions officers at entrepreneurial schools ask this to see initiative, follow-through, and self-awareness. They want to know if you built something real or something theoretical.',answer:'Answer structure: Name the specific thing you built → who it was for → what problem it solved → what worked, what didn\'t → what you learned. End with what you\'d build next and why. Do NOT start with "I\'ve always been entrepreneurial."',mistake:'Describing the idea without describing the users. The best Builder interview answers center the people the project was for.'},
+        {q:'Describe a time you failed at something you started. What happened?',why:'Selective schools ask this to distinguish authentic Builders (who finish or learn) from performers (who start for the appearance of ambition).',answer:'Pick a real failure. Name what specifically failed — the idea, the execution, the team dynamic. Show that you stayed in the failure long enough to learn something you could not have learned from success. Then name what you did differently.',mistake:'Calling the failure a "learning experience" immediately. Let the interviewer sit with the failure before you get to the lesson.'},
+        {q:'Where do you see yourself in 10 years, and how does [school name] connect to that?',why:'This tests whether you have a genuine direction or just want a prestigious credential.',answer:'Builder answer: Name the specific thing you want to have built by then — not a job title but a thing that exists. Then connect it to the specific program, culture, or resource at that school. "I want to have launched a company that... and Babson\'s eLab is the only place in the country where I can run an actual business in my first year."',mistake:'Naming a career title instead of a contribution. "I want to be a CEO" is weaker than "I want to have built the organization that solves X."'}
+      ],
+      generalTip:'The Builder who interviews best is the one who has clearly built something real. Before any interview, be ready to describe one project in complete, specific, honest detail — including what went wrong.'
+    },
+    Shepherd: {
+      questions: [
+        {q:'Tell me about a time you helped someone in a meaningful way.',why:'This distinguishes genuine Shepherds from performative helpers. The best answers are specific, quiet, and don\'t center the helper.',answer:'Name the specific person (without identifying details), what they were carrying, what you did, and what happened. The power is in the specificity. Do not describe how helpful you were — describe what you noticed and what you stayed for.',mistake:'Centering yourself in someone else\'s story. The best Shepherd interview answer makes the interviewer feel they met the person you helped, not just you.'},
+        {q:'Describe a community you have been part of that changed you.',why:'Schools like Boston College and Georgetown use this to find students who give as well as receive from community.',answer:'Name the community specifically. Describe what you brought to it AND what it gave you. Show the reciprocal relationship. A Shepherd who only gives and never receives is not yet fully formed — and admissions officers know this.',mistake:'Describing your service hours instead of your relationship with the community. Hours are data. Stories are evidence.'},
+        {q:'Why do you want to study [field]?',why:'For Shepherd students applying to nursing, social work, education, or counseling programs, this is the central question.',answer:'Name the specific category of suffering you cannot walk past. Be honest about why it is yours to address. Name one experience that made it undeniable. Do NOT say "I want to help people" — say what specific people, in what specific situation.', mistake:'Starting with the field instead of the person. The field is a tool. Start with the human need that makes the tool necessary.'}
+      ],
+      generalTip:'The Shepherd who interviews best is the one who is honest about why this calling is theirs — not just generally good. The most powerful Shepherd interview answers include a specific person and a specific moment.'
+    },
+    Architect: {
+      questions: [
+        {q:'Tell me about a complex problem you\'ve worked on. How did you approach it?',why:'Selective universities and engineering programs use this to find students who think in systems, not just symptoms.',answer:'Name the problem specifically — not "a complex situation at school" but the actual problem. Describe how you mapped it before trying to solve it. Show your process: what you looked for first, what surprised you, what frameworks you used or built.',mistake:'Jumping to the solution before establishing that you understood the problem. The Architect\'s gift is diagnostic before it is prescriptive — let the interviewer see the diagnosis.'},
+        {q:'What would you change about [institution/system/policy] and how?',why:'Many schools ask variants of this — "what would you change about our program," "what policy would you change if you could." For Architects, this is the gift question.',answer:'Pick something real and propose a specific, feasible redesign. Show that you understand why it is the way it is before proposing how it should change. The Architect who acknowledges the constraints is more credible than the one who ignores them.',mistake:'Proposing a change that ignores the reasons the current system exists. Understanding the path dependency is what separates Architect-level thinking from generic criticism.'},
+        {q:'Describe a time you had to explain something complex to someone who did not have your background.',why:'Architects can struggle to communicate their thinking to non-technical audiences. Schools ask this to find Architects who can translate.',answer:'Name the concept, the audience, and the approach you took. Show that you adjusted — that you met them where they were rather than expecting them to meet you where you were. Then name what you learned from having to explain it.',mistake:'Making this a story about how smart you are. The best answer centers the other person\'s understanding, not your ability to explain.'}
+      ],
+      generalTip:'The Architect who interviews best has done the work to understand why the system they want to change is the way it is. Show that you understand before you redesign.'
+    },
+    Catalyst: {
+      questions: [
+        {q:'Tell me about a time you changed how a group of people saw something.',why:'Communication and advocacy programs use this to find students with genuine persuasive ability — not just confidence.',answer:'Name the specific belief that changed and the specific moment it shifted. Be honest about what you did that worked and what you tried that did not. The best Catalyst interview stories include a moment of failure before the moment of success.',mistake:'Making this about your speech or your campaign rather than about the people who changed. The power is in what shifted in the room, not what you did.'},
+        {q:'Describe a cause or issue you\'ve worked on. What have you learned?',why:'This tests whether you have depth behind your activism or just energy.',answer:'Pick one cause. Describe what you believed about it when you started and what you believe now. Show the evolution. A Catalyst who has learned something more complex than when they started is more compelling than one who has only become more certain.',mistake:'Listing your activities and accomplishments. The interviewer wants to know what you learned, not what you did.'},
+        {q:'Tell me about a time your communication failed. What happened?',why:'The best Catalysts are honest about the limits of their persuasive gifts.',answer:'Pick a real failure. A speech that landed wrong, an argument that alienated instead of persuading, a campaign that generated backlash. Show that you understand WHY it failed — not just that it did.',mistake:'Blaming the audience. If your message did not land, the responsibility is yours to examine.'}
+      ],
+      generalTip:'The Catalyst who interviews best shows range — the ability to reflect and listen, not just to activate. Interviewers who meet only the activating energy worry about whether you can sustain.'
+    },
+    Advocate: {
+      questions: [
+        {q:'Tell me about a cause you\'ve fought for. Have you ever changed your position on it?',why:'Law schools and policy programs use this to find students who have intellectual humility behind their conviction.',answer:'Name the cause. Then name something you now understand about it that you did not understand when you started — including something that complicates your position. The Advocate who cannot name a complexity is less credible than the one who can.',mistake:'Treating this as an opportunity to demonstrate how right you are. The question is specifically designed to find out if you can be changed by evidence.'},
+        {q:'Describe a time you disagreed with someone in authority and what you did about it.',why:'This tests courage but also judgment — did you disagree strategically or just reactively?',answer:'Name the disagreement, why you disagreed, what you chose to do and why, and what happened. Show that you thought about how to be effective, not just how to be right. The best Advocate answer distinguishes between being principled and being effective.',mistake:'Making the authority figure the villain. The most mature Advocate answers acknowledge that the person in authority had reasons, even if they were wrong reasons.'},
+        {q:'Why law/journalism/public policy? (or whatever field)',why:'For Advocates applying to pre-professional tracks, this is the test of whether the field is a calling or a credential.',answer:'Name the specific mechanism — what specifically can you do as a [lawyer/journalist/policy analyst] that you cannot do without that credential? Then connect it to a specific injustice you want to address.',mistake:'Starting with the field. Start with the injustice and work toward the field as the tool.'}
+      ],
+      generalTip:'The Advocate who interviews best is the one who is fighting for something specific, not against everything in general. Know your cause, know its complexity, and know why you specifically are called to it.'
+    },
+    Cultivator: {
+      questions: [
+        {q:'Tell me about a long-term commitment you\'ve kept. What sustained you?',why:'Many schools ask about consistency and depth. For Cultivators, this is the gift question — but only if they can articulate what sustained them through the slow periods.',answer:'Name the commitment and its duration. Describe a moment when it would have been reasonable to stop — and what kept you going. Show that you have a theory of why slow investment produces things that speed cannot. This is the Cultivator\'s distinctive insight.',mistake:'Describing the outcome without the patience required to reach it. The power is in the middle — the sustained investment when results were not visible.'},
+        {q:'Describe a time you helped someone develop over a longer period of time.',why:'Education, counseling, and human development programs specifically look for students with this capacity.',answer:'Name the person (without identifying details) and the starting point. Describe what you did consistently over time. Show that you saw something in them before they could see it themselves — and that you held that belief through the slow periods.',mistake:'Making this a story about your mentoring skills. It should be a story about their growth.'},
+        {q:'Where do you see yourself in 20 years?',why:'Cultivators are asked longer-arc questions because their archetype operates on longer timelines. "20 years" is a gift question for a Cultivator.',answer:'Describe what you will have grown — a program, a generation of students, a restored ecosystem, a body of research. Show that you have a genuine relationship with the long timeline and that it does not make you passive — it makes you strategic.',mistake:'Giving a career title. Give a thing that will exist because of you.'}
+      ],
+      generalTip:'The Cultivator who interviews best shows evidence of sustained commitment — not just one long project, but a pattern across their life of returning to things and investing over time.'
+    },
+    Peacemaker: {
+      questions: [
+        {q:'Tell me about a time you helped resolve a conflict.',why:'Conflict resolution, international studies, and community programs look for students with genuine mediation experience — not just general niceness.',answer:'Name the specific conflict and the parties. Describe what you did — specifically what you said and what you listened for. Show that you understood both sides before you acted. Name what held after you left.',mistake:'Making yourself the hero of someone else\'s resolution. The best Peacemaker interview answer makes the interviewer feel they witnessed the reconciliation, not your skill.'},
+        {q:'Describe a time you had to hold an unpopular position in a group.',why:'Interviewers want to know if Peacemakers can have positions, not just facilitate other people\'s positions.',answer:'Name the position and why you held it. Show that you held it thoughtfully — that you understood why others disagreed and still maintained your stance. Then name what happened.',mistake:'Making the group wrong. The Peacemaker who has never been in genuine tension with a group they are part of has not yet been tested.'},
+        {q:'What brings you to [school] specifically? What will you add?',why:'Peacemakers sometimes struggle here because they define themselves by what they offer rather than who they are.',answer:'Name the specific community at the school you want to be part of and the specific dimension of bridge-building you will add. Show that you have identified a division or gap at that school that your archetype specifically equips you to address.',mistake:'Describing what the school will give you rather than what you will contribute to it.'}
+      ],
+      generalTip:'The Peacemaker who interviews best shows that they have positions, not just process. The risk for Peacemakers in interviews is being so agreeable that the interviewer cannot tell what you actually believe.'
+    }
+  };
+
+  var data = interviewData[arch] || interviewData.Builder;
+  var qCards = data.questions.map(function(q, i) {
+    return '<div style="background:white;border:1px solid rgba(0,0,0,0.07);border-radius:8px;padding:20px;margin-bottom:14px">'
+      + '<div style="font-size:11px;font-weight:700;color:var(--gold-dark,#A07840);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Question ' + (i+1) + ' of 3</div>'
+      + '<div style="font-size:16px;font-weight:600;color:var(--navy);line-height:1.45;margin-bottom:10px;font-style:italic">"' + q.q + '"</div>'
+      + '<div style="display:flex;flex-direction:column;gap:8px">'
+      + '<div style="background:rgba(24,95,165,0.05);border-radius:6px;padding:10px 12px">'
+      + '<div style="font-size:10px;font-weight:700;color:#185FA5;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Why they ask this</div>'
+      + '<p style="font-size:12px;color:var(--text-mid);line-height:1.6;margin:0">' + q.why + '</p>'
+      + '</div>'
+      + '<div style="background:rgba(45,106,79,0.05);border-radius:6px;padding:10px 12px">'
+      + '<div style="font-size:10px;font-weight:700;color:#2d6a4f;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">How to answer as a ' + arch + '</div>'
+      + '<p style="font-size:12px;color:var(--text-mid);line-height:1.6;margin:0">' + q.answer + '</p>'
+      + '</div>'
+      + '<div style="background:rgba(155,34,38,0.05);border-radius:6px;padding:10px 12px">'
+      + '<div style="font-size:10px;font-weight:700;color:#9b2226;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Common mistake to avoid</div>'
+      + '<p style="font-size:12px;color:var(--text-mid);line-height:1.6;margin:0">' + q.mistake + '</p>'
+      + '</div>'
+      + '</div></div>';
+  }).join('');
+
+  el.innerHTML = '<div class="ai-badge">✦ Interview preparation — 3 questions every ' + arch + ' will be asked</div>'
+    + '<div class="ai-content">'
+    + '<div style="background:#f8f7f4;border-radius:8px;padding:14px 18px;margin-bottom:16px;font-size:13px;color:var(--text-mid);line-height:1.7">'
+    + '<strong style="color:var(--navy)">General principle for ' + arch + ' interviews:</strong> ' + data.generalTip
+    + '</div>'
+    + qCards
+    + '</div>';
+}
+window.generateInterviewPrep = generateInterviewPrep;
+
+// ── 5. PEER ARCHETYPES ────────────────────────────────────────
+async function generatePeerArchetypes(archProfile, pArch, intake) {
+  var el = document.getElementById('prem-peer');
+  if (!el) return;
+  var arch = archProfile.split(' ')[0];
+
+  var peerData = {
+    Builder: {
+      best: {arch:'Shepherd',reason:'The Shepherd softens the Builder\'s tendency to treat people as resources. A Shepherd teammate will tell you when a team member needs care before they quit. The Builder builds the thing; the Shepherd keeps the team intact long enough to finish it.'},
+      powerful: {arch:'Architect',reason:'The Architect gives the Builder\'s work structure and rigor. Where the Builder wants to ship, the Architect wants to design it properly first. This tension, managed well, produces work that is both launched and durable.'},
+      challenging: {arch:'Builder',reason:'Two Builders on a team without clear division of scope will collide. Both have strong visions, both want to lead the build, both will move fast in different directions. The key is dividing ownership cleanly.'},
+      learn: {arch:'Cultivator',reason:'The Cultivator teaches the Builder how to tend what they\'ve already started — the most important lesson for a Builder archetype. Spend time with Cultivators. Let them show you what completion looks like.'}
+    },
+    Shepherd: {
+      best: {arch:'Builder',reason:'The Builder gives the Shepherd a clear project to pour their care into. Shepherds without Builders can diffuse their attention across too many people without structural focus. The Builder\'s project gives the Shepherd a specific community to serve.'},
+      powerful: {arch:'Catalyst',reason:'The Catalyst activates energy; the Shepherd sustains relationships. Together they can build a movement that both starts AND holds. The Catalyst gets people excited; the Shepherd keeps them connected when the excitement fades.'},
+      challenging: {arch:'Advocate',reason:'Advocates can push into conflict that Shepherds feel compelled to smooth over. The Shepherd\'s drive to maintain harmony can mute the Advocate\'s necessary confrontation. Both need to learn from the other: the Shepherd to tolerate more friction, the Advocate to care more about the people in the room.'},
+      learn: {arch:'Advocate',reason:'The Advocate teaches the Shepherd that some conflicts should not be resolved — they should be honored. Spend time with Advocates who fight for people you care about. Let them show you when peace is not the right goal.'}
+    },
+    Architect: {
+      best: {arch:'Catalyst',reason:'The Catalyst gets people excited about what the Architect has designed. The Architect alone may build a perfect system nobody uses; the Catalyst ensures people understand and adopt it. The Architect designs; the Catalyst activates.'},
+      powerful: {arch:'Builder',reason:'The Builder\'s execution drive gives the Architect\'s designs somewhere to go. The Architect can get paralyzed in design; the Builder says "good enough, let\'s ship" — which is the most important sentence an Architect can hear.'},
+      challenging: {arch:'Cultivator',reason:'Both are patient and deep, but in different ways. The Architect wants the system right before it launches; the Cultivator wants to tend the relationships that make the system work. They can stall each other\'s momentum when they cannot agree on when "done enough" is.'},
+      learn: {arch:'Peacemaker',reason:'The Peacemaker teaches the Architect that systems serve people and people are messy. Architects can design beautiful systems that fail because they did not account for how humans actually behave in groups. Peacemakers see this clearly.'}
+    },
+    Catalyst: {
+      best: {arch:'Cultivator',reason:'The Cultivator tends what the Catalyst ignites. The Catalyst\'s shadow is starting fires and walking away; the Cultivator\'s gift is staying and developing what was started. Together: the Catalyst starts the movement, the Cultivator sustains it.'},
+      powerful: {arch:'Advocate',reason:'The Advocate\'s conviction gives the Catalyst\'s energy a cause. Catalysts without Advocates can generate a lot of movement without clear direction. The Advocate says "this is what we\'re fighting for" — which focuses the Catalyst\'s activation.'},
+      challenging: {arch:'Architect',reason:'The Catalyst wants to launch now; the Architect wants to design it properly first. This tension is productive when both archetypes respect each other, but it can produce gridlock when neither yields. The Catalyst needs to learn to wait; the Architect needs to learn to ship.'},
+      learn: {arch:'Shepherd',reason:'The Shepherd teaches the Catalyst to notice the people in the room who are not speaking — the ones who are affected by the energy but not amplifying it. Spend time with Shepherds. Let them show you who you are leaving behind.'}
+    },
+    Advocate: {
+      best: {arch:'Architect',reason:'The Architect gives the Advocate\'s fight a structural strategy. Advocates are often better at identifying injustice than at designing the specific policy or system change that would address it. The Architect builds the framework; the Advocate fights for it.'},
+      powerful: {arch:'Catalyst',reason:'The Catalyst activates the Advocate\'s cause. The Advocate often has the evidence and the conviction but lacks the ability to move people emotionally. The Catalyst can take the Advocate\'s case and make it land with an audience.'},
+      challenging: {arch:'Peacemaker',reason:'The Advocate sees conflict as necessary; the Peacemaker sees it as a problem. This fundamental difference in orientation can make collaboration hard. The Advocate needs to learn that not every fight must happen now; the Peacemaker needs to learn that not every conflict should be smoothed.'},
+      learn: {arch:'Peacemaker',reason:'The Peacemaker teaches the Advocate that the people you are fighting against are still people. The best advocates — the ones who actually change things — can hold their opponents\' humanity alongside their opposition to their position.'}
+    },
+    Cultivator: {
+      best: {arch:'Builder',reason:'The Builder gives the Cultivator a project to tend. Cultivators without Builders can invest deeply in things that never quite get off the ground. The Builder launches; the Cultivator develops what was launched into something durable.'},
+      powerful: {arch:'Shepherd',reason:'Two deep-investment archetypes who both care about people but in different time horizons. The Shepherd tends the immediate; the Cultivator tends the long arc. Together they can care for people across time in ways neither can do alone.'},
+      challenging: {arch:'Catalyst',reason:'The Catalyst\'s urgency and the Cultivator\'s patience are fundamentally in tension. The Catalyst says "we need to move now"; the Cultivator says "this needs more time." Both are sometimes right. The key is knowing which kind of moment you are in.'},
+      learn: {arch:'Catalyst',reason:'The Catalyst teaches the Cultivator that some things need urgency. Not everything benefits from more time and patience. Spend time with Catalysts when you feel yourself becoming too comfortable in the slow lane.'}
+    },
+    Peacemaker: {
+      best: {arch:'Advocate',reason:'The Advocate gives the Peacemaker a cause worth bridging toward. Peacemakers without direction can build bridges between people without a clear reason for the connection. The Advocate says "this is what we are trying to accomplish together" — which gives the bridge a purpose.'},
+      powerful: {arch:'Shepherd',reason:'Both care deeply about the people in the room. The Shepherd cares for individuals; the Peacemaker cares for the relationships between them. Together they can build a community that is both personally supported and relationally connected.'},
+      challenging: {arch:'Catalyst',reason:'The Peacemaker values harmony; the Catalyst values momentum. The Catalyst will break harmony to generate movement; the Peacemaker will slow momentum to restore harmony. Both are right at different moments. The challenge is knowing which moment you are in.'},
+      learn: {arch:'Builder',reason:'The Builder teaches the Peacemaker that it is possible to act decisively without losing relationships. Peacemakers often wait for consensus before acting. Builders act and repair the relationships afterward. There is wisdom in this sequence that Peacemakers need.'}
+    }
+  };
+
+  var data = peerData[arch] || peerData.Builder;
+  var peerRow = function(type, label, color, icon) {
+    var d = data[type];
+    return '<div style="background:white;border:1px solid rgba(0,0,0,0.07);border-radius:8px;padding:16px;margin-bottom:12px">'
+      + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'
+      + '<span style="font-size:10px;font-weight:700;color:' + color + ';text-transform:uppercase;letter-spacing:.06em;border:1px solid ' + color + ';padding:2px 8px;border-radius:3px">' + label + '</span>'
+      + '<span style="font-size:15px;font-weight:700;color:var(--navy)">The ' + d.arch + '</span>'
+      + '</div>'
+      + '<p style="font-size:13px;color:var(--text-mid);line-height:1.65;margin:0">' + d.reason + '</p>'
+      + '</div>';
+  };
+
+  el.innerHTML = '<div class="ai-badge">✦ How the ' + arch + ' works with every other archetype</div>'
+    + '<div class="ai-content">'
+    + '<p style="font-size:13px;color:var(--text-mid);line-height:1.7;margin-bottom:16px">Understanding how your archetype works with others is one of the most practical tools in this report. Use it to build better teams, choose better collaborators, and understand why some relationships feel effortless and others feel like friction.</p>'
+    + peerRow('best', 'Best Complement', '#2d6a4f', '✦')
+    + peerRow('powerful', 'Powerful Pairing', '#185FA5', '◆')
+    + peerRow('challenging', 'Most Challenging', '#9b2226', '▲')
+    + peerRow('learn', 'Most to Learn From', '#A07840', '→')
+    + '</div>';
+}
+window.generatePeerArchetypes = generatePeerArchetypes;
+
+// ── 6. RECOMMENDATION LETTER GUIDE ───────────────────────────
+async function generateRecLetterGuide(archProfile, pArch, intake) {
+  var el = document.getElementById('prem-recletter');
+  if (!el) return;
+  var arch = archProfile.split(' ')[0];
+  var name = (intake && intake.firstname) ? intake.firstname : 'this student';
+
+  var recData = {
+    Builder: {
+      whoToAsk: 'The teacher who saw you start and finish something real. The advisor who watched you lead a project under pressure. The coach or supervisor who saw you make hard decisions when things went wrong. Not the teacher who gave you an A — the adult who watched you build something.',
+      whatToTell: 'Ask them to write about a specific project or initiative you led, the obstacles you faced, and how you responded. Ask them to describe how you treat the people you work with — not just your output. Ask them to name one thing you started that you saw through to completion.',
+      strongSigns: ['Describes a specific project with specific obstacles and outcomes','Names the people you brought along and how you led them','Shows the difference between your energy at the start vs. your commitment at the end','Uses words like "initiative," "follow-through," "resourceful," "built"'],
+      weakSigns: ['Generic praise without a specific project','Focuses only on grades or class participation','Does not mention anything you created or led','Could have been written for any high-achieving student'],
+      template: name + ' came into my [class/program] with an unusual orientation. While other students engaged with [subject] analytically, ' + name + ' was always looking for what didn\'t exist yet — and how to build it. In my [time] knowing ' + name + ', I watched [him/her/them] [specific project/initiative]. What distinguished ' + name + ' was not the idea but the follow-through. [Specific obstacle]. [How ' + name + ' responded]. The result was [specific outcome]. I have worked with many motivated students. What I have rarely seen is a student who builds things for other people — who measures success not by what they made but by whether it worked for the people it was made for. ' + name + ' has this orientation.'
+    },
+    Shepherd: {
+      whoToAsk: 'The teacher, counselor, or supervisor who watched you show up for someone else — especially in a moment that was not your formal role. The coach who saw you tend a struggling teammate. The volunteer coordinator who watched you with the people you served.',
+      whatToTell: 'Ask them to write about a specific moment when they observed you caring for someone in a way that was beyond what was expected of you. Ask them to describe what they noticed about how you were present — not just what you did, but how you were.',
+      strongSigns: ['Describes a specific person and a specific moment of care','Shows that the care was quiet, not performative','Names what the writer noticed about your presence, not just your actions','Uses words like "stayed," "noticed," "present," "genuine," "trust"'],
+      weakSigns: ['Lists your volunteer hours and activities','Describes how kind and helpful you are without a specific story','Focuses on your grades or classroom performance','Could have been written for any service-oriented student'],
+      template: name + ' has a quality that I have struggled to name precisely. In [time] watching [him/her/them] in [context], I observed something I rarely see in students: the ability to notice who is struggling before anyone asks [him/her/them] to, and to respond in ways that are specific to that person rather than generic. [Specific story — person, moment, what ' + name + ' did]. What moved me was not that ' + name + ' helped. What moved me was how [he/she/they] helped — with attention to the specific person rather than the general problem. I believe ' + name + ' will be the person in any community they join who makes it safer for people to be honest about their struggles.'
+    },
+    Architect: {
+      whoToAsk: 'The teacher in whose class you went the furthest beyond the assignment — the one who watched you diagram, map, model, or redesign something that was not on the syllabus. The research supervisor who watched you work. The teacher who had the most demanding intellectual standards.',
+      whatToTell: 'Ask them to describe a specific moment when your thinking surprised them — when you saw something in the material that went beyond what was expected. Ask them to name your specific intellectual approach, not just your work ethic.',
+      strongSigns: ['Describes a specific intellectual insight or approach that was yours alone','Shows your ability to hold complexity without oversimplifying','Names the specific way you engage with problems — how you map before you solve','Uses words like "rigorous," "systems," "designed," "framework," "insight"'],
+      weakSigns: ['Describes your grades and study habits','Praises your work ethic without naming your thinking','Does not distinguish your intellectual contribution from other strong students','Could have been written for any academically strong applicant'],
+      template: name + ' is one of a small number of students I have taught who engages with [subject] not as a body of knowledge to master but as a set of systems to understand and improve. In [specific assignment or project], ' + name + ' did not simply complete the task — [he/she/they] mapped the problem first. [Specific example of intellectual approach]. What distinguished ' + name + ' was the question [he/she/they] asked before anyone else did: [specific question]. That question revealed a structural insight that [other students/I myself] had not yet seen. I expect ' + name + ' to spend [his/her/their] career redesigning systems that most people have accepted as fixed.'
+    },
+    Catalyst: {
+      whoToAsk: 'The advisor, teacher, or supervisor who watched you move a group of people — who was in the room when you changed the energy. The coach who watched you lead in a moment of collective doubt. The club advisor who saw your organizing.',
+      whatToTell: 'Ask them to describe a specific moment when you changed what a group of people believed was possible. Ask them to distinguish between your natural enthusiasm and your strategic influence — to show that you know when to speak and when to wait.',
+      strongSigns: ['Names a specific moment when you shifted collective belief or action','Shows that your leadership is strategic, not just energetic','Describes your restraint as well as your activation','Uses words like "activated," "momentum," "shifted," "organized," "moved"'],
+      weakSigns: ['Describes you as enthusiastic and passionate without a specific story','Lists your leadership positions and activities','Does not show the specific effect of your communication on other people','Could have been written for any student leader'],
+      template: name + ' has a quality that I have rarely encountered in [number] years of [teaching/coaching/advising]: the ability to change what a room believes is possible. In [specific situation], ' + name + ' did not lead by position or authority. [He/she/they] led by shifting the story people were telling themselves about what was achievable. [Specific story — the moment, what was said or done, what changed]. What I want to be clear about is that this was not raw enthusiasm. ' + name + ' knew when to speak and when to wait. [He/she/they] read the room before [he/she/they] tried to move it. I believe ' + name + ' will leave every community [he/she/they] joins with more belief in itself than it had before.'
+    },
+    Advocate: {
+      whoToAsk: 'The teacher, advisor, or supervisor who watched you fight for something and showed courage under pressure. The person who saw you take an unpopular position and hold it with integrity. Not the person who agreed with you — the person who watched you argue.',
+      whatToTell: 'Ask them to write about a specific moment when you stood for something at personal cost. Ask them to describe your combination of conviction and preparation — to show that your advocacy is grounded in evidence and understanding, not just passion.',
+      strongSigns: ['Names a specific moment of moral courage with a specific cost','Shows your preparation and rigor alongside your conviction','Demonstrates that you can hold a position under pressure without becoming a different person','Uses words like "principled," "courageous," "evidence," "argued," "held"'],
+      weakSigns: ['Describes your passion for social justice without a specific story','Lists your advocacy activities and accomplishments','Does not show what your advocacy cost you','Could have been written for any civically engaged student'],
+      template: 'In my [years] working with students, I have met many who care deeply about justice. I have met far fewer who fight for it with both passion and preparation. ' + name + ' is one of those rare students. In [specific situation], ' + name + ' identified something that was wrong and chose to say so when saying so was not easy. [Specific story — what the injustice was, what ' + name + ' did, what it cost]. What distinguished ' + name + ' was not the courage alone — it was the preparation. [He/she/they] understood the argument before [he/she/they] made it. [He/she/they] knew the counterargument before it was raised. I believe ' + name + ' will spend [his/her/their] life fighting for the people who cannot fight for themselves — and winning more than [he/she/they] loses.'
+    },
+    Cultivator: {
+      whoToAsk: 'The teacher, mentor, or supervisor who worked with you over the longest period of time — who can describe your development, not just your current state. The person who watched you invest in something or someone over years. The adult who has known you in depth.',
+      whatToTell: 'Ask them to describe your development over time — what they saw you become, not just what you were. Ask them to name a specific thing or person you invested in over an extended period and what that investment produced.',
+      strongSigns: ['Shows your development over time rather than a snapshot','Names a specific thing or person you tended and what that tending produced','Demonstrates your patience and your long-arc orientation','Uses words like "invested," "tended," "sustained," "developed," "grew"'],
+      weakSigns: ['Describes your current accomplishments without the arc that produced them','Focuses on grades or short-term achievements','Does not show your capacity for long-term investment','Could have been written after knowing you for one year or one month'],
+      template: 'I have known ' + name + ' for [number] years — longer than most of the students I write for, and more deeply. What I want to convey is not the student I met at the beginning but the person I have watched emerge through sustained investment in [specific thing/person/project]. ' + name + ' has a quality that I have come to recognize as rare: [he/she/they] does not abandon things when the returns are slow. [Specific story — the investment, the slow period, what emerged]. What strikes me most is not what ' + name + ' has produced. It is what [he/she/they] is willing to tend — the patience [he/she/they] brings to growth that cannot be rushed. I believe ' + name + ' will leave everything [he/she/they] touches more developed than [he/she/they] found it.'
+    },
+    Peacemaker: {
+      whoToAsk: 'The teacher, advisor, or supervisor who saw you in a moment of genuine conflict — who watched you hold space between people or groups who were not communicating. The person who watched you work across difference.',
+      whatToTell: 'Ask them to name a specific moment when you brought people together who were divided. Ask them to describe your ability to hold a position — to show that you are not just agreeable, but that you have a genuine orientation toward unity that is rooted in conviction, not conflict-avoidance.',
+      strongSigns: ['Names a specific moment of bridge-building with a specific outcome','Shows that you hold your own position alongside your facilitation of others','Demonstrates that your peacemaking is active and strategic, not passive','Uses words like "bridged," "held," "united," "facilitated," "connected"'],
+      weakSigns: ['Describes you as easygoing, agreeable, or likable','Lists your collaborative activities without a specific bridge-building story','Does not distinguish your peacemaking from general social skills','Could have been written for any pleasant, well-liked student'],
+      template: name + ' has a quality that I find difficult to describe without a specific story: the ability to stand between people who are not communicating with each other and create the conditions for genuine dialogue. In [specific situation — the conflict, the parties, the stakes], ' + name + ' did not smooth over the disagreement. [He/she/they] held it — acknowledged it fully — and then did something I rarely see: [he/she/they] found what both sides were actually fighting for underneath the position each was holding. [Specific story]. What I want to name is not that ' + name + ' is good at getting along with people. [He/she/they] is something rarer: good at getting divided people to hear each other. I believe every community ' + name + ' joins will be more whole because [he/she/they] was in it.'
+    }
+  };
+
+  var data = recData[arch] || recData.Builder;
+  var strongItems = data.strongSigns.map(function(s) {
+    return '<li style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:4px"><span style="color:#2d6a4f;margin-right:6px">✓</span>' + s + '</li>';
+  }).join('');
+  var weakItems = data.weakSigns.map(function(s) {
+    return '<li style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:4px"><span style="color:#9b2226;margin-right:6px">✗</span>' + s + '</li>';
+  }).join('');
+
+  el.innerHTML = '<div class="ai-badge">✦ Letters of recommendation — the ' + arch + ' guide</div>'
+    + '<div class="ai-content">'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">'
+    + '<div style="background:rgba(45,106,79,0.05);border-radius:8px;padding:16px">'
+    + '<div style="font-size:11px;font-weight:700;color:#2d6a4f;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Who to ask</div>'
+    + '<p style="font-size:13px;color:var(--text-mid);line-height:1.65">' + data.whoToAsk + '</p>'
+    + '</div>'
+    + '<div style="background:rgba(24,95,165,0.05);border-radius:8px;padding:16px">'
+    + '<div style="font-size:11px;font-weight:700;color:#185FA5;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">What to tell them</div>'
+    + '<p style="font-size:13px;color:var(--text-mid);line-height:1.65">' + data.whatToTell + '</p>'
+    + '</div>'
+    + '</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">'
+    + '<div><div style="font-size:11px;font-weight:700;color:#2d6a4f;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Signs of a strong rec</div>'
+    + '<ul style="list-style:none;padding:0;margin:0">' + strongItems + '</ul></div>'
+    + '<div><div style="font-size:11px;font-weight:700;color:#9b2226;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Signs of a weak rec</div>'
+    + '<ul style="list-style:none;padding:0;margin:0">' + weakItems + '</ul></div>'
+    + '</div>'
+    + '<div style="background:#f8f7f4;border-radius:8px;padding:16px 20px">'
+    + '<div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:8px">Template to share with your recommender</div>'
+    + '<div style="font-size:12px;color:var(--text-mid);line-height:1.75;white-space:pre-wrap;font-style:italic">' + data.template + '</div>'
+    + '<div style="font-size:11px;color:var(--text-light);margin-top:8px">Share this as a starting point, not a script. The most powerful rec letters are in the writer\'s own voice.</div>'
+    + '</div>'
+    + '</div>';
+}
+window.generateRecLetterGuide = generateRecLetterGuide;
+
+// ── 7. SUMMER PROGRAMS ────────────────────────────────────────
+async function generateSummerPrograms(archProfile, pArch, intake) {
+  var el = document.getElementById('prem-summer');
+  if (!el) return;
+  var arch = archProfile.split(' ')[0];
+  var grade = 12;
+  if (intake && intake.gradyear) {
+    var now = new Date();
+    var sy = now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1;
+    grade = 12 - (parseInt(intake.gradyear) - sy - 1);
+  }
+
+  var programs = {
+    Builder: [
+      {name:'MIT Launch',where:'MIT / Cambridge, MA',type:'Entrepreneurship',grade:'9–12',cost:'$$$',desc:'The most rigorous high school entrepreneurship program in the country. Students build real products and pitch to real investors. Highly selective. Strong for college applications.',url:'mitlaunch.com'},
+      {name:'LaunchX',where:'Multiple locations + Online',type:'Entrepreneurship',grade:'10–12',cost:'$$',desc:'6-week entrepreneurship program with teams of 4 students building a real startup. One of the most respected summer programs for Builder archetypes.', url:'launchx.com'},
+      {name:'iD Tech',where:'Top university campuses nationwide',type:'Tech/Entrepreneurship',grade:'7–12',cost:'$$',desc:'Technology and entrepreneurship programs on college campuses. Lets students preview college environments while building real technical skills.',url:'idtech.com'},
+      {name:'NFTE Summer Institute',where:'Multiple cities',type:'Entrepreneurship',grade:'9–12',cost:'$ (need-based)',desc:'Network for Teaching Entrepreneurship summer program — strong financial aid, real business plan development, excellent scholarship connections.',url:'nfte.com/summer'},
+      {name:'Wharton Pre-Business Academy',where:'University of Pennsylvania',type:'Business/Entrepreneurship',grade:'11–12',cost:'$$$',desc:'One week at Wharton for high school students. Excellent if Penn is on your list — demonstrates interest. Strong for Builders interested in business school.', url:'wharton.upenn.edu/offices/oapd'},
+      {name:'Babson College Summer Experience',where:'Babson College, Wellesley MA',type:'Entrepreneurship',grade:'10–12',cost:'$$$',desc:'Summer programs at the #1 entrepreneurship school in America. Strong demonstrated interest signal for Babson applicants.',url:'babson.edu/academics/executive-education/babson-summer-programs'}
+    ],
+    Shepherd: [
+      {name:'National Student Leadership Conference — Medicine',where:'Multiple universities',type:'Healthcare/Service',grade:'9–11',cost:'$$$',desc:'Medical and healthcare leadership conference that places students in hospital simulations. Strong for Shepherds interested in clinical careers.',url:'nslcleaders.org'},
+      {name:'Summer Institute for the Gifted — Social Work track',where:'Multiple campuses',type:'Social Work',grade:'8–11',cost:'$$$',desc:'Academic summer program with social work and psychology tracks. Strong preparation for Shepherd archetypes interested in counseling.',url:'giftedstudy.org'},
+      {name:'Camp Anytown',where:'National (NCCJ)',type:'Social Justice/Service',grade:'9–12',cost:'$ (scholarship available)',desc:'Deeply formative program focused on identity, community, and social justice. One of the most impactful summer experiences for Shepherd archetypes.',url:'nccj.org/programs/camp-anytown'},
+      {name:'Envision Healthcare Summer Program',where:'Vanderbilt Medical Center',type:'Healthcare',grade:'10–12',cost:'$$$',desc:'Hands-on healthcare experience at one of the top medical centers in the country. Strong for Shepherds interested in medicine or public health.',url:'envisionexperience.com'},
+      {name:'AmeriCorps Summer Programs',where:'Nationwide',type:'Community Service',grade:'12+/Gap Year',cost:'Stipend provided',desc:'The most direct expression of the Shepherd calling in a structured program. Service-based, real community impact, recognized by colleges as meaningful.',url:'americorps.gov'}
+    ],
+    Architect: [
+      {name:'Research Science Institute (RSI)',where:'MIT, Cambridge MA',type:'Research',grade:'11',cost:'Free (fully funded)',desc:'The most selective high school research program in the country. Six weeks of genuine research with MIT faculty. Transformative for Architects with scientific rigor.',url:'cee.org/programs/rsi'},
+      {name:'MIT Primes',where:'MIT (Remote + Residential)',type:'Math/CS Research',grade:'10–11',cost:'Free',desc:'Year-long research program with a residential summer component. One of the best research experiences available to high school Architect archetypes.',url:'math.mit.edu/research/highschool/primes'},
+      {name:'PROMYS',where:'Boston University',type:'Mathematics',grade:'9–11',cost:'$ (need-based aid)',desc:'Six-week intensive mathematics research program. Rigorous, deep, and transformative for Architects with mathematical orientation.',url:'promys.org'},
+      {name:'Carnegie Mellon AI Summer School',where:'Carnegie Mellon University',type:'AI/Computer Science',grade:'10–12',cost:'$$$',desc:'Rigorous AI and machine learning program at one of the best CS schools in the country. Strong signal for CMU and technical university applications.',url:'cmu.edu'},
+      {name:'George Washington University College Experience',where:'Washington DC',type:'Policy/Systems',grade:'11–12',cost:'$$$',desc:'Policy and government summer program in DC. Strong for Architects interested in public policy, government systems, and structural change.',url:'gwu.edu/academic-programs/secondary-school-programs'},
+      {name:'HBS High School Innovation and Entrepreneurship',where:'Harvard Business School',type:'Business/Systems',grade:'11–12',cost:'$$$',desc:'Harvard Business School case method program for high schoolers. Strong for Architects interested in organizational systems and business strategy.',url:'exed.hbs.edu/programs/hsei'}
+    ],
+    Catalyst: [
+      {name:'Close Up Washington DC',where:'Washington DC',type:'Civic Leadership',grade:'9–12',cost:'$$',desc:'One of the most respected civic education programs in the country. Catalysts learn the mechanics of political activation in the city where it matters most.',url:'closeup.org'},
+      {name:'Hugh O\'Brian Youth Leadership (HOBY)',where:'State-by-state',type:'Leadership',grade:'10',cost:'$ (scholarship available)',desc:'State-level leadership seminars with a community service project component. One of the most recognized leadership programs for college applications.',url:'hoby.org'},
+      {name:'Teen Vogue Summit',where:'New York / Online',type:'Media/Advocacy',grade:'10–12',cost:'$–$$',desc:'Leadership summit for young activists and communicators. Strong for Catalysts interested in media, journalism, and advocacy.',url:'teenvogue.com/summit'},
+      {name:'People to People Student Ambassador Program',where:'International',type:'Global Leadership',grade:'8–12',cost:'$$$$',desc:'Student exchange and leadership program. Strong for Catalysts interested in cross-cultural communication and international advocacy.',url:'studentambassadors.com'},
+      {name:'Emerging Leaders Program at Tisch College',where:'Tufts University',type:'Civic Leadership',grade:'11–12',cost:'$$$',desc:'Summer leadership program at Tufts, one of the strongest civic engagement universities. Strong demonstrated interest signal for Tufts applicants.',url:'tufts.edu/civic-life'},
+      {name:'National Speech & Debate Summer Institute',where:'Multiple universities',type:'Communication',grade:'9–12',cost:'$$',desc:'Intensive debate and public speaking training. The Catalyst\'s craft practiced at its highest level.',url:'speechanddebate.org'}
+    ],
+    Advocate: [
+      {name:'Georgetown Summer Programs — Politics & Advocacy',where:'Georgetown University, DC',type:'Policy/Advocacy',grade:'10–12',cost:'$$$',desc:'Summer policy and advocacy program at one of the most politically connected universities in America. Strong demonstrated interest for Georgetown applicants.',url:'summer.georgetown.edu'},
+      {name:'Street Law Summer Institute',where:'Georgetown Law / Multiple sites',type:'Legal Education',grade:'10–12',cost:'$ (scholarship available)',desc:'Legal literacy education program. Advocates learn how the law actually works — and how to use it — before law school.',url:'streetlaw.org'},
+      {name:'Yale Young Global Scholars',where:'Yale University',type:'International Affairs/Policy',grade:'10–11',cost:'$$$',desc:'Two-week academic program at Yale with tracks in law, global affairs, and social justice. Strong for Advocates interested in international law.',url:'globalscholars.yale.edu'},
+      {name:'American Civil Liberties Union (ACLU) Internship',where:'State ACLU offices nationwide',type:'Civil Rights',grade:'11–12',cost:'Usually unpaid',desc:'The most direct expression of the Advocate calling in a professional setting. Work on real civil rights cases. Extremely competitive and extremely impactful.',url:'aclu.org/internships'},
+      {name:'Amnesty International Youth Activists Program',where:'Remote / Regional',type:'Human Rights',grade:'9–12',cost:'Free',desc:'Human rights advocacy training and campaign work. Strong for Advocates whose calling is international justice.',url:'amnestyusa.org/take-action/youth'},
+      {name:'Environmental Leadership Program',where:'Multiple sites',type:'Environmental Advocacy',grade:'12+',cost:'$ (scholarship)',desc:'Residential leadership program for Advocates whose calling is environmental justice. One of the most respected environmental leadership programs available.',url:'elpnet.org'}
+    ],
+    Cultivator: [
+      {name:'Farm & Wilderness Summer Camps',where:'Plymouth, Vermont',type:'Nature/Sustainability',grade:'7–12',cost:'$$',desc:'Vermont farm and wilderness camps grounded in Quaker values. Deep community, real work, genuine relationship with land and people. Transformative for Cultivators.',url:'farmandwilderness.org'},
+      {name:'Audubon Society Camp Programs',where:'Multiple nature centers',type:'Conservation/Ecology',grade:'High school',cost:'$$',desc:'Ecology and conservation field programs. Cultivators who grow literal things find Audubon camps deeply aligned with their calling.',url:'audubon.org/education-opportunities'},
+      {name:'American Farm School',where:'Greece (International)',type:'Agriculture/Sustainability',grade:'11–12',cost:'$$$',desc:'International agricultural education experience. For Cultivators with a global orientation who want to understand food systems.',url:'afs.edu.gr'},
+      {name:'Kieve-Wavus Leadership Program',where:'Maine',type:'Nature/Leadership',grade:'High school',cost:'$$',desc:'Leadership program rooted in outdoor education and community development. Strong for Cultivators who develop themselves through relationship with land.',url:'kieve.org'},
+      {name:'Cornell Summer Ecology Research',where:'Cornell University',type:'Ecology/Research',grade:'11–12',cost:'$$$',desc:'Field ecology research program at one of the strongest agricultural and environmental science schools in the country.',url:'cornell.edu/admissions/precollegiate'},
+      {name:'International Agricultural Exchange',where:'Multiple countries',type:'Agriculture',grade:'18+ or gap year',cost:'Varies',desc:'For Cultivators taking a gap year who want to work on farms internationally. Transforms the archetype through sustained contact with growth.',url:'agriventure.com'}
+    ],
+    Peacemaker: [
+      {name:'Seeds of Peace',where:'Otisfield, Maine + International',type:'Conflict Resolution',grade:'9–11',cost:'$ (scholarship available)',desc:'THE summer program for Peacemaker archetypes. Teenagers from conflicting regions live together and learn to dialogue. Life-changing. Extremely selective.',url:'seedsofpeace.org'},
+      {name:'American Debate League',where:'Multiple universities',type:'Dialogue/Debate',grade:'9–12',cost:'$$',desc:'High-level debate training that teaches Peacemakers the difference between argument and dialogue — and when each is appropriate.',url:'debateleague.org'},
+      {name:'Model UN Summer Conference',where:'Multiple host cities',type:'International Affairs',grade:'9–12',cost:'$$',desc:'The most recognized pre-college program for Peacemakers interested in international diplomacy. Strong for college applications at international studies programs.',url:'nmun.org/high-school'},
+      {name:'Rotary Youth Exchange',where:'International',type:'Cross-Cultural Bridge-Building',grade:'15–19',cost:'$ (Rotary sponsor)',desc:'Year-long or summer exchange program. The most direct bridge-building experience available — living in another culture is the Peacemaker\'s deepest formation.',url:'rotary.org/youth-exchange'},
+      {name:'National Institute on Civic Engagement',where:'Georgetown / American University',type:'Civic Dialogue',grade:'10–12',cost:'$$$',desc:'Civic dialogue and conflict resolution program in Washington DC. Strong for Peacemakers interested in policy and legislative conflict resolution.',url:'american.edu/summer'},
+      {name:'Facing History Summer Institute (Educator Track)',where:'Multiple cities',type:'Social Justice/Dialogue',grade:'11–12',cost:'$$',desc:'Intensive program on how history, identity, and conflict intersect. Strong for Peacemakers whose calling involves building bridges across historical divides.',url:'facinghistory.org/about-us/summer-institutes'}
+    ]
+  };
+
+  var list = programs[arch] || programs.Builder;
+  var cards = list.map(function(p) {
+    var costColor = p.cost.length <= 2 ? '#2d6a4f' : p.cost.length <= 3 ? '#d4a017' : '#9b2226';
+    return '<div style="background:white;border:1px solid rgba(0,0,0,0.07);border-radius:8px;padding:16px;margin-bottom:12px">'
+      + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">'
+      + '<div style="flex:1;padding-right:12px"><div style="font-size:15px;font-weight:700;color:var(--navy)">' + p.name + '</div>'
+      + '<div style="font-size:12px;color:var(--text-light)">' + p.where + ' · Grades ' + p.grade + '</div></div>'
+      + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">'
+      + '<span style="font-size:10px;border:1px solid rgba(0,0,0,0.15);padding:2px 8px;border-radius:3px;color:var(--text-light)">' + p.type + '</span>'
+      + '<span style="font-size:11px;font-weight:700;color:' + costColor + '">' + p.cost + '</span></div>'
+      + '</div>'
+      + '<p style="font-size:13px;color:var(--text-mid);line-height:1.65;margin-bottom:8px">' + p.desc + '</p>'
+      + '<a href="https://' + p.url + '" target="_blank" style="font-size:12px;color:var(--gold-dark,#A07840);font-weight:600">' + p.url + ' →</a>'
+      + '</div>';
+  }).join('');
+
+  el.innerHTML = '<div class="ai-badge">✦ Summer programs matched to the ' + arch + ' archetype</div>'
+    + '<div class="ai-content">'
+    + '<div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;font-size:12px">'
+    + '<span style="color:#2d6a4f">$ = Under $2,000 or free</span>'
+    + '<span style="color:#d4a017">$$ = $2,000–$5,000</span>'
+    + '<span style="color:#9b2226">$$$ = $5,000+ (financial aid usually available)</span>'
+    + '</div>'
+    + cards
+    + '<p style="font-size:12px;color:var(--text-light);margin-top:14px;font-style:italic;line-height:1.6">Cost and availability change annually. Financial aid is available at most programs — always inquire before ruling a program out on cost. Your counselor can identify additional local and state-specific programs.</p>'
+    + '</div>';
+}
+window.generateSummerPrograms = generateSummerPrograms;
+
+// ── 8. COUNSELOR SESSION GUIDE ────────────────────────────────
+async function generateCounselorGuide(archProfile, pArch, intake) {
+  var el = document.getElementById('prem-counselor-guide');
+  if (!el) return;
+  var arch = archProfile.split(' ')[0];
+  var name = (intake && intake.firstname) ? intake.firstname : 'this student';
+
+  var grade = 12;
+  if (intake && intake.gradyear) {
+    var now = new Date();
+    var sy = now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1;
+    grade = 12 - (parseInt(intake.gradyear) - sy - 1);
+  }
+
+  var sessions = {
+    9: [
+      {num:1,title:'Archetype Introduction',goal:'Student understands their archetype and can explain it in their own words.',agenda:'Review report hero and gifts sections (15 min) · Student explains what surprised them · First calling statement draft (10 min) · Identify one thing to build this year',homework:'Write first calling statement. Identify one problem they want to address this year.'},
+      {num:2,title:'The Burden',goal:'Student can name the specific thing in the world they cannot walk past.',agenda:'Review burden statement section (10 min) · Counselor asks the three burden questions · Student writes first burden statement draft · Connect burden to potential projects',homework:'Draft burden statement. Share with one trusted adult and get their reaction.'},
+      {num:3,title:'Shadow Introduction',goal:'Student has honest awareness of their shadow pattern.',agenda:'Review shadow section (10 min) · Counselor reads shadow story aloud · Student identifies one real example from their own life · First workbook question (10 min)',homework:'Complete shadow workbook questions 1-2. Note one moment this week where they noticed the shadow.'},
+      {num:4,title:'Clubs & Activities',goal:'Student has a plan for meaningful activities aligned to their archetype.',agenda:'Review clubs and local opportunities sections · Identify 2-3 programs to investigate · Discuss how to frame activities through the Builder lens',homework:'Research one activity program and attend one meeting or event.'},
+      {num:5,title:'Year Review & Update',goal:'Student updates their calling statement based on what they learned this year.',agenda:'Review the year: what did they build? What did they not finish? · Shadow check-in · Update calling statement · Preview of 10th grade focus',homework:'Revised calling statement. One paragraph: what I built this year and what it taught me about my calling.'}
+    ],
+    10: [
+      {num:1,title:'Project Review',goal:'Student has a real project underway that activates their calling.',agenda:'Review action plan section · Identify one project to launch this year · Map the 60-day build project · Connect to peer archetype dynamics',homework:'Draft project plan with a specific person the project serves.'},
+      {num:2,title:'College Introduction',goal:'Student understands the archetype basis for college fit.',agenda:'Review college match section (20 min) · Discuss what Builder culture looks like at different schools · Student picks 3 schools to research · Add to dream schools field',homework:'Virtual campus tour of one reach, one target. Note what felt like a match and what did not.'},
+      {num:3,title:'Career Exploration',goal:'Student can describe 2-3 careers they\'re genuinely curious about.',agenda:'Review career paths section (20 min) · Day-in-the-life discussion for top 2 careers · Connect to major choices · Review future of work section',homework:'Shadow or interview one professional in a field they are considering.'},
+      {num:4,title:'Peer Dynamics',goal:'Student understands how their archetype works with others.',agenda:'Review peer archetypes section · Identify teammates and collaborators in their life · Discuss one difficult collaboration from this year through the archetype lens',homework:'Identify the archetype of two important people in their life. How does that change how they understand the relationship?'},
+      {num:5,title:'Year Review',goal:'Updated report and refined direction.',agenda:'Calling statement update · Burden statement check-in · Shadow reflection · Preview of 11th grade (essay year)',homework:'Updated calling statement. One paragraph on what changed about their understanding of their calling this year.'}
+    ],
+    11: [
+      {num:1,title:'College List Building',goal:'Student has a final college list with archetype-informed reasoning for each school.',agenda:'Review and finalize college match section · Add/remove schools · For each school: name the archetype-specific reason it is on the list · Review selectivity preference',homework:'Research one program at each reach school specifically connected to Builder archetype.'},
+      {num:2,title:'Essay Strategy',goal:'Student has chosen their primary essay angle and written an opening paragraph.',agenda:'Review essay angles section (15 min) · Discuss top 3 angles · Student picks one and writes first paragraph in session · Review pre-writing questions',homework:'Complete the three pre-writing questions for their chosen angle. Write a full draft.'},
+      {num:3,title:'Recommendation Strategy',goal:'Student knows who to ask, has briefed their recommenders, and has shared the guide.',agenda:'Review rec letter guide section (15 min) · Discuss who fits the criteria · Student drafts the ask and the briefing · Share template with recommenders',homework:'Ask recommenders. Send template to each one. Schedule a brief conversation with each.'},
+      {num:4,title:'Interview Preparation',goal:'Student can answer all three archetype-specific interview questions confidently.',agenda:'Review interview prep section · Practice Question 1 in session · Coach on specific improvements · Assign Questions 2 and 3 for homework',homework:'Practice Questions 2 and 3 aloud. Record themselves and watch it back.'},
+      {num:5,title:'Application Strategy',goal:'Student has a complete application plan.',agenda:'Finalize college list · Essay status · Rec letter status · Supplemental essays (review supplemental angles) · Timeline and deadlines',homework:'Draft Why Us essay for top reach school using the archetype framing.'}
+    ],
+    12: [
+      {num:1,title:'Application Audit',goal:'All application components are in progress and on schedule.',agenda:'Review all essays · Rec letter status · College list finalization · Financial aid plan',homework:'Submit earliest application. Complete all materials for first deadline.'},
+      {num:2,title:'Decision Support',goal:'Student has a framework for making college decisions from their calling.',agenda:'Review college match section through the lens of acceptances received · Discuss fit vs. prestige · Apply combination profile to the decision · What would the calling statement say?',homework:'Write one paragraph: Why this college serves my calling, not just my resume.'},
+      {num:3,title:'Waitlist Strategy',goal:'Student knows how to respond to a waitlist with archetype-grounded advocacy.',agenda:'If waitlisted at a reach: draft a Letter of Continued Interest through the Builder lens · What to update, what to add, how to advocate without pressuring',homework:'Submit LOCI if applicable.'},
+      {num:4,title:'Transition Preparation',goal:'Student enters college with their calling in hand.',agenda:'Final calling statement · What Builder gifts to deploy in year one · What shadow to watch for in the transition · How to find their people (peer archetypes)',homework:'Final calling statement. One-paragraph letter to themselves to read in December of freshman year.'},
+      {num:5,title:'Graduation Session',goal:'Student leaves with a compass, not just a destination.',agenda:'Celebrate · Review the full journey through the report · Name what changed in their understanding of themselves · Set one intention for year one',homework:'Share their calling statement with one person who does not know what it means. Notice their reaction.'}
+    ]
+  };
+
+  var gradeSessions = sessions[grade] || sessions[11];
+  if (!gradeSessions) { gradeSessions = sessions[11]; }
+
+  var sessionCards = gradeSessions.map(function(s) {
+    return '<div style="background:white;border:1px solid rgba(0,0,0,0.07);border-radius:8px;padding:18px;margin-bottom:12px">'
+      + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">'
+      + '<div>'
+      + '<div style="font-size:10px;font-weight:700;color:var(--gold-dark,#A07840);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Session ' + s.num + '</div>'
+      + '<div style="font-size:16px;font-weight:700;color:var(--navy)">' + s.title + '</div>'
+      + '</div>'
+      + '</div>'
+      + '<div style="font-size:13px;color:var(--green,#2d6a4f);font-weight:500;margin-bottom:10px">Goal: ' + s.goal + '</div>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+      + '<div><div style="font-size:10px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Session Agenda</div>'
+      + '<p style="font-size:12px;color:var(--text-mid);line-height:1.65">' + s.agenda.split(' · ').map(function(a){ return '· ' + a; }).join('<br>') + '</p></div>'
+      + '<div><div style="font-size:10px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Between-Session Work</div>'
+      + '<p style="font-size:12px;color:var(--text-mid);line-height:1.65">' + s.homework + '</p></div>'
+      + '</div></div>';
+  }).join('');
+
+  el.innerHTML = '<div class="ai-badge">✦ Counselor session guide — ' + arch + ' in grade ' + grade + '</div>'
+    + '<div class="ai-content">'
+    + '<div style="background:rgba(45,106,79,0.06);border-radius:8px;padding:14px 18px;margin-bottom:16px">'
+    + '<div style="font-size:12px;font-weight:700;color:#2d6a4f;margin-bottom:4px">For the counselor</div>'
+    + '<p style="font-size:13px;color:var(--text-mid);line-height:1.65">' + name + ' is a grade ' + grade + ' ' + arch + ' archetype. These five sessions are designed to use the Beyond Class report as the backbone of your work together. Each session builds on the previous one. The report sections referenced in each session are all in this document.</p>'
+    + '</div>'
+    + sessionCards
+    + '</div>';
+}
+window.generateCounselorGuide = generateCounselorGuide;
+
+
 
 /* ── Make all onclick-used functions globally accessible ── */
 window.nextSection             = nextSection;
