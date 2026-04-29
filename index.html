@@ -2823,7 +2823,7 @@ function renderCopyrightFooter() {
   generateActivities(arch, pa, int).catch(function(){});
   generateMentorMatch(arch, pa, int).catch(function(){});
   generateShadowWorkbook(arch, pa, int).catch(function(){});
-  generatePremiumFromBank(arch, pa, int).catch(function(){});
+  try { generatePremiumFromBank(arch, pa, int); } catch(e) { console.warn('prembank:',e); }
   // New premium generators
   generatePeerArchetypes(arch, pa, int).catch(function(e){ console.warn('peer:',e); });
   generateInterviewPrep(arch, pa, int).catch(function(e){ console.warn('interview:',e); });
