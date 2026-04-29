@@ -955,10 +955,6 @@ async function renderResults(r) {
     </div>
 
 <!-- 9. CAREER PATHS (shell — generator in premium) -->
-    <div class="results-section">
-      <div class="results-section-title"><span class="rs-icon">💼</span> Career Paths</div>
-      <div class="ai-section" id="section-careers-free"><div class="ai-loading"><div class="ai-spinner"></div><span>Mapping career paths matched to your archetype...</span></div></div>
-    </div>
 
 <!-- 10. EXAMPLES OF ROLES -->
 <!-- ROLES -->
@@ -3191,81 +3187,152 @@ async function generateMajors(archProfile, pArch, intake) {
 }
 
 async function generateOpportunities(archProfile, location, pArch, intake) {
-  const el = document.getElementById('section-opportunities');
-  const arch = archProfile.split(' ')[0];
-  const data = REPORT_DATA[arch] || REPORT_DATA['Builder'];
-  const locNote = location && location !== 'your area' ? `<div class="ai-badge" style="margin-bottom:12px">✦ Opportunities tailored to ${location} & the ${arch} archetype</div>` : `<div class="ai-badge" style="margin-bottom:12px">✦ Tailored to the ${arch} archetype</div>`;
-  const typeColors = { Club:'#185FA5', Competition:'#0F6E56', Project:'#854F0B', Internship:'#993556', Volunteer:'#3B6D11', Program:'#534AB7', Work:'#5F5E5A', Research:'#993C1D', Leadership:'#0F6E56', Community:'#1A6B6B', Skill:'#3C3489' };
-  el.innerHTML = `${locNote}
-    <div class="ai-content">
-      <p style="font-size:14px;color:var(--text-mid);margin-bottom:16px;line-height:1.6">The activities below are specifically chosen for the ${arch} archetype. The most important thing isn't doing all of them  -  it's choosing 2–3 and committing deeply enough to have a real story to tell.</p>
-      <ul style="padding-left:0;list-style:none;display:flex;flex-direction:column;gap:12px">
-        ${data.activities.map(a => {
-          const col = typeColors[a.type] || '#888';
-          return `<li style="padding:16px;background:white;border:1px solid rgba(0,0,0,0.07)">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-              <span style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;background:${col}18;color:${col};padding:3px 8px">${a.type}</span>
-              <strong style="font-size:14px;color:var(--navy)">${a.title}</strong>
-            </div>
-            <span style="font-size:13px;color:var(--text-mid);line-height:1.6">${a.description}</span>
-          </li>`;
-        }).join('')}
-      </ul>
-      <div style="background:var(--navy);padding:16px;margin-top:20px">
-        <p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6"><strong style="color:var(--gold-light)">Local search tip:</strong> To find specific internships, volunteer sites, and programs near ${location !== 'your area' ? location : 'you'}, search <strong style="color:white">VolunteerMatch.org</strong>, <strong style="color:white">Idealist.org</strong>, and <strong style="color:white">LinkedIn</strong> for your city + the type of organization that matches your archetype. Your counselor can also help identify specific local organizations.</p>
-      </div>
-    </div>`;
+  var el = document.getElementById('section-opportunities');
+  if (!el) return;
+  var arch = archProfile.split(' ')[0];
+  var data = REPORT_DATA[arch] || REPORT_DATA['Builder'];
+  var loc = location && location !== 'your area' ? location : 'your area';
+  var locNote = '<div class="ai-badge" style="margin-bottom:12px">\u2726 Opportunities tailored to ' + loc + ' &amp; the ' + arch + ' archetype</div>';
+
+  // activities is {national:[...], state:"..."} — use national array
+  var acts = (data.activities && data.activities.national) ? data.activities.national : [];
+  var items = acts.map(function(a) {
+    return '<li style="padding:16px;background:white;border:1px solid rgba(0,0,0,0.07);border-radius:6px;margin-bottom:10px">'
+      + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px">'
+      + '<strong style="font-size:14px;color:var(--navy)">' + a.name + '</strong>'
+      + (a.grades ? '<span style="font-size:10px;color:var(--text-light);border:1px solid rgba(0,0,0,0.12);padding:2px 8px;border-radius:3px;white-space:nowrap">Grades ' + a.grades + '</span>' : '')
+      + '</div>'
+      + '<span style="font-size:13px;color:var(--text-mid);line-height:1.6;display:block;margin-bottom:8px">' + (a.desc || '') + '</span>'
+      + (a.url ? '<a href="https://' + a.url + '" target="_blank" style="font-size:12px;color:var(--gold-dark,#A07840);font-weight:600">' + a.url + ' \u2192</a>' : '')
+      + '</li>';
+  }).join('');
+
+  if (!items) {
+    items = '<li style="font-size:13px;color:var(--text-mid)">Search VolunteerMatch.org, Idealist.org, and LinkedIn for local ' + arch + '-aligned opportunities near ' + loc + '.</li>';
+  }
+
+  el.innerHTML = locNote + '<div class="ai-content">'
+    + '<p style="font-size:13px;color:var(--text-mid);margin-bottom:16px;line-height:1.65">The most important thing is not doing all of these \u2014 it is choosing 2\u20133 and committing deeply enough to have a real story to tell.</p>'
+    + '<ul style="padding-left:0;list-style:none">' + items + '</ul>'
+    + '<div style="background:var(--navy);padding:16px;margin-top:16px;border-radius:6px">'
+    + '<p style="font-size:13px;color:rgba(255,255,255,0.75);line-height:1.6"><strong style="color:var(--gold)">Local search tip:</strong> To find specific internships and volunteer sites near ' + loc + ', search <strong style="color:white">VolunteerMatch.org</strong>, <strong style="color:white">Idealist.org</strong>, and <strong style="color:white">LinkedIn</strong> + your city + the type of organization that matches your archetype.</p>'
+    + '</div></div>';
 }
 
 async function generateClubs(archProfile, pArch, intake) {
-  const el = document.getElementById('section-clubs');
-  const arch = archProfile.split(' ')[0];
-  const data = REPORT_DATA[arch] || REPORT_DATA['Builder'];
-  const clubActivities = data.activities.filter(a => ['Club','Competition','Leadership','Community'].includes(a.type));
-  const allActivities = data.activities;
-  el.innerHTML = `<div class="ai-badge">✦ Aligned to your ${arch} archetype</div>
-    <div class="ai-content">
-      <h4>Clubs & activities to pursue now</h4>
-      <ul style="padding-left:0;list-style:none;display:flex;flex-direction:column;gap:10px">
-        ${allActivities.map(a => `<li style="display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:white;border:1px solid rgba(0,0,0,0.07)">
-          <span style="color:var(--gold);flex-shrink:0;font-size:14px;margin-top:1px">✦</span>
-          <span style="font-size:14px;color:var(--text-mid);line-height:1.5"><strong style="color:var(--navy)">${a.title}</strong>  -  ${a.description}</span>
-        </li>`).join('')}
-      </ul>
-      <div style="background:var(--cream-dark);border-left:3px solid var(--gold);padding:16px;margin-top:20px">
-        <p style="font-size:13px;color:var(--text-mid);line-height:1.6"><strong style="color:var(--navy)">The deeper principle:</strong> Admissions officers aren't counting your activities  -  they're looking for evidence of who you are. Two or three activities pursued with genuine depth and leadership over multiple years are worth far more than eight surface-level involvements. Choose what matches your archetype and go deep.</p>
-      </div>
-    </div>`;
+  var el = document.getElementById('section-clubs');
+  if (!el) return;
+  var arch = archProfile.split(' ')[0];
+  var data = REPORT_DATA[arch] || REPORT_DATA['Builder'];
+
+  // activities is {national:[...], state:"..."} — use national array
+  var acts = (data.activities && data.activities.national) ? data.activities.national : [];
+  var items = acts.map(function(a) {
+    return '<li style="display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:white;border:1px solid rgba(0,0,0,0.07);border-radius:6px;margin-bottom:8px">'
+      + '<span style="color:var(--gold,#C8A96E);flex-shrink:0;font-size:16px;margin-top:1px">\u2726</span>'
+      + '<div><strong style="font-size:14px;color:var(--navy);display:block;margin-bottom:3px">' + a.name + (a.grades ? ' <span style="font-size:10px;font-weight:400;color:var(--text-light)">(Grades ' + a.grades + ')</span>' : '') + '</strong>'
+      + '<span style="font-size:13px;color:var(--text-mid);line-height:1.6;display:block">' + (a.desc || '') + '</span>'
+      + (a.url ? '<a href="https://' + a.url + '" target="_blank" style="font-size:12px;color:var(--gold-dark,#A07840);font-weight:600;display:block;margin-top:4px">' + a.url + ' \u2192</a>' : '')
+      + '</div></li>';
+  }).join('');
+
+  if (!items) items = '<li style="font-size:13px;color:var(--text-mid)">Talk to your school counselor about starting a club aligned with your ' + arch + ' archetype.</li>';
+
+  el.innerHTML = '<div class="ai-badge">\u2726 Clubs &amp; organizations aligned to the ' + arch + ' archetype</div>'
+    + '<div class="ai-content">'
+    + '<ul style="padding-left:0;list-style:none">' + items + '</ul>'
+    + '<div style="background:rgba(15,31,61,0.04);border-left:3px solid var(--gold);padding:14px 16px;margin-top:16px;border-radius:0 6px 6px 0">'
+    + '<p style="font-size:13px;color:var(--text-mid);line-height:1.6"><strong style="color:var(--navy)">The deeper principle:</strong> Admissions officers are looking for evidence of who you are \u2014 not how many clubs you joined. Two or three activities pursued with genuine depth over multiple years are worth more than eight surface-level involvements.</p>'
+    + '</div></div>';
 }
 
 async function generateScholarships(archProfile, pArch, intake, cfPrefs) {
-  const el = document.getElementById('section-scholarships');
-  const arch = archProfile.split(' ')[0];
-  const data = REPORT_DATA[arch] || REPORT_DATA['Builder'];
-  const state = intake.state ? `<p style="font-size:13px;color:var(--text-mid);margin-bottom:16px;line-height:1.6">In addition to the scholarships below, search <strong>your state's scholarship database</strong>  -  most states have a higher education scholarship portal. Search "<strong>${intake.state} scholarships for high school students</strong>" and your state education department's website.</p>` : '';
-  el.innerHTML = `<div class="ai-badge">✦ Matched to your ${arch} archetype & profile</div>
-    <div class="ai-content">
-      ${state}
-      <ul style="padding-left:0;list-style:none;display:flex;flex-direction:column;gap:12px">
-        ${data.scholarships.map(s => `<li style="padding:16px;background:white;border:1px solid rgba(0,0,0,0.07);border-left:3px solid var(--gold)">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:6px;flex-wrap:wrap">
-            <strong style="font-size:14px;color:var(--navy)">${s.name}</strong>
-            <span style="font-size:12px;font-weight:600;color:var(--green);white-space:nowrap">${s.amount}</span>
-          </div>
-          <span style="font-size:13px;color:var(--text-mid);line-height:1.5">${s.notes}</span>
-        </li>`).join('')}
-      </ul>
-      <div style="background:var(--navy);padding:16px;margin-top:20px">
-        <p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6;margin-bottom:10px"><strong style="color:var(--gold-light)">Scholarship search strategy:</strong></p>
-        <ul style="padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px">
-          <li style="font-size:13px;color:rgba(255,255,255,0.6);display:flex;gap:8px"><span style="color:var(--gold)">✦</span>Start searching in 10th grade  -  many scholarships require years of consistent activity to be competitive</li>
-          <li style="font-size:13px;color:rgba(255,255,255,0.6);display:flex;gap:8px"><span style="color:var(--gold)">✦</span>Use <strong style="color:white">Fastweb.com</strong>, <strong style="color:white">Scholarships.com</strong>, and <strong style="color:white">Bold.org</strong> for searchable databases</li>
-          <li style="font-size:13px;color:rgba(255,255,255,0.6);display:flex;gap:8px"><span style="color:var(--gold)">✦</span>Check your parent's employer  -  many corporations offer employee-dependent scholarships that go unclaimed</li>
-          <li style="font-size:13px;color:rgba(255,255,255,0.6);display:flex;gap:8px"><span style="color:var(--gold)">✦</span>Local community foundations and Rotary clubs often give $500–$2,500 awards with very little competition</li>
-          <li style="font-size:13px;color:rgba(255,255,255,0.6);display:flex;gap:8px"><span style="color:var(--gold)">✦</span>Your counselor can help identify scholarships specific to your archetype, location, and background</li>
-        </ul>
-      </div>
-    </div>`;
+  var el = document.getElementById('section-scholarships');
+  if (!el) return;
+  var arch = archProfile.split(' ')[0];
+  var state = intake && intake.state ? intake.state : '';
+  var firstGen = intake && intake.firstgen === 'yes';
+
+  var scholarshipData = {
+    Builder: [
+      {name:'NFTE Entrepreneurship Scholarship',amount:'Up to $10,000',desc:'For students demonstrating entrepreneurial thinking. Requires a business plan or active project. Perfect Builder alignment.',url:'nfte.com/scholarships'},
+      {name:'Babson Weissman Scholarship',amount:'Up to full tuition',desc:'Merit scholarship at the #1 entrepreneurship school. Apply when you apply to Babson.',url:'babson.edu'},
+      {name:'Young Entrepreneur Foundation Scholarship',amount:'$2,500\u2013$10,000',desc:'Supports young entrepreneurs demonstrating innovation and leadership. Essay aligns with Builder angles.',url:'youngentrepreneurfoundation.org'},
+      {name:'DECA Scholarship Program',amount:'Varies ($1,000\u2013$25,000)',desc:'Multiple scholarships for active DECA members with entrepreneurship focus.',url:'deca.org/scholarships'},
+      {name:'Jack Kent Cooke Foundation',amount:'Up to $55,000/year',desc:'For high-achieving students with financial need. Strong fit for first-gen Builders.',url:'jkcf.org'}
+    ],
+    Shepherd: [
+      {name:'ANA Foundation Nursing Scholarship',amount:'$2,500\u2013$5,000',desc:'For students entering nursing or healthcare. Strong Shepherd alignment.',url:'anafoundation.org'},
+      {name:'National Association of Social Workers Scholarship',amount:'Varies',desc:'For students pursuing social work degrees. Requires commitment to the profession.',url:'naswfoundation.org'},
+      {name:'CVS Health Foundation Scholarship',amount:'Up to $5,000',desc:'For students pursuing health careers. Available to first-generation college students.',url:'cvshealth.com/social-responsibility'},
+      {name:'Tylenol Future Care Scholarship',amount:'$5,000\u2013$10,000',desc:'For students pursuing healthcare-related fields. Shepherd archetype fits perfectly.',url:'tylenol.com/scholarship'},
+      {name:'Jack Kent Cooke Foundation',amount:'Up to $55,000/year',desc:'For high-achieving students with financial need. Strong fit for first-gen Shepherds.',url:'jkcf.org'}
+    ],
+    Architect: [
+      {name:'Society of Women Engineers Scholarship',amount:'$1,000\u2013$15,000',desc:'For women in engineering and technology. Strong Architect alignment.',url:'scholarships.swe.org'},
+      {name:'American Institute of Architects Scholarship',amount:'Varies',desc:'For students pursuing architecture or design. Core Architect archetype fit.',url:'aia.org'},
+      {name:'Gates Scholarship',amount:'Full cost of attendance',desc:'For outstanding minority students with significant financial need. Highly competitive.',url:'thegatesscholarship.org'},
+      {name:'Davidson Fellows Scholarship',amount:'$10,000\u2013$50,000',desc:'For students who have completed a significant piece of work in STEM, literature, or philosophy.',url:'davidsongifted.org/fellows-scholarship'},
+      {name:'Jack Kent Cooke Foundation',amount:'Up to $55,000/year',desc:'For high-achieving students with financial need.',url:'jkcf.org'}
+    ],
+    Catalyst: [
+      {name:'Scholastic Art & Writing Awards',amount:'Varies',desc:'For students with exceptional creative or communication talent. Strong Catalyst fit.',url:'artandwriting.org'},
+      {name:'National Oratorical Contest (American Legion)',amount:'Up to $18,000',desc:'Public speaking competition with significant scholarship prizes. Perfect for Catalysts.',url:'legion.org/oratorical'},
+      {name:'Prudential Spirit of Community Award',amount:'$1,000\u2013$5,000',desc:'For students demonstrating leadership through community service and activism.',url:'spirit.prudential.com'},
+      {name:'Do Something Scholarship',amount:'$5,000',desc:'For students running social campaigns or community impact projects.',url:'dosomething.org/scholarships'},
+      {name:'Jack Kent Cooke Foundation',amount:'Up to $55,000/year',desc:'For high-achieving students with financial need.',url:'jkcf.org'}
+    ],
+    Advocate: [
+      {name:'NAACP Scholarships',amount:'$1,000\u2013$5,000',desc:'For students committed to civil rights and social justice. Strong Advocate fit.',url:'naacp.org/scholarships'},
+      {name:'Amnesty International Youth Activist Scholarship',amount:'Varies',desc:'For students demonstrating human rights advocacy and activism.',url:'amnestyusa.org'},
+      {name:'New Voices Scholarship',amount:'$1,500',desc:'For student journalists and advocates committed to truth and civic accountability.',url:'newvoicesforjournalism.org'},
+      {name:'Congressional Black Caucus Foundation Scholarship',amount:'$3,000\u2013$10,000',desc:'For students committed to public service and civic engagement.',url:'cbcfinc.org/scholarships'},
+      {name:'Jack Kent Cooke Foundation',amount:'Up to $55,000/year',desc:'For high-achieving students with financial need.',url:'jkcf.org'}
+    ],
+    Cultivator: [
+      {name:'National FFA Scholarships',amount:'$1,000\u2013$22,000',desc:'Over 1,000 scholarships for students involved in agriculture and environmental stewardship.',url:'ffa.org/participate/grants-and-scholarships'},
+      {name:'Environmental Defense Fund Scholarship',amount:'Varies',desc:'For students committed to environmental sustainability and conservation.',url:'edf.org'},
+      {name:'Garden Club of America Scholarship',amount:'$1,500\u2013$5,000',desc:'For students studying horticulture, botany, environmental studies, or related fields.',url:'gcamerica.org/scholarships'},
+      {name:'Future Farmers of America Scholarship',amount:'Varies ($1,000\u2013$5,000)',desc:'For students in agricultural education programs. Strong Cultivator archetype fit.',url:'ffa.org/scholarships'},
+      {name:'Jack Kent Cooke Foundation',amount:'Up to $55,000/year',desc:'For high-achieving students with financial need.',url:'jkcf.org'}
+    ],
+    Peacemaker: [
+      {name:'United World Colleges Scholarship',amount:'Full scholarship',desc:'Two years at an international school focused on global understanding. Perfect Peacemaker fit.',url:'uwc.org'},
+      {name:'Congress-Bundestag Youth Exchange',amount:'Full scholarship',desc:'A year in Germany for students interested in cross-cultural dialogue and international relations.',url:'usagermanyscholarships.org'},
+      {name:'National Peace Essay Contest (USIP)',amount:'$1,000\u2013$2,500',desc:'For students writing about international conflict and peace. Direct Peacemaker calling.',url:'usip.org/public-education/students/peace-essay-contest'},
+      {name:'Rotary Foundation Scholarship',amount:'Varies',desc:'For students demonstrating peace, conflict resolution, and international service values.',url:'rotary.org/en/our-programs/scholarships'},
+      {name:'Jack Kent Cooke Foundation',amount:'Up to $55,000/year',desc:'For high-achieving students with financial need.',url:'jkcf.org'}
+    ]
+  };
+
+  var list = scholarshipData[arch] || scholarshipData.Builder;
+
+  // Add first-gen note if applicable
+  var firstGenNote = firstGen
+    ? '<div style="background:rgba(45,106,79,0.07);border-left:3px solid #2d6a4f;border-radius:0 6px 6px 0;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#2d6a4f"><strong>First-generation note:</strong> You qualify for additional scholarships not listed here. Your counselor can help identify FAFSA-independent awards, your state\'s first-gen scholarship programs, and institutional grants at your target schools.</div>'
+    : '';
+
+  var stateNote = state
+    ? '<div style="background:rgba(24,95,165,0.06);border-left:3px solid #185FA5;border-radius:0 6px 6px 0;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#185FA5"><strong>' + state + ' residents:</strong> Your state has additional scholarships not listed here. Search &ldquo;' + state + ' state scholarship&rdquo; and &ldquo;' + state + ' community foundation scholarship&rdquo; for local awards.</div>'
+    : '';
+
+  var cards = list.map(function(s) {
+    return '<div style="background:white;border:1px solid rgba(0,0,0,0.07);border-radius:6px;padding:14px 16px;margin-bottom:10px">'
+      + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">'
+      + '<strong style="font-size:14px;color:var(--navy);flex:1;padding-right:12px">' + s.name + '</strong>'
+      + '<span style="font-size:12px;font-weight:700;color:#2d6a4f;white-space:nowrap">' + s.amount + '</span>'
+      + '</div>'
+      + '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:6px">' + s.desc + '</p>'
+      + (s.url ? '<a href="https://' + s.url + '" target="_blank" style="font-size:12px;color:var(--gold-dark,#A07840);font-weight:600">' + s.url + ' \u2192</a>' : '')
+      + '</div>';
+  }).join('');
+
+  el.innerHTML = '<div class="ai-badge">\u2726 Scholarships matched to the ' + arch + ' archetype</div>'
+    + '<div class="ai-content">'
+    + firstGenNote + stateNote
+    + cards
+    + '<p style="font-size:12px;color:var(--text-light);margin-top:12px;line-height:1.6;font-style:italic">Amounts and deadlines change annually. Your counselor can identify additional local, institutional, and state-specific awards beyond this list.</p>'
+    + '</div>';
 }
 
 async function generateCourses(archProfile, pArch, intake) {
