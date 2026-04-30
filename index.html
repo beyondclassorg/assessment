@@ -32,13 +32,13 @@
       btn.style.color = 'var(--navy)';
       btn.style.border = '1.5px solid var(--gold)';
       btn.style.cursor = 'pointer';
-      btn.textContent = '✦ Open My Full Premium Report →';
+      btn.textContent = '✦ I\'ve Paid — Reveal My Report →';
     } else {
       btn.style.background = 'rgba(200,169,110,0.08)';
       btn.style.color = 'rgba(15,15,36,0.4)';
       btn.style.border = '1.5px solid rgba(200,169,110,0.2)';
       btn.style.cursor = 'not-allowed';
-      btn.textContent = '⏳ Generating your report — ready in a few seconds...';
+      btn.textContent = '⏳ Your report is generating — button activates in seconds...';
     }
   }
 
@@ -3215,11 +3215,6 @@ function renderCopyrightFooter() {
 
   // ── STEP 2 PAYMENT GUARD ──────────────────────────────────
   function handleStep2Click() {
-    if (!window._bcPaymentClicked) {
-      var btn = document.getElementById('step2-btn');
-      if (btn) { btn.textContent = 'Complete Step 1 payment first →'; btn.style.color='rgba(15,15,36,0.4)'; }
-      return;
-    }
     // Close modal if open
     var modal = document.getElementById('premium-modal');
     if (modal) modal.style.display = 'none';
