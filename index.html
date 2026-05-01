@@ -237,22 +237,42 @@ const ESSAY_ENHANCEMENTS = {Builder:[{ao:"Wharton/Penn essays: show you understa
     var modal = document.getElementById('premium-modal');
     if (!modal) return;
     modal.innerHTML = [
-      '<div style="position:fixed;inset:0;background:rgba(15,31,61,0.75);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px">',
-      '<div style="background:white;border-radius:20px;padding:36px 32px;max-width:460px;width:100%;text-align:center;position:relative;box-shadow:0 24px 80px rgba(0,0,0,0.3)">',
-      '<button onclick="document.getElementById(\'premium-modal\').style.display=\'none\'" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;line-height:1">&#215;</button>',
-      '<div style="font-size:32px;margin-bottom:12px">&#10022;</div>',
-      '<h3 style="font-family:Georgia,serif;font-size:24px;color:var(--navy);margin-bottom:8px">Unlock Your Full Report</h3>',
-      '<p style="font-size:14px;color:var(--text-mid);line-height:1.65;margin-bottom:28px">Essay angles &middot; Career deep-dives &middot; Shadow workbook &middot; Interview prep &middot; Rec letter guide &middot; Summer programs &middot; and more.</p>',
-      '<div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-light);margin-bottom:14px">Step 1 &mdash; Purchase access</div>',
-      '<a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" style="display:block;background:linear-gradient(135deg,#C8A96E,#D4B87A);color:#0F1F3D;padding:15px 24px;border-radius:10px;font-weight:700;font-size:15px;text-decoration:none;margin-bottom:20px;">Purchase Access &mdash; $79 &rarr;</a>',
-      '<div style="height:1px;background:rgba(0,0,0,0.07);margin-bottom:18px"></div>',
-      '<div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-light);margin-bottom:12px">Step 2 &mdash; Reveal your report</div>',
-      '<button id="step2-btn" onclick="handleStep2Click()" style="width:100%;padding:15px 24px;border-radius:10px;font-size:15px;font-weight:600;border:1.5px solid rgba(200,169,110,0.2);background:rgba(200,169,110,0.06);color:rgba(15,15,36,0.4);cursor:not-allowed;transition:all .3s">&#8987; Your report is generating &mdash; button activates in seconds...</button>',
-      '<div style="margin-top:18px;padding-top:16px;border-top:1px solid rgba(0,0,0,0.06)">',
-      '<p style="font-size:12px;color:var(--text-light);margin-bottom:8px">Already paid? Enter your access code below.</p>',
-      '<input type="text" placeholder="Enter access code..." style="width:100%;padding:10px 14px;border:1px solid rgba(0,0,0,0.12);border-radius:8px;font-size:13px;box-sizing:border-box;outline:none;margin-bottom:6px" oninput="window.checkCounselorCode&&checkCounselorCode(this.value)">',
-      '<div id="modal-code-status" style="font-size:12px;min-height:16px;color:var(--text-light)"></div>',
-      '</div></div></div>'
+      '<div style="position:fixed;inset:0;background:rgba(15,31,61,0.80);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px">',
+      '<div style="background:white;border-radius:20px;padding:36px 32px;max-width:480px;width:100%;text-align:center;position:relative;box-shadow:0 24px 80px rgba(0,0,0,0.35)">',
+      '<button onclick="document.getElementById(\'premium-modal\').style.display=\'none\'" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:rgba(0,0,0,0.35);line-height:1">&#215;</button>',
+      '<div style="font-size:30px;margin-bottom:10px">&#10022;</div>',
+      '<h3 style="font-family:Georgia,serif;font-size:23px;color:#0F1F3D;margin-bottom:6px">Unlock Your Full Report</h3>',
+      '<p style="font-size:13px;color:#7A6F60;line-height:1.6;margin-bottom:24px">Essay angles &middot; Career deep-dives &middot; Shadow workbook &middot; Interview prep &middot; Rec letter guide &middot; Summer programs &middot; and more.</p>',
+
+      // Step 1 box
+      '<div style="background:#0F1F3D;border-radius:12px;padding:20px 20px 18px;margin-bottom:12px;text-align:left">',
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">',
+      '<div style="width:26px;height:26px;border-radius:50%;background:#C8A96E;color:#0F1F3D;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>',
+      '<span style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.9)">Purchase Premium Report &mdash; $79</span>',
+      '</div>',
+      '<a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" style="display:block;background:linear-gradient(135deg,#C8A96E,#D4B87A);color:#0F1F3D;padding:14px 24px;border-radius:9px;font-weight:700;font-size:15px;text-decoration:none;text-align:center;letter-spacing:.01em">',
+      'Pay &amp; Unlock My Report &rarr;</a>',
+      '<p style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:10px;text-align:center">Secure checkout &middot; Instant access</p>',
+      '</div>',
+
+      // Step 2 box
+      '<div style="background:#FAF7F2;border:1.5px solid rgba(200,169,110,0.25);border-radius:12px;padding:20px 20px 18px;margin-bottom:16px;text-align:left">',
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">',
+      '<div style="width:26px;height:26px;border-radius:50%;background:rgba(200,169,110,0.15);color:#8B6914;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid rgba(200,169,110,0.4)">2</div>',
+      '<span style="font-size:13px;font-weight:600;color:#4A4035">Return here &amp; reveal your report</span>',
+      '</div>',
+      '<button id="step2-btn" onclick="handleStep2Click()" style="width:100%;padding:14px 24px;border-radius:9px;font-size:15px;font-weight:600;border:1.5px solid rgba(200,169,110,0.2);background:rgba(200,169,110,0.07);color:rgba(15,15,36,0.35);cursor:not-allowed;transition:all .3s;text-align:center">&#8987; Waiting for payment &mdash; activates after checkout</button>',
+      '<p style="font-size:11px;color:#7A6F60;margin-top:8px;text-align:center">After paying, return to this tab and click the button above.</p>',
+      '</div>',
+
+      // Code entry divider
+      '<div style="border-top:1px solid rgba(0,0,0,0.07);padding-top:14px">',
+      '<p style="font-size:12px;color:#7A6F60;margin-bottom:8px">Have a school or student access code? Enter it below.</p>',
+      '<input type="text" placeholder="Enter access code (e.g. BC-STU-2026-X4)..." style="width:100%;padding:10px 14px;border:1px solid rgba(0,0,0,0.12);border-radius:8px;font-size:13px;box-sizing:border-box;outline:none;margin-bottom:6px;font-family:inherit" oninput="window.checkCounselorCode&&checkCounselorCode(this.value)">',
+      '<div id="modal-code-status" style="font-size:12px;min-height:16px;color:#7A6F60"></div>',
+      '</div>',
+
+      '</div></div>'
     ].join('');
     modal.style.display = 'block';
     updateStep2Button();
@@ -3018,8 +3038,9 @@ function renderCopyrightFooter() {
   function checkCounselorCodeOnResults() {
     var el = document.getElementById('f-schoolcode');
     var val = (el && el.value) ? el.value : (intakeData && intakeData.schoolcode ? intakeData.schoolcode : '');
-    if (val.trim().toUpperCase() === 'BC-PRAC-2026-X4') {
-      console.log('[BC] Counselor code confirmed on results page - revealing premium');
+    var _cv = val.trim().toUpperCase();
+    if (_cv === 'BC-PRAC-2026-X4' || _cv === 'BC-STU-2026-X4') {
+      console.log('[BC] Code confirmed on results page - revealing premium');
       setTimeout(function() { revealPremiumContent(); }, 500);
     }
   }
