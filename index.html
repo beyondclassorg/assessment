@@ -3006,7 +3006,8 @@ function renderCopyrightFooter() {
   generateActivities(arch, pa, int).catch(function(){});
   generateMentorMatch(arch, pa, int).catch(function(){});
   generateShadowWorkbook(arch, pa, int).catch(function(){});
-  try { generatePremiumFromBank(_r || {primary:(arch||'').split(' ')[0], intake:int}, _pArch || pa, _sArch || {}, _studentName || ''); } catch(e) { console.warn('prembank:',e); }
+  // NOTE: generatePremiumFromBank (research/group/parent) is already run by runPremiumReport at assessment time.
+  // Do NOT call it again here — it overwrites the DOM with incorrect data.
   // New premium generators
   generatePeerArchetypes(arch, pa, int).catch(function(e){ console.warn('peer:',e); });
   generateInterviewPrep(arch, pa, int).catch(function(e){ console.warn('interview:',e); });
