@@ -24,11 +24,12 @@
 
 <script>
 // ── STEP 2 BUTTON STATE MANAGEMENT ───────────────────────────
-  function updateStep2Button() {
+  function updateStep2Button(activate) {
+    var ready = activate || !!window._bcPremiumData;
     // Modal step2 button
     var btn = document.getElementById('step2-btn');
     if (btn) {
-      if (window._bcPremiumData) {
+      if (ready) {
         btn.style.background = 'var(--gold)';
         btn.style.color = 'var(--navy)';
         btn.style.border = '1.5px solid var(--gold)';
@@ -45,7 +46,7 @@
     // Inline reveal button on results page
     var inlineBtn = document.getElementById('inline-reveal-btn');
     if (inlineBtn) {
-      if (window._bcPremiumData) {
+      if (ready) {
         inlineBtn.style.background = 'linear-gradient(135deg,#C8A96E,#D4B87A)';
         inlineBtn.style.color = '#0F1F3D';
         inlineBtn.style.border = '1.5px solid #C8A96E';
@@ -56,15 +57,20 @@
         inlineBtn.style.color = 'rgba(255,255,255,0.3)';
         inlineBtn.style.border = '1.5px solid rgba(201,168,76,0.2)';
         inlineBtn.style.cursor = 'not-allowed';
-        inlineBtn.textContent = '⏳ Waiting for payment — activates after checkout';
+        inlineBtn.textContent = '⏳ Waiting for payment — activates in a moment...';
       }
     }
   }
 
   function startStep2Polling() {
+    // Activate reveal buttons after 10 seconds so the student knows to click
+    setTimeout(function() {
+      if (!window._bcPremiumUnlocked) { updateStep2Button(true); }
+    }, 10000);
+    // Also watch for _bcPremiumData in case it loads faster
     var interval = setInterval(function() {
       if (window._bcPremiumData) {
-        updateStep2Button();
+        updateStep2Button(true);
         clearInterval(interval);
       }
     }, 1000);
@@ -287,7 +293,7 @@ const ESSAY_ENHANCEMENTS = {Builder:[{ao:"Wharton/Penn essays: show you understa
       // Code entry divider
       '<div style="border-top:1px solid rgba(0,0,0,0.07);padding-top:14px">',
       '<p style="font-size:12px;color:#7A6F60;margin-bottom:8px">Have a school or student access code? Enter it below.</p>',
-      '<input type="text" placeholder="Enter access code (e.g. BC-STU-2026-X4)..." style="width:100%;padding:10px 14px;border:1px solid rgba(0,0,0,0.12);border-radius:8px;font-size:13px;box-sizing:border-box;outline:none;margin-bottom:6px;font-family:inherit" oninput="window.checkCounselorCode&&checkCounselorCode(this.value)">',
+      '<input type="text" placeholder="Enter access code..." style="width:100%;padding:10px 14px;border:1px solid rgba(0,0,0,0.12);border-radius:8px;font-size:13px;box-sizing:border-box;outline:none;margin-bottom:6px;font-family:inherit" oninput="window.checkCounselorCode&&checkCounselorCode(this.value)">',
       '<div id="modal-code-status" style="font-size:12px;min-height:16px;color:#7A6F60"></div>',
       '</div>',
 
@@ -520,7 +526,7 @@ var parentConsentGiven = false;
 let answers = {};
 let openAnswers = {};
 // Module-level vars for premium reveal (set in renderResults)
-var _archProfile = '', _pArch = '', _intake = {}, _cfPrefs = {};
+var _archProfile = '', _pArch = '', _intake = {}, _cfPrefs = {}, _r = null, _sArch = null, _studentName = '';
 let intakeData = {};
 let collegeFitData = { priorities: [], envPrefs: [], sizes: [], locations: [], athletics: 'no_preference', budget: 3, faith: 'no_preference' };
 
@@ -1195,7 +1201,7 @@ async function renderResults(r) {
             <div style="width:26px;height:26px;border-radius:50%;background:rgba(201,168,76,0.15);color:rgba(201,168,76,0.7);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid rgba(201,168,76,0.35);">2</div>
             <span style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.7);">Return here &amp; reveal your report</span>
           </div>
-          <button id="inline-reveal-btn" onclick="window.handleStep2Click&&handleStep2Click()" style="width:100%;padding:14px 24px;border-radius:9px;font-size:15px;font-weight:600;border:1.5px solid rgba(201,168,76,0.2);background:rgba(201,168,76,0.07);color:rgba(255,255,255,0.3);cursor:not-allowed;transition:all .3s;font-family:'DM Sans',sans-serif;text-align:center;">&#8987; Waiting for payment &mdash; activates after checkout</button>
+          <button id="inline-reveal-btn" onclick="window.handleStep2Click&&handleStep2Click()" style="width:100%;padding:14px 24px;border-radius:9px;font-size:15px;font-weight:600;border:1.5px solid rgba(201,168,76,0.2);background:rgba(201,168,76,0.07);color:rgba(255,255,255,0.3);cursor:not-allowed;transition:all .3s;font-family:'DM Sans',sans-serif;text-align:center;">&#8987; Waiting for payment &mdash; activates in a moment...</button>
           <p style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:8px;text-align:center;">After paying, return to this tab and click the button above.</p>
         </div>
 
@@ -1203,7 +1209,7 @@ async function renderResults(r) {
         <div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:16px;margin-top:4px;">
           <p style="font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:10px;">Have a school or student access code? Enter it below.</p>
           <div style="display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;">
-            <input id="inline-code-input" type="text" placeholder="e.g. BC-STU-2026-X4" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:9px 14px;color:white;font-family:'DM Sans',sans-serif;font-size:13px;width:240px;outline:none;" oninput="window.checkCounselorCode&&checkCounselorCode(this.value)">
+            <input id="inline-code-input" type="text" placeholder="Enter school code..." style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:9px 14px;color:white;font-family:'DM Sans',sans-serif;font-size:13px;width:240px;outline:none;" oninput="window.checkCounselorCode&&checkCounselorCode(this.value)">
             <div id="inline-code-status" style="display:none;font-size:13px;color:#4CAF50;font-weight:700;">&#10003; Code verified &mdash; unlocking...</div>
           </div>
         </div>
@@ -1322,6 +1328,9 @@ async function renderResults(r) {
   _pArch = pArch;
   _intake = intake;
   _cfPrefs = cfPrefs;
+  _r = r;
+  _sArch = sArch;
+  _studentName = studentName;
 
   showScreen('screen-results');
   setTimeout(initScrollIndicator, 300);
@@ -3002,7 +3011,7 @@ function renderCopyrightFooter() {
   generateActivities(arch, pa, int).catch(function(){});
   generateMentorMatch(arch, pa, int).catch(function(){});
   generateShadowWorkbook(arch, pa, int).catch(function(){});
-  try { generatePremiumFromBank(arch, pa, int); } catch(e) { console.warn('prembank:',e); }
+  try { generatePremiumFromBank(_r || {primary:arch,intake:int}, _pArch || pa, _sArch || {}, _studentName || ''); } catch(e) { console.warn('prembank:',e); }
   // New premium generators
   generatePeerArchetypes(arch, pa, int).catch(function(e){ console.warn('peer:',e); });
   generateInterviewPrep(arch, pa, int).catch(function(e){ console.warn('interview:',e); });
