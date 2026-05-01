@@ -2614,6 +2614,7 @@ function renderCopyrightFooter() {
   function generatePremiumFromBank(r, pArch, sArch, studentName) {
     var archName = r.primary || 'Builder';
     var bank = PREMIUM_BANK[archName] || PREMIUM_BANK['Builder'];
+    var shadowData = (SHADOW_DATA && SHADOW_DATA[archName]) || {};
     var intake = r.intake || {};
     var openAnswers = r.openAnswers || {};
     var studentKeywords = extractStudentKeywords(intake, openAnswers);
@@ -2654,11 +2655,11 @@ function renderCopyrightFooter() {
         };
       }),
       shadowWorkbook: {
-        overview: bank.shadow.overview || '',
-        reflectionPrompts: bank.shadow.prompts || [],
-        warningSigns: bank.shadow.warnings || [],
-        exercises: (bank.shadow.exercises || []).map(function(e){ return {title:e.n||e.name||'', description:e.d||e.steps||''}; }),
-        reframe: bank.shadow.reframe || '',
+        overview: shadowData.shadow_summary || '',
+        reflectionPrompts: (shadowData.questions || []).map(function(q){ return q.q || ''; }),
+        warningSigns: [],
+        exercises: shadowData.integration_practice ? [{title: 'Integration Practice', description: shadowData.integration_practice}] : [],
+        reframe: shadowData.shadow_name || '',
       },
       groupDynamics: {
         naturalRole: (bank.group.role || '') + ' - ' + (bank.group.brings || ''),
@@ -3006,8 +3007,7 @@ function renderCopyrightFooter() {
   generateActivities(arch, pa, int).catch(function(){});
   generateMentorMatch(arch, pa, int).catch(function(){});
   generateShadowWorkbook(arch, pa, int).catch(function(){});
-  // NOTE: generatePremiumFromBank (research/group/parent) is already run by runPremiumReport at assessment time.
-  // Do NOT call it again here — it overwrites the DOM with incorrect data.
+  try { generatePremiumFromBank(_r || {primary:(arch||'').split(' ')[0], intake:int}, _pArch || pa, _sArch || {}, _studentName || ''); } catch(e) { console.warn('prembank:',e); }
   // New premium generators
   generatePeerArchetypes(arch, pa, int).catch(function(e){ console.warn('peer:',e); });
   generateInterviewPrep(arch, pa, int).catch(function(e){ console.warn('interview:',e); });
