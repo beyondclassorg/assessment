@@ -57,17 +57,12 @@
         inlineBtn.style.color = 'rgba(255,255,255,0.3)';
         inlineBtn.style.border = '1.5px solid rgba(201,168,76,0.2)';
         inlineBtn.style.cursor = 'not-allowed';
-        inlineBtn.textContent = '⏳ Waiting for payment — activates in a moment...';
+        inlineBtn.textContent = '⏳ Waiting for payment — click Step 1 above first';
       }
     }
   }
 
   function startStep2Polling() {
-    // Activate reveal buttons after 10 seconds so the student knows to click
-    setTimeout(function() {
-      if (!window._bcPremiumUnlocked) { updateStep2Button(true); }
-    }, 10000);
-    // Also watch for _bcPremiumData in case it loads faster
     var interval = setInterval(function() {
       if (window._bcPremiumData) {
         updateStep2Button(true);
@@ -275,7 +270,7 @@ const ESSAY_ENHANCEMENTS = {Builder:[{ao:"Wharton/Penn essays: show you understa
       '<div style="width:26px;height:26px;border-radius:50%;background:#C8A96E;color:#0F1F3D;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>',
       '<span style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.9)">Purchase Premium Report &mdash; $79</span>',
       '</div>',
-      '<a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" style="display:block;background:linear-gradient(135deg,#C8A96E,#D4B87A);color:#0F1F3D;padding:14px 24px;border-radius:9px;font-weight:700;font-size:15px;text-decoration:none;text-align:center;letter-spacing:.01em">',
+      '<a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" onclick="setTimeout(function(){updateStep2Button(true);},500);" style="display:block;background:linear-gradient(135deg,#C8A96E,#D4B87A);color:#0F1F3D;padding:14px 24px;border-radius:9px;font-weight:700;font-size:15px;text-decoration:none;text-align:center;letter-spacing:.01em">',
       'Pay &amp; Unlock My Report &rarr;</a>',
       '<p style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:10px;text-align:center">Secure checkout &middot; Instant access</p>',
       '</div>',
@@ -293,7 +288,7 @@ const ESSAY_ENHANCEMENTS = {Builder:[{ao:"Wharton/Penn essays: show you understa
       // Code entry divider
       '<div style="border-top:1px solid rgba(0,0,0,0.07);padding-top:14px">',
       '<p style="font-size:12px;color:#7A6F60;margin-bottom:8px">Have a school or student access code? Enter it below.</p>',
-      '<input type="text" placeholder="Enter access code..." style="width:100%;padding:10px 14px;border:1px solid rgba(0,0,0,0.12);border-radius:8px;font-size:13px;box-sizing:border-box;outline:none;margin-bottom:6px;font-family:inherit" oninput="window.checkCounselorCode&&checkCounselorCode(this.value)">',
+      '<input type="text" placeholder="Enter access code (e.g. BC-STU-2026-X4)..." style="width:100%;padding:10px 14px;border:1px solid rgba(0,0,0,0.12);border-radius:8px;font-size:13px;box-sizing:border-box;outline:none;margin-bottom:6px;font-family:inherit" oninput="window.checkCounselorCode&&checkCounselorCode(this.value)">',
       '<div id="modal-code-status" style="font-size:12px;min-height:16px;color:#7A6F60"></div>',
       '</div>',
 
@@ -1191,7 +1186,7 @@ async function renderResults(r) {
             <div style="width:26px;height:26px;border-radius:50%;background:#C8A96E;color:#0F1F3D;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
             <span style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.9);">Purchase your premium report</span>
           </div>
-          <a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" style="display:block;background:linear-gradient(135deg,#C8A96E,#D4B87A);color:#0F1F3D;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;padding:14px 24px;border-radius:9px;text-decoration:none;text-align:center;letter-spacing:.01em;">Pay &amp; Unlock My Report &mdash; $79 &rarr;</a>
+          <a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" onclick="setTimeout(function(){updateStep2Button(true);},500);" style="display:block;background:linear-gradient(135deg,#C8A96E,#D4B87A);color:#0F1F3D;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;padding:14px 24px;border-radius:9px;text-decoration:none;text-align:center;letter-spacing:.01em;">Pay &amp; Unlock My Report &mdash; $79 &rarr;</a>
           <p style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:10px;text-align:center;">One-time payment &middot; Instant access &middot; No subscription</p>
         </div>
 
@@ -1201,7 +1196,7 @@ async function renderResults(r) {
             <div style="width:26px;height:26px;border-radius:50%;background:rgba(201,168,76,0.15);color:rgba(201,168,76,0.7);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid rgba(201,168,76,0.35);">2</div>
             <span style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.7);">Return here &amp; reveal your report</span>
           </div>
-          <button id="inline-reveal-btn" onclick="window.handleStep2Click&&handleStep2Click()" style="width:100%;padding:14px 24px;border-radius:9px;font-size:15px;font-weight:600;border:1.5px solid rgba(201,168,76,0.2);background:rgba(201,168,76,0.07);color:rgba(255,255,255,0.3);cursor:not-allowed;transition:all .3s;font-family:'DM Sans',sans-serif;text-align:center;">&#8987; Waiting for payment &mdash; activates in a moment...</button>
+          <button id="inline-reveal-btn" onclick="window.handleStep2Click&&handleStep2Click()" style="width:100%;padding:14px 24px;border-radius:9px;font-size:15px;font-weight:600;border:1.5px solid rgba(201,168,76,0.2);background:rgba(201,168,76,0.07);color:rgba(255,255,255,0.3);cursor:not-allowed;transition:all .4s;font-family:'DM Sans',sans-serif;text-align:center;">&#8987; Waiting for payment &mdash; click Step 1 above first</button>
           <p style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:8px;text-align:center;">After paying, return to this tab and click the button above.</p>
         </div>
 
@@ -1527,10 +1522,10 @@ function getCollegeMeta(col) {
 
 function filterCollegesByFaith(list, faithPref) {
   if (!faithPref || faithPref === 'no_preference') return list;
-  if (faithPref === 'faith_based') return list; // show all (faith schools included)
   return list.filter(function(col) {
     var m = getCollegeMeta(col);
     var af = m ? m.af : 'secular';
+    if (faithPref === 'faith_based')    return af === 'faith_based' || af === 'strongly_faith' || af === 'affiliated';
     if (faithPref === 'faith_positive') return af !== 'strongly_faith';
     if (faithPref === 'secular')        return af === 'secular';
     return true;
@@ -3011,7 +3006,7 @@ function renderCopyrightFooter() {
   generateActivities(arch, pa, int).catch(function(){});
   generateMentorMatch(arch, pa, int).catch(function(){});
   generateShadowWorkbook(arch, pa, int).catch(function(){});
-  try { generatePremiumFromBank(_r || {primary:arch,intake:int}, _pArch || pa, _sArch || {}, _studentName || ''); } catch(e) { console.warn('prembank:',e); }
+  try { generatePremiumFromBank(_r || {primary:(arch||'').split(' ')[0], intake:int}, _pArch || pa, _sArch || {}, _studentName || ''); } catch(e) { console.warn('prembank:',e); }
   // New premium generators
   generatePeerArchetypes(arch, pa, int).catch(function(e){ console.warn('peer:',e); });
   generateInterviewPrep(arch, pa, int).catch(function(e){ console.warn('interview:',e); });
@@ -4243,6 +4238,7 @@ window.updateRangeLabel        = updateRangeLabel;
 window.saveCollegeFit          = saveCollegeFit;
 window.saveIntake              = saveIntake;
 window.handleStep2Click        = handleStep2Click;
+window.updateStep2Button       = updateStep2Button;
 window.restartAssessment       = restartAssessment;
 window.selectAnswer            = selectAnswer;
 window.saveOpen                = saveOpen;
