@@ -569,7 +569,7 @@ function renderIntakeForm() {
         </label>
         <input class="form-input" id="f-schoolcode"
           placeholder="Enter your counselor's code  -  leave blank if none"
-          oninput="saveIntake(); checkCounselorCode(this.value); if(window._bcValidCodeEntered){ intakeData.schoolcode = this.value; }"
+          oninput="saveIntake(); checkCounselorCode(this.value)"
           style="letter-spacing:0.05em"
         >
         <div id="counselor-code-status" style="font-size:11px;margin-top:6px;display:none"></div>
@@ -3043,7 +3043,7 @@ function renderCopyrightFooter() {
   var prs = document.getElementById('premium-report-section');
   if (prs) prs.style.display = '';
 
-  // Show wrap- sections
+  // Show ALL premium wrap sections
   ['wrap-essays','wrap-careers','wrap-activities','wrap-shadow','wrap-mentor',
    'wrap-research','wrap-group','wrap-parent','wrap-peer','wrap-interview',
    'wrap-recletter','wrap-summer','wrap-counselor'].forEach(function(id) {
@@ -3133,8 +3133,14 @@ function renderCopyrightFooter() {
     }
 
     // Auto-reveal on results page if code matches
-    if (isValid && document.getElementById('premium-report-section')) {
-      setTimeout(function() { revealPremiumContent(); }, 800);
+    if (isValid) {
+      var premSection = document.getElementById('premium-report-section');
+      var ctaSection = document.getElementById('early-premium-cta');
+      if (premSection || ctaSection) {
+        // Hide paywall immediately
+        if (ctaSection) ctaSection.style.display = 'none';
+        setTimeout(function() { revealPremiumContent(); }, 200);
+      }
     }
   }
 
