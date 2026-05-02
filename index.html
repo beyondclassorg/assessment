@@ -569,7 +569,7 @@ function renderIntakeForm() {
         </label>
         <input class="form-input" id="f-schoolcode"
           placeholder="Enter your counselor's code  -  leave blank if none"
-          oninput="saveIntake(); checkCounselorCode(this.value)"
+          oninput="saveIntake(); checkCounselorCode(this.value); if(window._bcValidCodeEntered){ intakeData.schoolcode = this.value; }"
           style="letter-spacing:0.05em"
         >
         <div id="counselor-code-status" style="font-size:11px;margin-top:6px;display:none"></div>
@@ -1235,7 +1235,7 @@ async function renderResults(r) {
       </div>
 
       <!-- P3. RESEARCH PAPER IDEAS -->
-      <div class="results-section">
+      <div class="results-section" id="wrap-research">
         <div class="results-section-title"><span class="rs-icon">🔬</span> Research Paper Ideas</div>
         <div class="ai-section" id="prem-research"><div class="ai-loading"><div class="ai-spinner"></div><span>Generating research paper ideas...</span></div></div>
       </div>
@@ -1247,37 +1247,37 @@ async function renderResults(r) {
       </div>
 
       <!-- P5. GROUP DYNAMICS -->
-      <div class="results-section">
+      <div class="results-section" id="wrap-group">
         <div class="results-section-title"><span class="rs-icon">🤝</span> Group Dynamics</div>
         <div class="ai-section" id="prem-group"><div class="ai-loading"><div class="ai-spinner"></div><span>Mapping your group dynamics profile...</span></div></div>
       </div>
 
       <!-- P6. PEER ARCHETYPES — NEW -->
-      <div class="results-section">
+      <div class="results-section" id="wrap-peer">
         <div class="results-section-title"><span class="rs-icon">🔄</span> How You Work With Every Archetype</div>
         <div class="ai-section" id="prem-peer"><div class="ai-loading"><div class="ai-spinner"></div><span>Mapping your peer archetype dynamics...</span></div></div>
       </div>
 
       <!-- P7. INTERVIEW PREPARATION — NEW -->
-      <div class="results-section">
+      <div class="results-section" id="wrap-interview">
         <div class="results-section-title"><span class="rs-icon">🎤</span> College Interview Preparation</div>
         <div class="ai-section" id="prem-interview"><div class="ai-loading"><div class="ai-spinner"></div><span>Building your interview preparation...</span></div></div>
       </div>
 
       <!-- P8. RECOMMENDATION LETTER GUIDE — NEW -->
-      <div class="results-section">
+      <div class="results-section" id="wrap-recletter">
         <div class="results-section-title"><span class="rs-icon">📝</span> Letters of Recommendation Guide</div>
         <div class="ai-section" id="prem-recletter"><div class="ai-loading"><div class="ai-spinner"></div><span>Building your recommendation letter guide...</span></div></div>
       </div>
 
       <!-- P9. SUMMER PROGRAMS — NEW -->
-      <div class="results-section">
+      <div class="results-section" id="wrap-summer">
         <div class="results-section-title"><span class="rs-icon">☀️</span> Summer Programs Matched to Your Archetype</div>
         <div class="ai-section" id="prem-summer"><div class="ai-loading"><div class="ai-spinner"></div><span>Finding summer programs...</span></div></div>
       </div>
 
       <!-- P10. PARENT GUIDE -->
-      <div class="results-section">
+      <div class="results-section" id="wrap-parent">
         <div class="results-section-title"><span class="rs-icon">👪</span> Parent's Guide</div>
         <div class="ai-section" id="prem-parent"><div class="ai-loading"><div class="ai-spinner"></div><span>Building your parent's guide...</span></div></div>
       </div>
@@ -1289,7 +1289,7 @@ async function renderResults(r) {
       </div>
 
       <!-- P12. COUNSELOR SESSION GUIDE — NEW -->
-      <div class="results-section">
+      <div class="results-section" id="wrap-counselor">
         <div class="results-section-title"><span class="rs-icon">📋</span> Counselor Session Guide</div>
         <div class="ai-section" id="prem-counselor-guide"><div class="ai-loading"><div class="ai-spinner"></div><span>Building your counselor session guide...</span></div></div>
       </div>
@@ -3044,7 +3044,9 @@ function renderCopyrightFooter() {
   if (prs) prs.style.display = '';
 
   // Show wrap- sections
-  ['wrap-essays','wrap-careers','wrap-activities','wrap-shadow','wrap-mentor'].forEach(function(id) {
+  ['wrap-essays','wrap-careers','wrap-activities','wrap-shadow','wrap-mentor',
+   'wrap-research','wrap-group','wrap-parent','wrap-peer','wrap-interview',
+   'wrap-recletter','wrap-summer','wrap-counselor'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.style.display = '';
   });
