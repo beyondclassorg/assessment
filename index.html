@@ -3008,9 +3008,11 @@ function renderCopyrightFooter() {
       var schoolCodeVal = (r.intake && r.intake.schoolcode) || '';
       var liveCodeEl = document.getElementById('f-schoolcode');
       if (liveCodeEl && liveCodeEl.value) schoolCodeVal = liveCodeEl.value;
+      // Also check the flag set when code was typed (most reliable path)
+      if (!schoolCodeVal && window._bcValidCodeEntered) schoolCodeVal = window._bcValidCodeEntered;
       var _sc = schoolCodeVal.trim().toUpperCase(); var hasSchoolCode = _sc === 'BC-PRAC-2026-X4' || _sc === 'BC-STU-2026-X4';
       if (hasSchoolCode) {
-        revealPremiumContent();
+        setTimeout(function() { revealPremiumContent(); }, 300);
       }
 
       // Check tester mode
@@ -3079,6 +3081,9 @@ function renderCopyrightFooter() {
     var isValid = validCodes.indexOf(code) > -1;
     var isCounselor = code === 'BC-PRAC-2026-X4';
 
+    // Store flag at module level so runPremiumReport can read it reliably
+    if (isValid) window._bcValidCodeEntered = code;
+
     // Handle intake form status (assessment page)
     var status = document.getElementById('counselor-code-status');
     if (status) {
@@ -3136,6 +3141,8 @@ function renderCopyrightFooter() {
   function checkCounselorCodeOnResults() {
     var el = document.getElementById('f-schoolcode');
     var val = (el && el.value) ? el.value : (intakeData && intakeData.schoolcode ? intakeData.schoolcode : '');
+    // Also check the typed-code flag as a fallback
+    if (!val && window._bcValidCodeEntered) val = window._bcValidCodeEntered;
     var _cv = val.trim().toUpperCase();
     if (_cv === 'BC-PRAC-2026-X4' || _cv === 'BC-STU-2026-X4') {
       console.log('[BC] Code confirmed on results page - revealing premium');
