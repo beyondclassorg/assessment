@@ -25,20 +25,34 @@
 <script>
 // ── STEP 2 BUTTON STATE MANAGEMENT ───────────────────────────
   function updateStep2Button() {
+    var activated = window._bcPremiumData || window._bcPaidClicked;
+    // Update modal step2-btn
     var btn = document.getElementById('step2-btn');
-    if (!btn) return;
-    if (window._bcPremiumData || window._bcPaidClicked) {
-      btn.style.background = 'var(--gold)';
-      btn.style.color = 'var(--navy)';
-      btn.style.border = '1.5px solid var(--gold)';
-      btn.style.cursor = 'pointer';
-      btn.textContent = '✦ I\'ve Paid — Reveal My Report →';
-    } else {
-      btn.style.background = 'rgba(200,169,110,0.08)';
-      btn.style.color = 'rgba(15,15,36,0.4)';
-      btn.style.border = '1.5px solid rgba(200,169,110,0.2)';
-      btn.style.cursor = 'not-allowed';
-      btn.textContent = '⏳ Generating your report — ready in a few seconds...';
+    if (btn) {
+      if (activated) {
+        btn.style.background = 'var(--gold)';
+        btn.style.color = 'var(--navy)';
+        btn.style.border = '1.5px solid var(--gold)';
+        btn.style.cursor = 'pointer';
+        btn.textContent = '\u2726 I\u2019ve Paid \u2014 Reveal My Report \u2192';
+      } else {
+        btn.style.background = 'rgba(200,169,110,0.08)';
+        btn.style.color = 'rgba(15,15,36,0.4)';
+        btn.style.border = '1.5px solid rgba(200,169,110,0.2)';
+        btn.style.cursor = 'not-allowed';
+        btn.textContent = '\u23f3 Generating your report \u2014 ready in a few seconds...';
+      }
+    }
+    // Update inline reveal button
+    var inlineBtn = document.getElementById('inline-reveal-btn');
+    if (inlineBtn) {
+      if (activated) {
+        inlineBtn.style.background = 'linear-gradient(135deg,#C8A96E,#D4B87A)';
+        inlineBtn.style.color = '#0F1F3D';
+        inlineBtn.style.border = '1.5px solid #C8A96E';
+        inlineBtn.style.cursor = 'pointer';
+        inlineBtn.textContent = '\u2726 I\u2019ve Paid \u2014 Reveal My Report \u2192';
+      }
     }
   }
 
@@ -1139,16 +1153,17 @@ async function renderResults(r) {
         <div style="font-size:28px;margin-bottom:12px">&#10022;</div>
         <h3 style="font-family:'Playfair Display',serif;font-size:clamp(22px,3vw,28px);color:white;margin-bottom:10px;line-height:1.2">Unlock Your Full Premium Report</h3>
         <p style="font-size:14px;color:rgba(255,255,255,0.65);line-height:1.7;max-width:480px;margin:0 auto 24px;">Essay angles &middot; Career deep-dives &middot; Shadow workbook &middot; Interview prep &middot; Rec letter guide &middot; Summer programs &middot; + 4 more sections. One payment, instant access.</p>
-        <a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#C8A96E,#D4B87A);color:var(--navy);font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;padding:15px 40px;border-radius:8px;text-decoration:none;letter-spacing:.02em;margin-bottom:16px">Unlock My Report &mdash; $79 &rarr;</a>
-        <p style="font-size:12px;color:rgba(255,255,255,0.35);">One-time payment &middot; Instant access &middot; No subscription</p>
-        <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:18px;margin-top:18px;">
-          <p style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:10px;">Have a counselor school code? Enter it below for free access.</p>
-          <div style="display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;">
-            <input id="inline-code-input" type="text" placeholder="Enter school code..." style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:9px 14px;color:white;font-family:'DM Sans',sans-serif;font-size:13px;width:220px;outline:none;" oninput="window.checkCounselorCode&&checkCounselorCode(this.value)">
-            <div id="inline-code-status" style="display:none;font-size:13px;color:#4CAF50;font-weight:700;">&#10003; Code verified &mdash; unlocking...</div>
-          </div>
+        <!-- Step 1: Pay -->
+        <div style="margin-bottom:12px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:10px;">Step 1 &mdash; Purchase access</div>
+          <a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" onclick="window._bcPaidClicked=true;setTimeout(function(){if(window.updateStep2Button)updateStep2Button();},500);" style="display:block;background:linear-gradient(135deg,#C8A96E,#D4B87A);color:#0F1F3D;font-family:'DM Sans',sans-serif;font-size:17px;font-weight:700;text-align:center;padding:15px 40px;border-radius:8px;text-decoration:none;letter-spacing:.02em;margin-bottom:8px">Purchase Access &mdash; $79 &rarr;</a>
+          <p style="font-size:12px;color:rgba(255,255,255,0.35);margin:0;">One-time payment &middot; Instant access &middot; No subscription</p>
         </div>
-      </div>
+        <!-- Step 2: Reveal (turns gold after Step 1 clicked) -->
+        <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:16px;margin-top:4px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:10px;">Step 2 &mdash; Reveal your report</div>
+          <button id="inline-reveal-btn" onclick="if(window._bcPaidClicked||window._bcPremiumData){if(window.handleStep2Click)handleStep2Click();}" style="width:100%;padding:14px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;border:1.5px solid rgba(200,169,110,0.3);background:rgba(200,169,110,0.08);color:rgba(255,255,255,0.35);cursor:not-allowed;">&#9203; Complete Step 1 first to activate</button>
+        </div></div>
     </div>
 
   </div>
