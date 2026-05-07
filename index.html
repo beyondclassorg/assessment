@@ -3071,16 +3071,12 @@ function renderCopyrightFooter() {
       if (!code) { inlineStatus.style.display = 'none'; }
       else if (isValid) {
         inlineStatus.style.display = 'block';
-        setTimeout(function() { revealPremiumContent(); }, 800);
       } else {
         inlineStatus.style.display = 'none';
       }
     }
 
-    // Auto-reveal on results page if code matches
-    if (isValid && document.getElementById('premium-report-section')) {
-      setTimeout(function() { revealPremiumContent(); }, 800);
-    }
+    // Auto-reveal handled by checkCounselorCodeOnResults after data loads
   }
 
   // ── STANDALONE COUNSELOR CODE CHECK ─────────────────────────
