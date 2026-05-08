@@ -25,34 +25,29 @@
 <script>
 // ── STEP 2 BUTTON STATE MANAGEMENT ───────────────────────────
   function updateStep2Button() {
-    var activated = window._bcPremiumData || window._bcPaidClicked;
-    // Update modal step2-btn
     var btn = document.getElementById('step2-btn');
-    if (btn) {
-      if (activated) {
-        btn.style.background = 'var(--gold)';
-        btn.style.color = 'var(--navy)';
-        btn.style.border = '1.5px solid var(--gold)';
-        btn.style.cursor = 'pointer';
-        btn.textContent = '\u2726 I\u2019ve Paid \u2014 Reveal My Report \u2192';
-      } else {
-        btn.style.background = 'rgba(200,169,110,0.08)';
-        btn.style.color = 'rgba(15,15,36,0.4)';
-        btn.style.border = '1.5px solid rgba(200,169,110,0.2)';
-        btn.style.cursor = 'not-allowed';
-        btn.textContent = '\u23f3 Generating your report \u2014 ready in a few seconds...';
-      }
+    if (!btn) return;
+    if (window._bcPremiumData || window._bcPaidClicked) {
+      btn.style.background = 'var(--gold)';
+      btn.style.color = 'var(--navy)';
+      btn.style.border = '1.5px solid var(--gold)';
+      btn.style.cursor = 'pointer';
+      btn.textContent = '✦ I\'ve Paid — Reveal My Report →';
+    } else {
+      btn.style.background = 'rgba(200,169,110,0.08)';
+      btn.style.color = 'rgba(15,15,36,0.4)';
+      btn.style.border = '1.5px solid rgba(200,169,110,0.2)';
+      btn.style.cursor = 'not-allowed';
+      btn.textContent = '⏳ Generating your report — ready in a few seconds...';
     }
     // Update inline reveal button
-    var inlineBtn = document.getElementById('inline-reveal-btn');
-    if (inlineBtn) {
-      if (activated) {
-        inlineBtn.style.background = 'linear-gradient(135deg,#C8A96E,#D4B87A)';
-        inlineBtn.style.color = '#0F1F3D';
-        inlineBtn.style.border = '1.5px solid #C8A96E';
-        inlineBtn.style.cursor = 'pointer';
-        inlineBtn.textContent = '\u2726 I\u2019ve Paid \u2014 Reveal My Report \u2192';
-      }
+    var ib = document.getElementById('inline-reveal-btn');
+    if (ib && (window._bcPremiumData || window._bcPaidClicked)) {
+      ib.style.background = 'linear-gradient(135deg,#C8A96E,#D4B87A)';
+      ib.style.color = '#0F1F3D';
+      ib.style.border = '1.5px solid #C8A96E';
+      ib.style.cursor = 'pointer';
+      ib.textContent = '✦ I’ve Paid — Reveal My Report →';
     }
   }
 
@@ -251,22 +246,42 @@ const ESSAY_ENHANCEMENTS = {Builder:[{ao:"Wharton/Penn essays: show you understa
     var modal = document.getElementById('premium-modal');
     if (!modal) return;
     modal.innerHTML = [
-      '<div style="position:fixed;inset:0;background:rgba(15,31,61,0.75);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px">',
-      '<div style="background:white;border-radius:20px;padding:36px 32px;max-width:460px;width:100%;text-align:center;position:relative;box-shadow:0 24px 80px rgba(0,0,0,0.3)">',
-      '<button onclick="document.getElementById(\'premium-modal\').style.display=\'none\'" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;line-height:1">&#215;</button>',
-      '<div style="font-size:32px;margin-bottom:12px">&#10022;</div>',
-      '<h3 style="font-family:Georgia,serif;font-size:24px;color:var(--navy);margin-bottom:8px">Unlock Your Full Report</h3>',
-      '<p style="font-size:14px;color:var(--text-mid);line-height:1.65;margin-bottom:28px">Essay angles &middot; Career deep-dives &middot; Shadow workbook &middot; Interview prep &middot; Rec letter guide &middot; Summer programs &middot; and more.</p>',
-      '<div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-light);margin-bottom:14px">Step 1 &mdash; Purchase access</div>',
-      '<a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" onclick="window._bcPaidClicked=true;updateStep2Button();" style="display:block;background:linear-gradient(135deg,#C8A96E,#D4B87A);color:#0F1F3D;padding:15px 24px;border-radius:10px;font-weight:700;font-size:15px;text-decoration:none;margin-bottom:20px;">Purchase Access &mdash; $79 &rarr;</a>',
-      '<div style="height:1px;background:rgba(0,0,0,0.07);margin-bottom:18px"></div>',
-      '<div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-light);margin-bottom:12px">Step 2 &mdash; Reveal your report</div>',
-      '<button id="step2-btn" onclick="handleStep2Click()" style="width:100%;padding:15px 24px;border-radius:10px;font-size:15px;font-weight:600;border:1.5px solid rgba(200,169,110,0.2);background:rgba(200,169,110,0.06);color:rgba(15,15,36,0.4);cursor:not-allowed;transition:all .3s">&#8987; Your report is generating &mdash; button activates in seconds...</button>',
-      '<div style="margin-top:18px;padding-top:16px;border-top:1px solid rgba(0,0,0,0.06)">',
-      '<p style="font-size:12px;color:var(--text-light);margin-bottom:8px">Already paid? Enter your access code below.</p>',
-      '<input type="text" placeholder="Enter access code..." style="width:100%;padding:10px 14px;border:1px solid rgba(0,0,0,0.12);border-radius:8px;font-size:13px;box-sizing:border-box;outline:none;margin-bottom:6px" oninput="window.checkCounselorCode&&checkCounselorCode(this.value)">',
-      '<div id="modal-code-status" style="font-size:12px;min-height:16px;color:var(--text-light)"></div>',
-      '</div></div></div>'
+      '<div style="position:fixed;inset:0;background:rgba(15,31,61,0.80);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px">',
+      '<div style="background:white;border-radius:20px;padding:36px 32px;max-width:480px;width:100%;text-align:center;position:relative;box-shadow:0 24px 80px rgba(0,0,0,0.35)">',
+      '<button onclick="document.getElementById(\'premium-modal\').style.display=\'none\'" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:rgba(0,0,0,0.35);line-height:1">&#215;</button>',
+      '<div style="font-size:30px;margin-bottom:10px">&#10022;</div>',
+      '<h3 style="font-family:Georgia,serif;font-size:23px;color:#0F1F3D;margin-bottom:6px">Unlock Your Full Report</h3>',
+      '<p style="font-size:13px;color:#7A6F60;line-height:1.6;margin-bottom:24px">Essay angles &middot; Career deep-dives &middot; Shadow workbook &middot; Interview prep &middot; Rec letter guide &middot; Summer programs &middot; and more.</p>',
+
+      // Step 1 box
+      '<div style="background:#0F1F3D;border-radius:12px;padding:20px 20px 18px;margin-bottom:12px;text-align:left">',
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">',
+      '<div style="width:26px;height:26px;border-radius:50%;background:#C8A96E;color:#0F1F3D;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>',
+      '<span style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.9)">Purchase Premium Report &mdash; $79</span>',
+      '</div>',
+      '<a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" onclick="setTimeout(function(){if(window.updateStep2Button)updateStep2Button(true);},500);" style="display:block;background:linear-gradient(135deg,#C8A96E,#D4B87A);color:#0F1F3D;padding:14px 24px;border-radius:9px;font-weight:700;font-size:15px;text-decoration:none;text-align:center;letter-spacing:.01em">',
+      'Pay &amp; Unlock My Report &rarr;</a>',
+      '<p style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:10px;text-align:center">Secure checkout &middot; Instant access</p>',
+      '</div>',
+
+      // Step 2 box
+      '<div style="background:#FAF7F2;border:1.5px solid rgba(200,169,110,0.25);border-radius:12px;padding:20px 20px 18px;margin-bottom:16px;text-align:left">',
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">',
+      '<div style="width:26px;height:26px;border-radius:50%;background:rgba(200,169,110,0.15);color:#8B6914;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid rgba(200,169,110,0.4)">2</div>',
+      '<span style="font-size:13px;font-weight:600;color:#4A4035">Return here &amp; reveal your report</span>',
+      '</div>',
+      '<button id="step2-btn" onclick="handleStep2Click()" style="width:100%;padding:14px 24px;border-radius:9px;font-size:15px;font-weight:600;border:1.5px solid rgba(200,169,110,0.2);background:rgba(200,169,110,0.07);color:rgba(15,15,36,0.35);cursor:not-allowed;transition:all .3s;text-align:center">&#8987; Waiting for payment &mdash; activates after checkout</button>',
+      '<p style="font-size:11px;color:#7A6F60;margin-top:8px;text-align:center">After paying, return to this tab and click the button above.</p>',
+      '</div>',
+
+      // Code entry divider
+      '<div style="border-top:1px solid rgba(0,0,0,0.07);padding-top:14px">',
+      '<p style="font-size:12px;color:#7A6F60;margin-bottom:8px">Have a school or student access code? Enter it below.</p>',
+      '<input type="text" placeholder="Enter access code (e.g. BC-STU-2026-X4)..." style="width:100%;padding:10px 14px;border:1px solid rgba(0,0,0,0.12);border-radius:8px;font-size:13px;box-sizing:border-box;outline:none;margin-bottom:6px;font-family:inherit" oninput="window.checkCounselorCode&&checkCounselorCode(this.value)">',
+      '<div id="modal-code-status" style="font-size:12px;min-height:16px;color:#7A6F60"></div>',
+      '</div>',
+
+      '</div></div>'
     ].join('');
     modal.style.display = 'block';
     updateStep2Button();
@@ -1154,16 +1169,106 @@ async function renderResults(r) {
         <h3 style="font-family:'Playfair Display',serif;font-size:clamp(22px,3vw,28px);color:white;margin-bottom:10px;line-height:1.2">Unlock Your Full Premium Report</h3>
         <p style="font-size:14px;color:rgba(255,255,255,0.65);line-height:1.7;max-width:480px;margin:0 auto 24px;">Essay angles &middot; Career deep-dives &middot; Shadow workbook &middot; Interview prep &middot; Rec letter guide &middot; Summer programs &middot; + 4 more sections. One payment, instant access.</p>
         <!-- Step 1: Pay -->
-        <div style="margin-bottom:12px;">
-          <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:10px;">Step 1 &mdash; Purchase access</div>
-          <a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" onclick="window._bcPaidClicked=true;setTimeout(function(){if(window.updateStep2Button)updateStep2Button();},500);" style="display:block;background:linear-gradient(135deg,#C8A96E,#D4B87A);color:#0F1F3D;font-family:'DM Sans',sans-serif;font-size:17px;font-weight:700;text-align:center;padding:15px 40px;border-radius:8px;text-decoration:none;letter-spacing:.02em;margin-bottom:8px">Purchase Access &mdash; $79 &rarr;</a>
-          <p style="font-size:12px;color:rgba(255,255,255,0.35);margin:0;">One-time payment &middot; Instant access &middot; No subscription</p>
+        <div style="margin-bottom:16px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:12px;">Step 1 &mdash; Purchase access</div>
+          <a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" onclick="window._bcPaidClicked=true;setTimeout(function(){if(window.updateStep2Button)updateStep2Button();},500);" style="display:block;background:linear-gradient(135deg,#C8A96E,#D4B87A);color:#0F1F3D;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;text-align:center;padding:15px 40px;border-radius:8px;text-decoration:none;letter-spacing:.02em;margin-bottom:10px">Purchase Access &mdash; $79 &rarr;</a>
+          <p style="font-size:12px;color:var(--text-light);">One-time payment &middot; Instant access &middot; No subscription</p>
         </div>
         <!-- Step 2: Reveal (turns gold after Step 1 clicked) -->
-        <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:16px;margin-top:4px;">
-          <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:10px;">Step 2 &mdash; Reveal your report</div>
-          <button id="inline-reveal-btn" onclick="if(window._bcPaidClicked||window._bcPremiumData){if(window.handleStep2Click)handleStep2Click();}" style="width:100%;padding:14px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;border:1.5px solid rgba(200,169,110,0.3);background:rgba(200,169,110,0.08);color:rgba(255,255,255,0.35);cursor:not-allowed;">&#9203; Complete Step 1 first to activate</button>
-        </div></div>
+        <div style="border-top:1px solid rgba(200,169,110,0.15);padding-top:20px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:12px;">Step 2 &mdash; Reveal your report</div>
+          <button id="inline-reveal-btn" onclick="if(window._bcPaidClicked||window._bcPremiumData){if(window.handleStep2Click)handleStep2Click();}" style="width:100%;padding:15px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;border:1.5px solid rgba(200,169,110,0.25);background:rgba(200,169,110,0.06);color:var(--text-light);cursor:not-allowed;transition:all .3s ease;">&#9203; Complete Step 1 first to activate this button</button>
+        </div>
+<div id="early-premium-cta">
+  <div style="max-width:860px;margin:0 auto;padding:0 32px;">
+
+    <!-- Section header -->
+    <div style="text-align:center;padding:48px 0 32px;">
+      <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);border-radius:40px;padding:6px 18px;margin-bottom:20px">
+        <span style="font-size:16px">&#10022;</span>
+        <span style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)">Premium Report &mdash; 10 Additional Sections</span>
+      </div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:clamp(26px,4vw,36px);color:var(--navy);margin-bottom:12px;line-height:1.2">Your report goes deeper.<br>Much deeper.</h2>
+      <p style="font-size:15px;color:var(--text-mid);line-height:1.7;max-width:520px;margin:0 auto">The full premium report unlocks personalized guidance built specifically around your archetype and your answers.</p>
+    </div>
+
+    <!-- What's inside preview cards -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:28px;">
+      <div style="background:white;border:1px solid rgba(0,0,0,0.07);border-radius:12px;padding:18px 20px;border-left:3px solid var(--gold)">
+        <div style="font-size:20px;margin-bottom:8px">&#9997;&#65039;</div>
+        <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px">15 Essay Angles</div>
+        <div style="font-size:12px;color:var(--text-light);line-height:1.5">Archetype-specific essay prompts with opening lines, pre-writing questions, and common mistakes to avoid.</div>
+      </div>
+      <div style="background:white;border:1px solid rgba(0,0,0,0.07);border-radius:12px;padding:18px 20px;border-left:3px solid var(--navy)">
+        <div style="font-size:20px;margin-bottom:8px">&#128188;</div>
+        <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px">Career Deep-Dives</div>
+        <div style="font-size:12px;color:var(--text-light);line-height:1.5">Day-in-the-life breakdowns, salary ranges by region, AI risk ratings, and career paths matched to your archetype.</div>
+      </div>
+      <div style="background:white;border:1px solid rgba(0,0,0,0.07);border-radius:12px;padding:18px 20px;border-left:3px solid var(--gold)">
+        <div style="font-size:20px;margin-bottom:8px">&#127762;</div>
+        <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px">Shadow Workbook</div>
+        <div style="font-size:12px;color:var(--text-light);line-height:1.5">Deep reflection prompts, a shadow story, and a parent guide for your specific archetype pattern.</div>
+      </div>
+      <div style="background:white;border:1px solid rgba(0,0,0,0.07);border-radius:12px;padding:18px 20px;border-left:3px solid var(--navy)">
+        <div style="font-size:20px;margin-bottom:8px">&#127908;</div>
+        <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px">Interview Prep</div>
+        <div style="font-size:12px;color:var(--text-light);line-height:1.5">The 3 questions every admissions interviewer asks your archetype &mdash; with exact answer frameworks and mistakes to avoid.</div>
+      </div>
+      <div style="background:white;border:1px solid rgba(0,0,0,0.07);border-radius:12px;padding:18px 20px;border-left:3px solid var(--gold)">
+        <div style="font-size:20px;margin-bottom:8px">&#128221;</div>
+        <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px">Rec Letter Guide</div>
+        <div style="font-size:12px;color:var(--text-light);line-height:1.5">Who to ask, what to brief them on, and a template they can customize &mdash; matched to your archetype strengths.</div>
+      </div>
+      <div style="background:white;border:1px solid rgba(0,0,0,0.07);border-radius:12px;padding:18px 20px;border-left:3px solid var(--navy)">
+        <div style="font-size:20px;margin-bottom:8px">&#9728;&#65039;</div>
+        <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px">Summer Programs</div>
+        <div style="font-size:12px;color:var(--text-light);line-height:1.5">6 archetype-matched summer programs with cost ratings, descriptions, and direct links &mdash; curated for your calling.</div>
+      </div>
+      <div style="background:white;border:1px solid rgba(0,0,0,0.07);border-radius:12px;padding:18px 20px;border-left:3px solid var(--gold)">
+        <div style="font-size:20px;margin-bottom:8px">&#128260;</div>
+        <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px">Peer Archetype Dynamics</div>
+        <div style="font-size:12px;color:var(--text-light);line-height:1.5">How your archetype works with each of the other 7 &mdash; best collaborators, tension points, and what to learn from each.</div>
+      </div>
+      <div style="background:white;border:1px solid rgba(0,0,0,0.07);border-radius:12px;padding:18px 20px;border-left:3px solid var(--navy)">
+        <div style="font-size:20px;margin-bottom:8px">&#128203;</div>
+        <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px">Counselor Session Guide</div>
+        <div style="font-size:12px;color:var(--text-light);line-height:1.5">5-session roadmap for counselors to use this report across the year &mdash; goals, agendas, and between-session homework.</div>
+      </div>
+    </div>
+
+    <!-- Blurred sample content -->
+    <div style="position:relative;border-radius:14px;overflow:hidden;margin-bottom:32px;border:1px solid rgba(0,0,0,0.07);">
+      <div style="filter:blur(5px);user-select:none;pointer-events:none;padding:28px;background:white;">
+        <div style="font-size:11px;font-weight:700;color:#2d6a4f;background:rgba(45,106,79,0.1);display:inline-block;padding:4px 10px;border-radius:6px;margin-bottom:14px">Sample &mdash; Essay Angles</div>
+        <div style="background:var(--cream);border-radius:10px;padding:16px;margin-bottom:12px;border-left:3px solid var(--gold)">
+          <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px">The thing I built that did not exist before</div>
+          <div style="font-size:13px;color:var(--text-mid);font-style:italic;margin-bottom:8px">"The first time I realized I was a builder was not when the project launched — it was the night before, when everyone else had gone home."</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div style="background:#E8F5EE;color:#2d6a4f;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">Why this works</div>
+            <div style="background:#FDF3E0;color:#8B5E00;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">Common mistake</div>
+            <div style="background:#E8F0FE;color:#1A56DB;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">Best prompt fit</div>
+          </div>
+        </div>
+        <div style="background:var(--cream);border-radius:10px;padding:16px;border-left:3px solid var(--navy)">
+          <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px">The problem I could not walk past</div>
+          <div style="font-size:13px;color:var(--text-mid);font-style:italic">"There was a gap in the system that everyone seemed to accept. Every week I walked past it..."</div>
+        </div>
+      </div>
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(250,248,243,0.2) 0%,rgba(250,248,243,0.92) 65%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:24px;">
+        <div style="background:var(--navy);color:rgba(255,255,255,0.75);font-size:12px;font-weight:600;padding:8px 20px;border-radius:20px;border:1px solid rgba(201,168,76,0.3);margin-bottom:16px;letter-spacing:.04em">&#128274; Unlock to read your personalized essay angles</div>
+      </div>
+    </div>
+
+    <!-- Main unlock CTA -->
+    <div style="background:linear-gradient(135deg,var(--navy) 0%,#1a2d5a 100%);border-radius:16px;padding:36px 32px;text-align:center;border:1px solid rgba(201,168,76,0.25);margin-bottom:48px;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,0.12) 0%,transparent 60%);pointer-events:none;"></div>
+      <div style="position:relative;z-index:2;">
+        <div style="font-size:28px;margin-bottom:12px">&#10022;</div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:clamp(22px,3vw,28px);color:white;margin-bottom:10px;line-height:1.2">Unlock Your Full Premium Report</h3>
+        <p style="font-size:14px;color:rgba(255,255,255,0.65);line-height:1.7;max-width:480px;margin:0 auto 24px;">Essay angles &middot; Career deep-dives &middot; Shadow workbook &middot; Interview prep &middot; Rec letter guide &middot; Summer programs &middot; + 4 more sections. One payment, instant access.</p>
+        <a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" onclick="setTimeout(function(){if(window.updateStep2Button)updateStep2Button(true);},500);" style="display:inline-block;background:linear-gradient(135deg,#C8A96E,#D4B87A);color:var(--navy);font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;padding:15px 40px;border-radius:8px;text-decoration:none;letter-spacing:.02em;margin-bottom:16px">Unlock My Report &mdash; $79 &rarr;</a>
+        <p style="font-size:12px;color:rgba(255,255,255,0.35);">One-time payment &middot; Instant access &middot; No subscription</p>
+      </div>
     </div>
 
   </div>
@@ -1258,7 +1363,7 @@ async function renderResults(r) {
         <h3 style="font-size:20px;color:var(--navy);margin-bottom:8px">Unlock Premium Report</h3>
         <p style="font-size:14px;color:var(--text-mid);margin-bottom:20px">Enter your counselor school code or purchase access to unlock all premium sections.</p>
         <input id="premium-code-input" style="width:100%;padding:10px 14px;border:1px solid rgba(0,0,0,0.15);border-radius:8px;font-size:14px;margin-bottom:12px;box-sizing:border-box" placeholder="Enter counselor code..." oninput="window.checkPremiumCode&&checkPremiumCode(this.value)">
-        <a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" style="display:block;background:var(--gold);color:var(--navy);padding:12px 24px;border-radius:8px;font-weight:700;font-size:14px;text-decoration:none;margin-bottom:8px">Purchase Access — $79 →</a>
+        <a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" onclick="setTimeout(function(){if(window.updateStep2Button)updateStep2Button(true);},500);" style="display:block;background:var(--gold);color:var(--navy);padding:12px 24px;border-radius:8px;font-weight:700;font-size:14px;text-decoration:none;margin-bottom:8px">Purchase Access — $79 →</a>
         <button onclick="document.getElementById('premium-overlay').style.display='none'" style="background:none;border:none;color:var(--text-light);font-size:13px;cursor:pointer">Close</button>
       </div>
     </div>
@@ -2706,6 +2811,7 @@ function renderCopyrightFooter() {
 
       // Store data for later access
       window._bcPremiumData = premData;
+      renderPremiumBankContent(premData);
 
       // ── WRITE PREMIUM CONTENT INTO DOM ──────────────────────
       var S = 'style=', Q = '"';
@@ -2966,6 +3072,9 @@ function renderCopyrightFooter() {
       if (hasSchoolCode) {
         revealPremiumContent();
       }
+      ['wrap-research','wrap-group','wrap-parent'].forEach(function(id){
+        var el=document.getElementById(id); if(el) el.style.display='';
+      });
 
       // Check tester mode
       checkTesterMode();
@@ -2981,6 +3090,95 @@ function renderCopyrightFooter() {
   }
 
   // ── REVEAL PREMIUM CONTENT  -  removes overlay, content already in DOM ──
+  function renderPremiumBankContent(premData) {
+    if (!premData) return;
+    var S = 'style=', Q = '"';
+    var card = 'background:white;border-radius:12px;padding:22px 24px;border:1px solid rgba(200,169,110,0.18);margin-bottom:16px';
+    var sectionHead = "font-family:'Playfair Display',serif;font-size:20px;color:var(--navy);font-weight:500;margin-bottom:6px";
+    var sectionSub = 'font-size:12px;color:var(--text-light);margin-bottom:20px;font-style:italic';
+    var label = 'font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:6px';
+    var body = 'font-size:13px;color:var(--text-mid);line-height:1.75';
+    var title = 'font-size:15px;font-weight:700;color:var(--navy);margin-bottom:8px';
+    var divider = '<div style="height:1px;background:rgba(200,169,110,0.12);margin:16px 0"></div>';
+
+    function section(icon, heading, subtext, contentHtml) {
+      return '<div style="margin-bottom:40px">' +
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">' +
+        '<span style="font-size:22px">' + icon + '</span>' +
+        '<div ' + S + Q + sectionHead + Q + '>' + heading + '</div></div>' +
+        '<div ' + S + Q + sectionSub + Q + '>' + subtext + '</div>' +
+        contentHtml + '</div>';
+    }
+    function pCard(num, content) {
+      return '<div ' + S + Q + card + Q + '>' +
+        '<div ' + S + Q + label + Q + '>' + num + '</div>' +
+        content + '</div>';
+    }
+
+    // RESEARCH PAPER IDEAS
+    var resEl = document.getElementById('prem-research');
+    if (resEl && premData.researchPapers && premData.researchPapers.length) {
+      resEl.innerHTML = section('📝', 'Research Paper Ideas',
+        'Three academic angles matched to your archetype and interests.',
+        premData.researchPapers.map(function(p, i) {
+          return pCard('Research Topic ' + (i+1),
+            (p.field ? '<div style="display:inline-block;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:10px;background:rgba(200,169,110,0.12);color:var(--gold);margin-bottom:10px">' + p.field + '</div>' : '') +
+            '<div ' + S + Q + title + Q + '>' + (p.title||'') + '</div>' +
+            '<div ' + S + Q + body + Q + '>' + (p.angle||'') + '</div>' +
+            (p.startingPoint ? divider + '<div ' + S + Q + label + Q + '>Where to start</div><div style="font-size:12px;color:var(--navy);line-height:1.6">' + p.startingPoint + '</div>' : '')
+          );
+        }).join('')
+      );
+    }
+
+    // GROUP DYNAMICS
+    var groupEl = document.getElementById('prem-group');
+    if (groupEl && premData.groupDynamics) {
+      var gd = premData.groupDynamics;
+      groupEl.innerHTML = section('🤝', 'Your Group Dynamics Guide',
+        'How you naturally show up in teams, what you bring, and where friction happens.',
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">' +
+        '<div ' + S + Q + card + Q + '><div ' + S + Q + label + Q + '>Your Natural Role</div><div style="font-size:13px;color:var(--navy);font-weight:600;line-height:1.5">' + (gd.naturalRole||'') + '</div></div>' +
+        '<div ' + S + Q + card + Q + '><div ' + S + Q + label + Q + '>What You Uniquely Bring</div><div ' + S + Q + body + Q + '>' + (gd.contribution||'') + '</div></div>' +
+        '</div>' +
+        (gd.conflictPoints ? '<div ' + S + Q + card + ';margin-bottom:16px' + Q + '><div ' + S + Q + label + Q + '>Where Friction Happens</div><div ' + S + Q + body + Q + '>' + gd.conflictPoints + '</div></div>' : '') +
+        (gd.workingWithOthers && gd.workingWithOthers.length ? '<div ' + S + Q + card + ';margin-bottom:16px' + Q + '><div ' + S + Q + label + Q + '>Working With Other Archetypes</div>' +
+        gd.workingWithOthers.map(function(w) {
+          return '<div style="padding:12px 0;border-bottom:1px solid rgba(200,169,110,0.1)"><div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">' + (w.archetype||'') + '</div><div ' + S + Q + body + Q + '>' + (w.dynamic||'') + '</div></div>';
+        }).join('') + '</div>' : '') +
+        (gd.leadershipStyle ? '<div ' + S + Q + card + ';margin-bottom:16px' + Q + '><div ' + S + Q + label + Q + '>Your Leadership Style</div><div ' + S + Q + body + Q + '>' + gd.leadershipStyle + '</div></div>' : '') +
+        (gd.interviewAnswer ? '<div style="background:var(--navy);border-radius:12px;padding:22px 24px;margin-bottom:16px"><div ' + S + Q + label + Q + '>Coached Interview Answer</div><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:12px">"Tell me about a time you worked on a team"</div><div style="font-size:14px;color:rgba(255,255,255,0.9);line-height:1.8;font-style:italic">"' + gd.interviewAnswer + '"</div></div>' : '')
+      );
+    }
+
+    // PARENT GUIDE
+    var parentEl = document.getElementById('prem-parent');
+    if (parentEl && premData.parentGuide) {
+      var pg = premData.parentGuide;
+      var cs = pg.conversationScript || {};
+      parentEl.innerHTML = section('👨‍👩‍👧', 'Parent Conversation Guide',
+        'A practical guide to understanding how your student is wired and how to talk about college.',
+        '<div ' + S + Q + card + Q + '><div ' + S + Q + label + Q + '>What This Looks Like at Home</div><div ' + S + Q + body + Q + '>' + (pg.whatThisLooksLike||'') + '</div></div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">' +
+        '<div ' + S + Q + card + Q + '><div ' + S + Q + label + Q + '>Questions to Ask</div>' +
+        (pg.questionsToAsk||[]).map(function(q) { return '<div style="font-size:13px;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(200,169,110,0.1);line-height:1.5">"' + q + '"</div>'; }).join('') + '</div>' +
+        '<div style="display:flex;flex-direction:column;gap:12px">' +
+        '<div ' + S + Q + card + Q + '><div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#B91C1C;margin-bottom:8px">Phrases to Avoid</div>' +
+        (pg.phrasesToAvoid||[]).map(function(p) { return '<div style="font-size:12px;color:#7F1D1D;padding:5px 0;border-bottom:1px solid #FEE2E2;line-height:1.5">' + p + '</div>'; }).join('') + '</div>' +
+        '<div ' + S + Q + card + Q + '><div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#14532D;margin-bottom:8px">Try Instead</div>' +
+        (pg.phrasesToUse||[]).map(function(p) { return '<div style="font-size:12px;color:#166534;padding:5px 0;border-bottom:1px solid #D1FAE5;line-height:1.5">' + p + '</div>'; }).join('') + '</div>' +
+        '</div></div>' +
+        (pg.whatTheyNeedFromYou ? '<div ' + S + Q + card + ';margin-bottom:16px' + Q + '><div ' + S + Q + label + Q + '>What Your Student Needs From You</div><div ' + S + Q + body + Q + '>' + pg.whatTheyNeedFromYou + '</div></div>' : '') +
+        (cs.setup ? '<div style="background:rgba(200,169,110,0.06);border-radius:12px;padding:22px 24px;border:1px solid rgba(200,169,110,0.2)">' +
+        '<div ' + S + Q + label + Q + '>Sample Conversation</div><div style="font-size:11px;color:var(--text-light);margin-bottom:16px">' + cs.setup + '</div>' +
+        (cs.parentOpener ? '<div style="margin-bottom:12px"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:4px">Parent</div><div style="font-size:13px;color:var(--text-mid);font-style:italic;line-height:1.6">"' + cs.parentOpener + '"</div></div>' : '') +
+        (cs.studentResponse ? '<div style="margin-bottom:12px"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:4px">Student</div><div style="font-size:13px;color:var(--text-mid);font-style:italic;line-height:1.6">"' + cs.studentResponse + '"</div></div>' : '') +
+        (cs.parentFollowUp ? '<div><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:4px">Parent follow-up</div><div style="font-size:13px;color:var(--text-mid);font-style:italic;line-height:1.6">"' + cs.parentFollowUp + '"</div></div>' : '') +
+        '</div>' : '')
+      );
+    }
+  }
+
   function revealPremiumContent() {
   if (window._bcPremiumUnlocked) return;
   window._bcPremiumUnlocked = true;
@@ -3014,7 +3212,7 @@ function renderCopyrightFooter() {
   generateActivities(arch, pa, int).catch(function(){});
   generateMentorMatch(arch, pa, int).catch(function(){});
   generateShadowWorkbook(arch, pa, int).catch(function(){});
-  try { generatePremiumFromBank(arch, pa, int); } catch(e) { console.warn('prembank:',e); }
+  if (window._bcPremiumData) { try { renderPremiumBankContent(window._bcPremiumData); } catch(e){} }
   // New premium generators
   generatePeerArchetypes(arch, pa, int).catch(function(e){ console.warn('peer:',e); });
   generateInterviewPrep(arch, pa, int).catch(function(e){ console.warn('interview:',e); });
@@ -3074,12 +3272,13 @@ function renderCopyrightFooter() {
       if (!code) { inlineStatus.style.display = 'none'; }
       else if (isValid) {
         inlineStatus.style.display = 'block';
+        setTimeout(function() { revealPremiumContent(); }, 800);
       } else {
         inlineStatus.style.display = 'none';
       }
     }
 
-    // Auto-reveal handled by checkCounselorCodeOnResults after data loads
+    // revealPremiumContent called by runPremiumReport after data loads
   }
 
   // ── STANDALONE COUNSELOR CODE CHECK ─────────────────────────
@@ -3088,8 +3287,9 @@ function renderCopyrightFooter() {
     var el = document.getElementById('f-schoolcode');
     var val = (el && el.value) ? el.value : (intakeData && intakeData.schoolcode ? intakeData.schoolcode : '');
     if (!val && window._bcValidCodeEntered) val = window._bcValidCodeEntered;
-    if (val.trim().toUpperCase() === 'BC-PRAC-2026-X4' || val.trim().toUpperCase() === 'BC-STU-2026-X4') {
-      console.log('[BC] Counselor code confirmed on results page - revealing premium');
+    var _cv = val.trim().toUpperCase();
+    if (_cv === 'BC-PRAC-2026-X4' || _cv === 'BC-STU-2026-X4') {
+      console.log('[BC] Code confirmed on results page - revealing premium');
       setTimeout(function() { revealPremiumContent(); }, 500);
     }
   }
@@ -4239,10 +4439,27 @@ window.showPremiumModal        = showPremiumModal;
 window.copyResults             = copyResults;
 window.validateCoppaForm       = validateCoppaForm;
 window.startAssessmentFromMsIntro = startAssessmentFromMsIntro;
-function updateRangeLabel(el,id,labels){var o=document.getElementById(id);if(o)o.textContent=labels[(parseInt(el.value)||1)-1]||"";}window.updateRangeLabel=updateRangeLabel;
+function updateRangeLabel(el, id, labels) {
+    var out = document.getElementById(id);
+    if (out) out.textContent = labels[(parseInt(el.value)||1)-1] || '';
+  }
+  window.updateRangeLabel        = updateRangeLabel;
 window.saveCollegeFit          = saveCollegeFit;
 window.saveIntake              = saveIntake;
-window.handleStep2Click        = handleStep2Click;
+function updateStep2Button(activate) {
+    ['step2-btn','inline-reveal-btn'].forEach(function(id) {
+      var btn = document.getElementById(id);
+      if (btn && activate) {
+        btn.style.background = 'linear-gradient(135deg,#C8A96E,#D4B87A)';
+        btn.style.color = '#0F1F3D';
+        btn.style.border = '1.5px solid #C8A96E';
+        btn.style.cursor = 'pointer';
+        btn.textContent = '✦ Reveal My Report →';
+      }
+    });
+  }
+  window.updateStep2Button       = updateStep2Button;
+  window.handleStep2Click        = handleStep2Click;
 window.restartAssessment       = restartAssessment;
 window.selectAnswer            = selectAnswer;
 window.saveOpen                = saveOpen;
