@@ -1276,8 +1276,11 @@ async function renderResults(r) {
   const intake = r.intake;
   _archProfile = archProfile;
   _pArch = pArch;
+  _sArch = sArch;
   _intake = intake;
   _cfPrefs = cfPrefs;
+  _r = r;
+  _studentName = studentName;
 
   showScreen('screen-results');
   setTimeout(initScrollIndicator, 300);
