@@ -873,7 +873,7 @@ function nextSection() {
     renderSection(currentSection + 1);
   } catch(e) { console.error("nextSection error:", e); }
 }
-function submitAssessment() { showScreen('screen-loading'); runLoadingSequence(); }
+function submitAssessment() { saveIntake(); saveCollegeFit(); showScreen('screen-loading'); runLoadingSequence(); }
 
 function runLoadingSequence() {
   const steps = ['ls-1','ls-2','ls-3','ls-4','ls-5','ls-6','ls-7'];
@@ -1385,6 +1385,7 @@ async function renderResults(r) {
   _intake = intake;
   _cfPrefs = cfPrefs;
   _r = r;
+  window._r = r;  // expose globally for counselor code fallback check
   _studentName = studentName;
 
   showScreen('screen-results');
@@ -3063,11 +3064,16 @@ function renderCopyrightFooter() {
       }
 
       // Check if counselor code was entered  -  auto reveal
+      // r.intake.schoolcode is the reliable source (populated by saveIntake() at submit time)
       var schoolCodeVal = (r.intake && r.intake.schoolcode) || '';
-      var liveCodeEl = document.getElementById('f-schoolcode');
-      if (liveCodeEl && liveCodeEl.value) schoolCodeVal = liveCodeEl.value;
+      // Also check intakeData directly in case r.intake is a snapshot
+      if (!schoolCodeVal && window.intakeData && window.intakeData.schoolcode) schoolCodeVal = window.intakeData.schoolcode;
+      // Fallback: check if user typed it during real-time validation
       if (!schoolCodeVal && window._bcValidCodeEntered) schoolCodeVal = window._bcValidCodeEntered;
+      // Last resort: try the DOM element (may still be in the page on some paths)
+      if (!schoolCodeVal) { var liveCodeEl = document.getElementById('f-schoolcode'); if (liveCodeEl && liveCodeEl.value) schoolCodeVal = liveCodeEl.value; }
       var _sc = schoolCodeVal.trim().toUpperCase(); var hasSchoolCode = _sc === 'BC-PRAC-2026-X4' || _sc === 'BC-STU-2026-X4';
+      console.log('[BC] School code check in runPremiumReport:', _sc, '| hasSchoolCode:', hasSchoolCode);
       if (hasSchoolCode) {
         revealPremiumContent();
       }
@@ -3283,10 +3289,16 @@ function renderCopyrightFooter() {
   // ── STANDALONE COUNSELOR CODE CHECK ─────────────────────────
   // Runs after results render regardless of premium report status
   function checkCounselorCodeOnResults() {
-    var el = document.getElementById('f-schoolcode');
-    var val = (el && el.value) ? el.value : (intakeData && intakeData.schoolcode ? intakeData.schoolcode : '');
+    // Primary source: intakeData object (populated by saveIntake() at submit time)
+    var val = (intakeData && intakeData.schoolcode) ? intakeData.schoolcode : '';
+    // Secondary: real-time validation stored it here when user typed it
     if (!val && window._bcValidCodeEntered) val = window._bcValidCodeEntered;
+    // Also check the results object stored at module level
+    if (!val && window._r && window._r.intake && window._r.intake.schoolcode) val = window._r.intake.schoolcode;
+    // Last resort: DOM element (may exist if assessment screen is still in DOM)
+    if (!val) { var el = document.getElementById('f-schoolcode'); if (el && el.value) val = el.value; }
     var _cv = val.trim().toUpperCase();
+    console.log('[BC] checkCounselorCodeOnResults - code value:', _cv);
     if (_cv === 'BC-PRAC-2026-X4' || _cv === 'BC-STU-2026-X4') {
       console.log('[BC] Code confirmed on results page - revealing premium');
       setTimeout(function() { revealPremiumContent(); }, 500);
