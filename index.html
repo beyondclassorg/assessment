@@ -1423,6 +1423,16 @@ async function renderResults(r) {
   checkCounselorCodeOnResults();
   // Init sticky CTA
   setTimeout(initStickyCTA, 500);
+
+  // ── GUARANTEED BANK CONTENT RENDER ─────────────────────────
+  // renderPremiumBankContent writes to prem-research, prem-group, prem-parent.
+  // These are inside premium-report-section (hidden) but innerHTML works regardless.
+  // This runs unconditionally so the sections are never stuck on loading spinners.
+  setTimeout(function() {
+    if (window._bcPremiumData) {
+      try { renderPremiumBankContent(window._bcPremiumData); } catch(e) { console.error('[BC] bank render failed:', e); }
+    }
+  }, 100);
 }
 
  
@@ -3100,7 +3110,9 @@ function renderCopyrightFooter() {
 
     } catch(e) {
       console.error('[BC] Premium report FAILED:', e.message, e.stack);
-      // Surface error visibly for debugging
+      // Surface error visibly in page for debugging
+      var dbg = document.getElementById('prem-research') || document.getElementById('prem-group');
+      if (dbg) dbg.innerHTML = '<div style="padding:12px;color:red;font-size:12px">Premium report error: ' + e.message + '</div>';
     }
   }
 
@@ -3203,10 +3215,13 @@ function renderCopyrightFooter() {
   }
 
   function revealPremiumContent() {
-  if (window._bcPremiumUnlocked) return;
-  window._bcPremiumUnlocked = true;
+  // Guard: only run the full unlock once, but always ensure UI is updated
+  var alreadyUnlocked = window._bcPremiumUnlocked;
+  if (!alreadyUnlocked) {
+    window._bcPremiumUnlocked = true;
+  }
 
-  // 1. Hide ALL paywall / upsell elements
+  // 1. ALWAYS hide all paywall elements (safe to call multiple times)
   ['premium-overlay','early-premium-cta','early-premium-cta-2','sticky-premium-cta'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.style.display = 'none';
@@ -3214,40 +3229,28 @@ function renderCopyrightFooter() {
   var prb = document.getElementById('paid-reveal-banner');
   if (prb) prb.style.display = 'none';
 
-  // 2. Show the premium report section
+  // 2. ALWAYS show premium report section
   var prs = document.getElementById('premium-report-section');
   if (prs) prs.style.display = '';
 
-  // 3. Ensure all named wrap- sections are visible
-  ['wrap-essays','wrap-careers','wrap-activities','wrap-shadow','wrap-mentor',
-   'wrap-research','wrap-group','wrap-parent','wrap-peer','wrap-interview',
-   'wrap-recletter','wrap-summer','wrap-counselor'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.style.display = '';
-  });
-
-  // 4. Activate step-2 buttons (marks paid + styles them gold)
+  // 3. Activate step-2 buttons
   if (window.updateStep2Button) updateStep2Button(true);
 
-  // 5. Show unlock badge
+  // 4. Show unlock badge
   var slot = document.getElementById('counselor-slot');
   if (slot && !slot.querySelector('.bc-unlock-badge')) {
-    var isCounselorCode = (window._bcValidCodeEntered === 'BC-PRAC-2026-X4');
-    slot.innerHTML = '<div class="bc-unlock-badge" style="background:rgba(45,106,79,0.08);border:1px solid rgba(45,106,79,0.2);border-radius:8px;padding:12px 16px;margin:16px 0;font-size:13px;color:#2d6a4f;display:flex;align-items:center;gap:10px"><span style="font-size:18px">✓</span><div><strong>' + (isCounselorCode ? 'Counselor' : 'Premium') + ' Report Unlocked</strong><br><span style="font-size:12px;opacity:.8">' + (isCounselorCode ? 'School code verified — full 23-section report' : 'Access granted — full premium report') + '</span></div></div>';
+    var isCounselorCode = !!(window._bcValidCodeEntered);
+    slot.innerHTML = '<div class="bc-unlock-badge" style="background:rgba(45,106,79,0.08);border:1px solid rgba(45,106,79,0.2);border-radius:8px;padding:12px 16px;margin:16px 0;font-size:13px;color:#2d6a4f;display:flex;align-items:center;gap:10px"><span style="font-size:18px">✓</span><div><strong>' + (isCounselorCode ? 'Counselor' : 'Premium') + ' Report Unlocked</strong><br><span style="font-size:12px;opacity:.8">' + (isCounselorCode ? 'School code verified — full report active' : 'Access granted — full premium report') + '</span></div></div>';
   }
 
-  // 6. Fire all premium content generators
-  //    Uses a retry loop so it works even if called before renderResults sets _archProfile
-  function fireAllPremiumGenerators() {
+  if (alreadyUnlocked) return; // UI updated; generators already fired
+
+  // 5. Fire AI generators (only on first call)
+  function fireGenerators() {
     var arch = _archProfile || '';
     var pa   = _pArch   || {};
     var int  = _intake  || {};
-    if (!arch) {
-      // _archProfile not set yet (e.g. payment redirect) — retry in 600ms
-      setTimeout(fireAllPremiumGenerators, 600);
-      return;
-    }
-    // AI generators (write to section-essays, section-careers, etc.)
+    if (!arch) { setTimeout(fireGenerators, 500); return; }
     if (typeof generateEssayAngles    === 'function') generateEssayAngles(arch, pa, int).catch(function(){});
     if (typeof generateCareerProfiles === 'function') generateCareerProfiles(arch, pa, int).catch(function(){});
     if (typeof generateActivities     === 'function') generateActivities(arch, pa, int).catch(function(){});
@@ -3258,27 +3261,26 @@ function renderCopyrightFooter() {
     if (typeof generateRecLetterGuide === 'function') generateRecLetterGuide(arch, pa, int).catch(function(e){ console.warn('recletter:',e); });
     if (typeof generateSummerPrograms === 'function') generateSummerPrograms(arch, pa, int).catch(function(e){ console.warn('summer:',e); });
     if (typeof generateCounselorGuide === 'function') generateCounselorGuide(arch, pa, int).catch(function(e){ console.warn('counselor:',e); });
-
-    // Bank content renderer (writes research, group dynamics, parent guide)
-    // runPremiumReport sets window._bcPremiumData synchronously before calling revealPremiumContent,
-    // so it should be available here. If not (payment path), poll for it.
-    function renderBank() {
-      if (window._bcPremiumData) {
-        try { renderPremiumBankContent(window._bcPremiumData); } catch(e){ console.warn('bankContent:', e); }
-      } else {
-        var tries = 0;
-        var poll = setInterval(function() {
-          if (window._bcPremiumData) {
-            clearInterval(poll);
-            try { renderPremiumBankContent(window._bcPremiumData); } catch(e){ console.warn('bankContent:', e); }
-          }
-          if (++tries > 30) clearInterval(poll); // give up after 15s
-        }, 500);
-      }
-    }
-    renderBank();
   }
-  fireAllPremiumGenerators();
+  fireGenerators();
+
+  // 6. Render bank content sections (research, group dynamics, parent guide)
+  //    Poll until _bcPremiumData is available (set by runPremiumReport)
+  function ensureBankContent() {
+    if (window._bcPremiumData) {
+      try { renderPremiumBankContent(window._bcPremiumData); } catch(e) { console.error('[BC] bankContent error:', e); }
+    } else {
+      var tries = 0;
+      var poll = setInterval(function() {
+        if (window._bcPremiumData) {
+          clearInterval(poll);
+          try { renderPremiumBankContent(window._bcPremiumData); } catch(e) { console.error('[BC] bankContent error:', e); }
+        }
+        if (++tries > 40) clearInterval(poll);
+      }, 500);
+    }
+  }
+  ensureBankContent();
 }
   // Legacy alias
   function unlockPremiumSections() { revealPremiumContent(); }
@@ -3352,10 +3354,13 @@ function renderCopyrightFooter() {
     // Last resort: DOM element (may exist if assessment screen is still in DOM)
     if (!val) { var el = document.getElementById('f-schoolcode'); if (el && el.value) val = el.value; }
     var _cv = val.trim().toUpperCase();
-    console.log('[BC] checkCounselorCodeOnResults - code value:', _cv);
+    console.log('[BC] checkCounselorCodeOnResults - code:', _cv);
     if (_cv === 'BC-PRAC-2026-X4' || _cv === 'BC-STU-2026-X4') {
-      console.log('[BC] Code confirmed on results page - revealing premium');
-      setTimeout(function() { revealPremiumContent(); }, 500);
+      console.log('[BC] Valid code — calling revealPremiumContent');
+      // Call immediately (runPremiumReport already set _bcPremiumData synchronously)
+      revealPremiumContent();
+      // Also call with delay in case of timing issues
+      setTimeout(function() { revealPremiumContent(); }, 300);
     }
   }
 
