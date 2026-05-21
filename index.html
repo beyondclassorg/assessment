@@ -24,31 +24,39 @@
 
 <script>
 // ── STEP 2 BUTTON STATE MANAGEMENT ───────────────────────────
-  function updateStep2Button() {
+  function updateStep2Button(activate) {
+    // If called with activate=true (payment link clicked), set the paid flag
+    if (activate) window._bcPaidClicked = true;
+    var shouldActivate = !!(window._bcPremiumData || window._bcPaidClicked);
+
+    // Update modal step2 button
     var btn = document.getElementById('step2-btn');
-    if (!btn) return;
-    if (window._bcPremiumData || window._bcPaidClicked) {
-      btn.style.background = 'var(--gold)';
-      btn.style.color = 'var(--navy)';
-      btn.style.border = '1.5px solid var(--gold)';
-      btn.style.cursor = 'pointer';
-      btn.textContent = '✦ I\'ve Paid — Reveal My Report →';
-    } else {
-      btn.style.background = 'rgba(200,169,110,0.08)';
-      btn.style.color = 'rgba(15,15,36,0.4)';
-      btn.style.border = '1.5px solid rgba(200,169,110,0.2)';
-      btn.style.cursor = 'not-allowed';
-      btn.textContent = '⏳ Generating your report — ready in a few seconds...';
+    if (btn) {
+      if (shouldActivate) {
+        btn.style.background = 'linear-gradient(135deg,#C8A96E,#D4B87A)';
+        btn.style.color = '#0F1F3D';
+        btn.style.border = '1.5px solid #C8A96E';
+        btn.style.cursor = 'pointer';
+        btn.textContent = '✦ I\'ve Paid — Reveal My Report →';
+      } else {
+        btn.style.background = 'rgba(200,169,110,0.08)';
+        btn.style.color = 'rgba(15,15,36,0.4)';
+        btn.style.border = '1.5px solid rgba(200,169,110,0.2)';
+        btn.style.cursor = 'not-allowed';
+        btn.textContent = '⏳ Generating your report — ready in a few seconds...';
+      }
     }
-    // Update inline reveal button
-    var ib = document.getElementById('inline-reveal-btn');
-    if (ib && (window._bcPremiumData || window._bcPaidClicked)) {
-      ib.style.background = 'linear-gradient(135deg,#C8A96E,#D4B87A)';
-      ib.style.color = '#0F1F3D';
-      ib.style.border = '1.5px solid #C8A96E';
-      ib.style.cursor = 'pointer';
-      ib.textContent = '✦ I’ve Paid — Reveal My Report →';
-    }
+    // Update ALL inline reveal buttons
+    ['inline-reveal-btn', 'inline-reveal-btn-2'].forEach(function(id) {
+      var ib = document.getElementById(id);
+      if (ib && shouldActivate) {
+        ib.style.background = 'linear-gradient(135deg,#C8A96E,#D4B87A)';
+        ib.style.color = '#0F1F3D';
+        ib.style.border = '1.5px solid #C8A96E';
+        ib.style.cursor = 'pointer';
+        ib.textContent = '✦ I\'ve Paid — Reveal My Report →';
+      }
+    });
   }
 
   function startStep2Polling() {
@@ -306,6 +314,7 @@ const ESSAY_ENHANCEMENTS = {Builder:[{ao:"Wharton/Penn essays: show you understa
     }
     // PAID MODE: ?paid=true  -  student returning after Wix payment
     if (params.indexOf('paid=true') > -1) {
+      window._bcPaidClicked = true; // mark paid so reveal buttons activate
       // Show a floating reveal button — session is still alive so report is already generated
       setTimeout(function() {
         // Create the reveal banner with big button
@@ -1179,6 +1188,10 @@ async function renderResults(r) {
           <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:12px;">Step 2 &mdash; Reveal your report</div>
           <button id="inline-reveal-btn" onclick="if(window._bcPaidClicked||window._bcPremiumData){if(window.handleStep2Click)handleStep2Click();}" style="width:100%;padding:15px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;border:1.5px solid rgba(200,169,110,0.25);background:rgba(200,169,110,0.06);color:var(--text-light);cursor:not-allowed;transition:all .3s ease;">&#9203; Complete Step 1 first to activate this button</button>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
 <div id="early-premium-cta-2">
   <div style="max-width:860px;margin:0 auto;padding:0 32px;">
 
@@ -3188,42 +3201,74 @@ function renderCopyrightFooter() {
   if (window._bcPremiumUnlocked) return;
   window._bcPremiumUnlocked = true;
 
-  // Hide overlay and upsell elements
+  // ── 1. HIDE ALL PAYWALL / UPSELL ELEMENTS ────────────────
   ['premium-overlay','early-premium-cta','early-premium-cta-2','sticky-premium-cta'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
+  // Also hide paid-reveal-banner if present
+  var prb = document.getElementById('paid-reveal-banner');
+  if (prb) prb.style.display = 'none';
 
-  // Show premium report section
+  // ── 2. SHOW PREMIUM REPORT SECTION ───────────────────────
   var prs = document.getElementById('premium-report-section');
   if (prs) prs.style.display = '';
 
-  // Show wrap- sections
-  ['wrap-essays','wrap-careers','wrap-activities','wrap-shadow','wrap-mentor','wrap-research','wrap-group','wrap-parent','wrap-peer','wrap-interview','wrap-recletter','wrap-summer','wrap-counselor'].forEach(function(id) {
+  // ── 3. ENSURE ALL WRAP- SECTIONS ARE VISIBLE ─────────────
+  ['wrap-essays','wrap-careers','wrap-activities','wrap-shadow','wrap-mentor',
+   'wrap-research','wrap-group','wrap-parent','wrap-peer','wrap-interview',
+   'wrap-recletter','wrap-summer','wrap-counselor'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.style.display = '';
   });
 
-  // Show counselor badge
-  var slot = document.getElementById('counselor-slot');
-  if (slot) slot.innerHTML = '<div style="background:rgba(45,106,79,0.08);border:1px solid rgba(45,106,79,0.2);border-radius:8px;padding:12px 16px;margin:16px 0;font-size:13px;color:#2d6a4f;display:flex;align-items:center;gap:10px"><span style="font-size:18px">✓</span><div><strong>Counselor Premium Report Unlocked</strong><br><span style="font-size:12px;opacity:.8">Full 23-section report — school code verified</span></div></div>';
+  // ── 4. UPDATE STEP 2 BUTTONS TO ACTIVE STATE ─────────────
+  updateStep2Button(true);
 
-  // Fire premium generators
-  var arch = _archProfile || '';
-  var pa   = _pArch || {};
-  var int  = _intake || {};
-  generateEssayAngles(arch, pa, int).catch(function(){});
-  generateCareerProfiles(arch, pa, int).catch(function(){});
-  generateActivities(arch, pa, int).catch(function(){});
-  generateMentorMatch(arch, pa, int).catch(function(){});
-  generateShadowWorkbook(arch, pa, int).catch(function(){});
-  if (window._bcPremiumData) { try { renderPremiumBankContent(window._bcPremiumData); } catch(e){} }
-  // New premium generators
-  generatePeerArchetypes(arch, pa, int).catch(function(e){ console.warn('peer:',e); });
-  generateInterviewPrep(arch, pa, int).catch(function(e){ console.warn('interview:',e); });
-  generateRecLetterGuide(arch, pa, int).catch(function(e){ console.warn('recletter:',e); });
-  generateSummerPrograms(arch, pa, int).catch(function(e){ console.warn('summer:',e); });
-  generateCounselorGuide(arch, pa, int).catch(function(e){ console.warn('counselor:',e); });
+  // ── 5. SHOW UNLOCK BADGE ──────────────────────────────────
+  var slot = document.getElementById('counselor-slot');
+  if (slot && !slot.querySelector('.unlock-badge')) {
+    var isCounselorUnlock = !!(window._bcValidCodeEntered === 'BC-PRAC-2026-X4');
+    slot.innerHTML = '<div class="unlock-badge" style="background:rgba(45,106,79,0.08);border:1px solid rgba(45,106,79,0.2);border-radius:8px;padding:12px 16px;margin:16px 0;font-size:13px;color:#2d6a4f;display:flex;align-items:center;gap:10px"><span style="font-size:18px">✓</span><div><strong>' + (isCounselorUnlock ? 'Counselor' : 'Premium') + ' Report Unlocked</strong><br><span style="font-size:12px;opacity:.8">Full report — ' + (isCounselorUnlock ? 'school code verified' : 'access granted') + '</span></div></div>';
+  }
+
+  // ── 6. FIRE PREMIUM CONTENT GENERATORS ───────────────────
+  // Use a helper that retries if archProfile data isn't loaded yet
+  function fireGenerators() {
+    var arch = _archProfile || '';
+    var pa   = _pArch || {};
+    var int  = _intake || {};
+    if (!arch) {
+      // Data not ready yet — retry in 500ms (payment redirect case)
+      setTimeout(fireGenerators, 500);
+      return;
+    }
+    generateEssayAngles(arch, pa, int).catch(function(e){ console.warn('essays:', e); });
+    generateCareerProfiles(arch, pa, int).catch(function(e){ console.warn('careers:', e); });
+    generateActivities(arch, pa, int).catch(function(e){ console.warn('activities:', e); });
+    generateMentorMatch(arch, pa, int).catch(function(e){ console.warn('mentor:', e); });
+    generateShadowWorkbook(arch, pa, int).catch(function(e){ console.warn('shadow:', e); });
+    generatePeerArchetypes(arch, pa, int).catch(function(e){ console.warn('peer:', e); });
+    generateInterviewPrep(arch, pa, int).catch(function(e){ console.warn('interview:', e); });
+    generateRecLetterGuide(arch, pa, int).catch(function(e){ console.warn('recletter:', e); });
+    generateSummerPrograms(arch, pa, int).catch(function(e){ console.warn('summer:', e); });
+    generateCounselorGuide(arch, pa, int).catch(function(e){ console.warn('counselor:', e); });
+    // Render bank content (research, group, parent guide)
+    if (window._bcPremiumData) {
+      try { renderPremiumBankContent(window._bcPremiumData); } catch(e){ console.warn('bankContent:', e); }
+    } else {
+      // Wait for runPremiumReport to finish and set _bcPremiumData
+      var bankRetries = 0;
+      var bankInterval = setInterval(function() {
+        if (window._bcPremiumData) {
+          clearInterval(bankInterval);
+          try { renderPremiumBankContent(window._bcPremiumData); } catch(e){}
+        }
+        if (++bankRetries > 20) clearInterval(bankInterval);
+      }, 500);
+    }
+  }
+  fireGenerators();
 }
 
   // Legacy alias
@@ -3260,7 +3305,7 @@ function renderCopyrightFooter() {
       if (!code) { modalStatus.textContent = ''; }
       else if (isValid) {
         modalStatus.style.color = '#15803d';
-        modalStatus.textContent = '&#10003; Code verified — unlocking your report...';
+        modalStatus.innerHTML = '&#10003; Code verified &mdash; unlocking your report...';
         setTimeout(function() {
           document.getElementById('premium-modal').style.display = 'none';
           revealPremiumContent();
@@ -3465,11 +3510,23 @@ function renderCopyrightFooter() {
 
   // ── STEP 2 PAYMENT GUARD ──────────────────────────────────
   function handleStep2Click() {
+    // Close modal and banner
     var modal = document.getElementById('premium-modal');
     if (modal) modal.style.display = 'none';
     var banner = document.getElementById('paid-reveal-banner');
     if (banner) banner.style.display = 'none';
-    revealPremiumContent();
+    // Mark as paid
+    window._bcPaidClicked = true;
+    if (window._bcPremiumUnlocked) {
+      // Already unlocked (e.g. counselor code path) — just hide paywalls and scroll
+      ['premium-overlay','early-premium-cta','early-premium-cta-2','sticky-premium-cta'].forEach(function(id) {
+        var el = document.getElementById(id); if (el) el.style.display = 'none';
+      });
+      var prs = document.getElementById('premium-report-section');
+      if (prs) { prs.style.display = ''; prs.scrollIntoView({behavior:'smooth',block:'start'}); }
+    } else {
+      revealPremiumContent();
+    }
   }
 
 
@@ -4458,9 +4515,11 @@ function updateRangeLabel(el, id, labels) {
 window.saveCollegeFit          = saveCollegeFit;
 window.saveIntake              = saveIntake;
 function updateStep2Button(activate) {
-    ['step2-btn','inline-reveal-btn'].forEach(function(id) {
+    if (activate) window._bcPaidClicked = true;
+    var shouldActivate = !!(window._bcPremiumData || window._bcPaidClicked);
+    ['step2-btn','inline-reveal-btn','inline-reveal-btn-2'].forEach(function(id) {
       var btn = document.getElementById(id);
-      if (btn && activate) {
+      if (btn && shouldActivate) {
         btn.style.background = 'linear-gradient(135deg,#C8A96E,#D4B87A)';
         btn.style.color = '#0F1F3D';
         btn.style.border = '1.5px solid #C8A96E';
