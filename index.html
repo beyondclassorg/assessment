@@ -25,11 +25,8 @@
 <script>
 // ── STEP 2 BUTTON STATE MANAGEMENT ───────────────────────────
   function updateStep2Button(activate) {
-    // If called with activate=true (payment link clicked), set the paid flag
     if (activate) window._bcPaidClicked = true;
     var shouldActivate = !!(window._bcPremiumData || window._bcPaidClicked);
-
-    // Update modal step2 button
     var btn = document.getElementById('step2-btn');
     if (btn) {
       if (shouldActivate) {
@@ -37,7 +34,7 @@
         btn.style.color = '#0F1F3D';
         btn.style.border = '1.5px solid #C8A96E';
         btn.style.cursor = 'pointer';
-        btn.textContent = '✦ I\'ve Paid — Reveal My Report →';
+        btn.textContent = "✦ I've Paid — Reveal My Report →";
       } else {
         btn.style.background = 'rgba(200,169,110,0.08)';
         btn.style.color = 'rgba(15,15,36,0.4)';
@@ -46,22 +43,18 @@
         btn.textContent = '⏳ Generating your report — ready in a few seconds...';
       }
     }
-    // Update ALL inline reveal buttons
-    ['inline-reveal-btn', 'inline-reveal-btn-2'].forEach(function(id) {
-      var ib = document.getElementById(id);
-      if (ib && shouldActivate) {
-        ib.style.background = 'linear-gradient(135deg,#C8A96E,#D4B87A)';
-        ib.style.color = '#0F1F3D';
-        ib.style.border = '1.5px solid #C8A96E';
-        ib.style.cursor = 'pointer';
-        ib.textContent = '✦ I\'ve Paid — Reveal My Report →';
-      }
-    });
+    var ib = document.getElementById('inline-reveal-btn');
+    if (ib && shouldActivate) {
+      ib.style.background = 'linear-gradient(135deg,#C8A96E,#D4B87A)';
+      ib.style.color = '#0F1F3D';
+      ib.style.border = '1.5px solid #C8A96E';
+      ib.style.cursor = 'pointer';
+      ib.textContent = "✦ I've Paid — Reveal My Report →";
+    }
   }
-
   function startStep2Polling() {
     var interval = setInterval(function() {
-      if (window._bcPremiumData) {
+      if (window._bcPremiumData || window._bcPaidClicked) {
         updateStep2Button();
         clearInterval(interval);
       }
@@ -314,7 +307,7 @@ const ESSAY_ENHANCEMENTS = {Builder:[{ao:"Wharton/Penn essays: show you understa
     }
     // PAID MODE: ?paid=true  -  student returning after Wix payment
     if (params.indexOf('paid=true') > -1) {
-      window._bcPaidClicked = true; // mark paid so reveal buttons activate
+      window._bcPaidClicked = true; // enables reveal buttons immediately
       // Show a floating reveal button — session is still alive so report is already generated
       setTimeout(function() {
         // Create the reveal banner with big button
@@ -2782,7 +2775,8 @@ function renderCopyrightFooter() {
       shadowWorkbook: {
         overview: bank.shadow.overview || '',
         reflectionPrompts: bank.shadow.prompts || [],
-        warningSigns: bank.shadow.warnings || [],
+        // bank.shadow.warnings is [[...]] — flatten the nested array
+        warningSigns: (function(w){ return Array.isArray(w) ? (Array.isArray(w[0]) ? w[0] : w) : []; })(bank.shadow.warnings),
         exercises: (bank.shadow.exercises || []).map(function(e){ return {title:e.n||e.name||'', description:e.d||e.steps||''}; }),
         reframe: bank.shadow.reframe || '',
       },
@@ -2825,6 +2819,9 @@ function renderCopyrightFooter() {
 
       // Store data for later access
       window._bcPremiumData = premData;
+      // Immediately render bank-content sections (research, group, parent)
+      // so they are never left in a loading state
+      try { renderPremiumBankContent(premData); } catch(e) { console.warn('[BC] renderPremiumBankContent early call failed:', e); }
 
       // ── WRITE PREMIUM CONTENT INTO DOM ──────────────────────
       var S = 'style=', Q = '"';
@@ -3195,26 +3192,33 @@ function renderCopyrightFooter() {
         '</div>' : '')
       );
     }
+    // ── FALLBACK: clear spinners if data was missing ────────
+    // Prevents sections from being stuck in a loading state
+    ['prem-research','prem-group','prem-parent'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el && el.querySelector('.ai-loading')) {
+        el.innerHTML = '<div style="padding:20px;font-size:13px;color:var(--text-light);font-style:italic">Content is generating — check back in a moment or refresh.</div>';
+      }
+    });
   }
 
   function revealPremiumContent() {
   if (window._bcPremiumUnlocked) return;
   window._bcPremiumUnlocked = true;
 
-  // ── 1. HIDE ALL PAYWALL / UPSELL ELEMENTS ────────────────
+  // 1. Hide ALL paywall / upsell elements
   ['premium-overlay','early-premium-cta','early-premium-cta-2','sticky-premium-cta'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
-  // Also hide paid-reveal-banner if present
   var prb = document.getElementById('paid-reveal-banner');
   if (prb) prb.style.display = 'none';
 
-  // ── 2. SHOW PREMIUM REPORT SECTION ───────────────────────
+  // 2. Show the premium report section
   var prs = document.getElementById('premium-report-section');
   if (prs) prs.style.display = '';
 
-  // ── 3. ENSURE ALL WRAP- SECTIONS ARE VISIBLE ─────────────
+  // 3. Ensure all named wrap- sections are visible
   ['wrap-essays','wrap-careers','wrap-activities','wrap-shadow','wrap-mentor',
    'wrap-research','wrap-group','wrap-parent','wrap-peer','wrap-interview',
    'wrap-recletter','wrap-summer','wrap-counselor'].forEach(function(id) {
@@ -3222,55 +3226,60 @@ function renderCopyrightFooter() {
     if (el) el.style.display = '';
   });
 
-  // ── 4. UPDATE STEP 2 BUTTONS TO ACTIVE STATE ─────────────
-  updateStep2Button(true);
+  // 4. Activate step-2 buttons (marks paid + styles them gold)
+  if (window.updateStep2Button) updateStep2Button(true);
 
-  // ── 5. SHOW UNLOCK BADGE ──────────────────────────────────
+  // 5. Show unlock badge
   var slot = document.getElementById('counselor-slot');
-  if (slot && !slot.querySelector('.unlock-badge')) {
-    var isCounselorUnlock = !!(window._bcValidCodeEntered === 'BC-PRAC-2026-X4');
-    slot.innerHTML = '<div class="unlock-badge" style="background:rgba(45,106,79,0.08);border:1px solid rgba(45,106,79,0.2);border-radius:8px;padding:12px 16px;margin:16px 0;font-size:13px;color:#2d6a4f;display:flex;align-items:center;gap:10px"><span style="font-size:18px">✓</span><div><strong>' + (isCounselorUnlock ? 'Counselor' : 'Premium') + ' Report Unlocked</strong><br><span style="font-size:12px;opacity:.8">Full report — ' + (isCounselorUnlock ? 'school code verified' : 'access granted') + '</span></div></div>';
+  if (slot && !slot.querySelector('.bc-unlock-badge')) {
+    var isCounselorCode = (window._bcValidCodeEntered === 'BC-PRAC-2026-X4');
+    slot.innerHTML = '<div class="bc-unlock-badge" style="background:rgba(45,106,79,0.08);border:1px solid rgba(45,106,79,0.2);border-radius:8px;padding:12px 16px;margin:16px 0;font-size:13px;color:#2d6a4f;display:flex;align-items:center;gap:10px"><span style="font-size:18px">✓</span><div><strong>' + (isCounselorCode ? 'Counselor' : 'Premium') + ' Report Unlocked</strong><br><span style="font-size:12px;opacity:.8">' + (isCounselorCode ? 'School code verified — full 23-section report' : 'Access granted — full premium report') + '</span></div></div>';
   }
 
-  // ── 6. FIRE PREMIUM CONTENT GENERATORS ───────────────────
-  // Use a helper that retries if archProfile data isn't loaded yet
-  function fireGenerators() {
+  // 6. Fire all premium content generators
+  //    Uses a retry loop so it works even if called before renderResults sets _archProfile
+  function fireAllPremiumGenerators() {
     var arch = _archProfile || '';
-    var pa   = _pArch || {};
-    var int  = _intake || {};
+    var pa   = _pArch   || {};
+    var int  = _intake  || {};
     if (!arch) {
-      // Data not ready yet — retry in 500ms (payment redirect case)
-      setTimeout(fireGenerators, 500);
+      // _archProfile not set yet (e.g. payment redirect) — retry in 600ms
+      setTimeout(fireAllPremiumGenerators, 600);
       return;
     }
-    generateEssayAngles(arch, pa, int).catch(function(e){ console.warn('essays:', e); });
-    generateCareerProfiles(arch, pa, int).catch(function(e){ console.warn('careers:', e); });
-    generateActivities(arch, pa, int).catch(function(e){ console.warn('activities:', e); });
-    generateMentorMatch(arch, pa, int).catch(function(e){ console.warn('mentor:', e); });
-    generateShadowWorkbook(arch, pa, int).catch(function(e){ console.warn('shadow:', e); });
-    generatePeerArchetypes(arch, pa, int).catch(function(e){ console.warn('peer:', e); });
-    generateInterviewPrep(arch, pa, int).catch(function(e){ console.warn('interview:', e); });
-    generateRecLetterGuide(arch, pa, int).catch(function(e){ console.warn('recletter:', e); });
-    generateSummerPrograms(arch, pa, int).catch(function(e){ console.warn('summer:', e); });
-    generateCounselorGuide(arch, pa, int).catch(function(e){ console.warn('counselor:', e); });
-    // Render bank content (research, group, parent guide)
-    if (window._bcPremiumData) {
-      try { renderPremiumBankContent(window._bcPremiumData); } catch(e){ console.warn('bankContent:', e); }
-    } else {
-      // Wait for runPremiumReport to finish and set _bcPremiumData
-      var bankRetries = 0;
-      var bankInterval = setInterval(function() {
-        if (window._bcPremiumData) {
-          clearInterval(bankInterval);
-          try { renderPremiumBankContent(window._bcPremiumData); } catch(e){}
-        }
-        if (++bankRetries > 20) clearInterval(bankInterval);
-      }, 500);
-    }
-  }
-  fireGenerators();
-}
+    // AI generators (write to section-essays, section-careers, etc.)
+    if (typeof generateEssayAngles    === 'function') generateEssayAngles(arch, pa, int).catch(function(){});
+    if (typeof generateCareerProfiles === 'function') generateCareerProfiles(arch, pa, int).catch(function(){});
+    if (typeof generateActivities     === 'function') generateActivities(arch, pa, int).catch(function(){});
+    if (typeof generateMentorMatch    === 'function') generateMentorMatch(arch, pa, int).catch(function(){});
+    if (typeof generateShadowWorkbook === 'function') generateShadowWorkbook(arch, pa, int).catch(function(){});
+    if (typeof generatePeerArchetypes === 'function') generatePeerArchetypes(arch, pa, int).catch(function(e){ console.warn('peer:',e); });
+    if (typeof generateInterviewPrep  === 'function') generateInterviewPrep(arch, pa, int).catch(function(e){ console.warn('interview:',e); });
+    if (typeof generateRecLetterGuide === 'function') generateRecLetterGuide(arch, pa, int).catch(function(e){ console.warn('recletter:',e); });
+    if (typeof generateSummerPrograms === 'function') generateSummerPrograms(arch, pa, int).catch(function(e){ console.warn('summer:',e); });
+    if (typeof generateCounselorGuide === 'function') generateCounselorGuide(arch, pa, int).catch(function(e){ console.warn('counselor:',e); });
 
+    // Bank content renderer (writes research, group dynamics, parent guide)
+    // runPremiumReport sets window._bcPremiumData synchronously before calling revealPremiumContent,
+    // so it should be available here. If not (payment path), poll for it.
+    function renderBank() {
+      if (window._bcPremiumData) {
+        try { renderPremiumBankContent(window._bcPremiumData); } catch(e){ console.warn('bankContent:', e); }
+      } else {
+        var tries = 0;
+        var poll = setInterval(function() {
+          if (window._bcPremiumData) {
+            clearInterval(poll);
+            try { renderPremiumBankContent(window._bcPremiumData); } catch(e){ console.warn('bankContent:', e); }
+          }
+          if (++tries > 30) clearInterval(poll); // give up after 15s
+        }, 500);
+      }
+    }
+    renderBank();
+  }
+  fireAllPremiumGenerators();
+}
   // Legacy alias
   function unlockPremiumSections() { revealPremiumContent(); }
 
@@ -3305,7 +3314,7 @@ function renderCopyrightFooter() {
       if (!code) { modalStatus.textContent = ''; }
       else if (isValid) {
         modalStatus.style.color = '#15803d';
-        modalStatus.innerHTML = '&#10003; Code verified &mdash; unlocking your report...';
+        modalStatus.textContent = '&#10003; Code verified — unlocking your report...';
         setTimeout(function() {
           document.getElementById('premium-modal').style.display = 'none';
           revealPremiumContent();
@@ -3510,22 +3519,26 @@ function renderCopyrightFooter() {
 
   // ── STEP 2 PAYMENT GUARD ──────────────────────────────────
   function handleStep2Click() {
-    // Close modal and banner
+    // Close any open modal/banner
     var modal = document.getElementById('premium-modal');
     if (modal) modal.style.display = 'none';
     var banner = document.getElementById('paid-reveal-banner');
     if (banner) banner.style.display = 'none';
-    // Mark as paid
+    // Mark as paid so buttons stay active
     window._bcPaidClicked = true;
     if (window._bcPremiumUnlocked) {
-      // Already unlocked (e.g. counselor code path) — just hide paywalls and scroll
+      // Already unlocked (counselor code path) — just hide paywalls and scroll into view
       ['premium-overlay','early-premium-cta','early-premium-cta-2','sticky-premium-cta'].forEach(function(id) {
         var el = document.getElementById(id); if (el) el.style.display = 'none';
       });
       var prs = document.getElementById('premium-report-section');
-      if (prs) { prs.style.display = ''; prs.scrollIntoView({behavior:'smooth',block:'start'}); }
+      if (prs) { prs.style.display = ''; prs.scrollIntoView({behavior:'smooth', block:'start'}); }
     } else {
       revealPremiumContent();
+      setTimeout(function() {
+        var prs = document.getElementById('premium-report-section');
+        if (prs) prs.scrollIntoView({behavior:'smooth', block:'start'});
+      }, 300);
     }
   }
 
@@ -4517,14 +4530,14 @@ window.saveIntake              = saveIntake;
 function updateStep2Button(activate) {
     if (activate) window._bcPaidClicked = true;
     var shouldActivate = !!(window._bcPremiumData || window._bcPaidClicked);
-    ['step2-btn','inline-reveal-btn','inline-reveal-btn-2'].forEach(function(id) {
+    ['step2-btn','inline-reveal-btn'].forEach(function(id) {
       var btn = document.getElementById(id);
       if (btn && shouldActivate) {
         btn.style.background = 'linear-gradient(135deg,#C8A96E,#D4B87A)';
         btn.style.color = '#0F1F3D';
         btn.style.border = '1.5px solid #C8A96E';
         btn.style.cursor = 'pointer';
-        btn.textContent = '✦ Reveal My Report →';
+        btn.textContent = "✦ Reveal My Report →";
       }
     });
   }
