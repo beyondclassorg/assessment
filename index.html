@@ -1995,6 +1995,54 @@ async function generateColleges(archProfile, cfPrefs, pArch, intake) {
   var reach  = applyFilters(cols.reach);
   var target = applyFilters(cols.target);
   var likely = applyFilters(cols.likely);
+
+  // Supplement thin tiers from COLLEGE_META pool when filters reduce them below 3
+  // This ensures students with specific preferences always see meaningful results
+  var MIN_PER_TIER = 3;
+  function supplementTier(tier, tierLabel, existingNames) {
+    if (tier.length >= MIN_PER_TIER) return tier;
+    // Find colleges from COLLEGE_META that match the applied filters and aren't already shown
+    var allNames = Object.keys(COLLEGE_META);
+    var used = new Set(existingNames.concat(tier.map(function(c){ return c.n; })));
+    var candidates = allNames.filter(function(n) {
+      if (used.has(n)) return false;
+      var m = COLLEGE_META[n];
+      if (!m) return false;
+      // Apply the same filters against COLLEGE_META
+      var mockCol = {n: n};
+      var passes = true;
+      if (faithPref && faithPref !== 'no_preference') {
+        var af = m.af || 'secular';
+        if (faithPref === 'secular' && af !== 'secular') passes = false;
+        if (faithPref === 'faith_positive' && af === 'strongly_faith') passes = false;
+      }
+      if (passes && locationPrefs && locationPrefs.length && locationPrefs.indexOf('No preference') < 0) {
+        var regionMap = {'Northeast (NY, MA, CT, RI, etc.)':'NE','Southeast (NC, GA, FL, etc.)':'SE','Midwest':'MW','Southwest (TX, CO, AZ, etc.)':'SW','West Coast (CA, OR, WA)':'WC'};
+        var wantedRegs = locationPrefs.map(function(lp){ return regionMap[lp]; }).filter(Boolean);
+        if (wantedRegs.length && !wantedRegs.some(function(r){ return m.reg && m.reg.indexOf(r) >= 0; })) passes = false;
+      }
+      if (passes && costRange >= 4) {
+        if (m.co === 'high' && m.ai === 'typical') passes = false;
+      }
+      if (passes && (athPref === 'div1' || athPref === 'recruiting')) {
+        if (!m.d1) passes = false;
+      }
+      return passes;
+    });
+    // Add supplements with a note that they're preference-matched
+    var needed = MIN_PER_TIER - tier.length;
+    candidates.slice(0, needed).forEach(function(n) {
+      tier.push({n: n, p: 'Matches your preferences', r: 'This school fits your stated preferences and may be worth exploring with your counselor.', tags: []});
+      used.add(n);
+    });
+    return tier;
+  }
+
+  var allShown = reach.map(function(c){return c.n;}).concat(target.map(function(c){return c.n;})).concat(likely.map(function(c){return c.n;}));
+  reach  = supplementTier(reach,  'Reach',  allShown);
+  target = supplementTier(target, 'Target', reach.map(function(c){return c.n;}));
+  likely = supplementTier(likely, 'Likely', reach.map(function(c){return c.n;}).concat(target.map(function(c){return c.n;})));
+
   var total  = reach.length + target.length + likely.length;
 
   /* filter summary banner */
@@ -2068,11 +2116,11 @@ async function generateEssayAngles(archProfile, pArch, intake) {
   var el = document.getElementById('section-essays');
   if (!el) return;
   var arch = archProfile.split(' ')[0];
-  var data = (REPORT_DATA[arch] || REPORT_DATA['Builder']).essayAngles || [];
+  var allAngles = (REPORT_DATA[arch] || REPORT_DATA['Builder']).essayAngles || [];
 
   // Merge essay engine enhancements into angle data
   var enhancements = (ESSAY_ENHANCEMENTS && ESSAY_ENHANCEMENTS[arch]) || [];
-  data = data.map(function(angle, i) {
+  var data = allAngles.map(function(angle, i) {
     var enh = enhancements[i] || {};
     return Object.assign({}, angle, {
       ao_note:        enh.ao || '',
@@ -2080,6 +2128,78 @@ async function generateEssayAngles(archProfile, pArch, intake) {
       pre_writing:    enh.pw || []
     });
   });
+
+  // ── PERSONALIZED SELECTION: score & pick best 5 ──────────
+  // Ensures each student gets angles matched to their specific
+  // interests, activities, and background — not generic ones
+  var studentText = [
+    (intake && intake.interests) || '',
+    (intake && intake.extracurriculars) || '',
+    (intake && intake.firstname) || '',
+    (intake && intake.school) || '',
+    (intake && intake.city) || '',
+    (intake && intake.gpa) || '',
+    (typeof openAnswers !== 'undefined' ? Object.values(openAnswers).join(' ') : '')
+  ].join(' ').toLowerCase();
+
+  // Score each angle for student relevance
+  var keywords = {
+    'build|creat|launch|start|found|product|app|website|business|startup|make|design': ['Builder','built','created','launched','product','app','tech','code','program','business','startup'],
+    'help|care|support|community|people|volunteer|service|mentor|teach|counsel': ['Shepherd','helped','cared','volunteered','mentored','tutored','community'],
+    'research|science|math|system|engineer|data|analyz|model|design|structure': ['Architect','research','science','math','engineer','data','analysis','system'],
+    'speak|write|perform|media|art|music|theater|film|journal|communicat': ['Catalyst','speak','write','perform','media','art','music','theater','journal'],
+    'justice|law|policy|advocate|equit|rights|change|activism|politic': ['Advocate','justice','law','policy','advocate','equity','rights','activism'],
+    'teach|grow|sustainab|environment|garden|nature|farm|patient|long-term': ['Cultivator','teach','garden','nature','farm','environment','sustainable','patient'],
+    'peace|mediat|conflict|languages|diplomat|international|bridge|translate': ['Peacemaker','peace','mediation','conflict','language','international','bridge']
+  };
+
+  // Simple relevance score: does the student's text match the angle's theme?
+  function scoreAngle(angle, idx) {
+    var score = 0;
+    var angleText = (angle.title + ' ' + angle.prompt + ' ' + (angle.why || '')).toLowerCase();
+    // Keyword match between angle and student profile
+    var words = studentText.split(/\W+/).filter(function(w){ return w.length > 3; });
+    words.forEach(function(word) {
+      if (angleText.indexOf(word) > -1) score += 2;
+    });
+    // Prefer variety: use student name hash as offset so two students
+    // with the same archetype get different starting points
+    var nameHash = (intake && intake.firstname) ? 
+      intake.firstname.split('').reduce(function(acc, c){ return acc + c.charCodeAt(0); }, 0) : 0;
+    score += (idx + nameHash) % 3; // 0-2 offset based on name
+    return score;
+  }
+
+  // Score all angles
+  var scored = data.map(function(angle, i) {
+    return { angle: angle, score: scoreAngle(angle, i), idx: i };
+  });
+
+  // Select 5: ensure prompt type diversity (no two from exact same prompt)
+  // Sort by score descending
+  scored.sort(function(a, b) { return b.score - a.score; });
+
+  var selected = [];
+  var usedPromptTypes = {};
+  // First pass: take top-scoring angles that have unique primary prompt types
+  scored.forEach(function(s) {
+    if (selected.length >= 5) return;
+    var primaryPrompt = s.angle.prompt.split('/')[0].trim();
+    // Allow at most 2 from exactly the same primary prompt type
+    if ((usedPromptTypes[primaryPrompt] || 0) < 2) {
+      selected.push(s.angle);
+      usedPromptTypes[primaryPrompt] = (usedPromptTypes[primaryPrompt] || 0) + 1;
+    }
+  });
+  // If still under 5, fill from remaining
+  if (selected.length < 5) {
+    scored.forEach(function(s) {
+      if (selected.length >= 5) return;
+      if (selected.indexOf(s.angle) < 0) selected.push(s.angle);
+    });
+  }
+  data = selected.slice(0, 5);
+  // ── END PERSONALIZED SELECTION ────────────────────────────
 
   var promptColors = {
     'Common App Essay':'#185FA5','Why This Major':'#0F6E56','Why This College':'#7B5EA7',
@@ -2097,7 +2217,7 @@ async function generateEssayAngles(archProfile, pArch, intake) {
 
   // Filter bar
   var filterHtml = '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">'
-    + '<button onclick="filterEssays(\'all\',this)" class="essay-filter-btn active-filter" style="font-size:11px;padding:4px 12px;border:1px solid var(--gold);background:var(--gold);color:var(--navy);border-radius:20px;cursor:pointer;font-weight:600">All ' + data.length + ' Angles</button>'
+    + '<button onclick="filterEssays(\'all\',this)" class="essay-filter-btn active-filter" style="font-size:11px;padding:4px 12px;border:1px solid var(--gold);background:var(--gold);color:var(--navy);border-radius:20px;cursor:pointer;font-weight:600">All 5 Angles</button>'
     + ['Common App Essay','Why This Major','Why This College','Community','Leadership','Challenge','Identity'].map(function(f) {
         var count = data.filter(function(a) { return a.prompt.indexOf(f) >= 0; }).length;
         return count ? '<button onclick="filterEssays(\'' + f + '\',this)" class="essay-filter-btn" style="font-size:11px;padding:4px 12px;border:1px solid rgba(15,31,61,0.2);background:white;color:var(--text-mid);border-radius:20px;cursor:pointer">' + f + ' (' + count + ')</button>' : '';
@@ -2131,7 +2251,7 @@ async function generateEssayAngles(archProfile, pArch, intake) {
     return '<div class="essay-card" data-prompt="' + a.prompt + '" style="background:white;border:1px solid rgba(0,0,0,0.07);border-left:3px solid ' + color + ';border-radius:0 8px 8px 0;padding:16px 18px;margin-bottom:12px">'
       + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">'
       + '<strong style="font-size:14px;color:var(--navy);line-height:1.3;flex:1;padding-right:12px">' + a.title + '</strong>'
-      + '<span style="font-size:10px;white-space:nowrap;background:rgba(15,31,61,0.06);color:' + color + ';padding:3px 8px;border-radius:3px;font-weight:600">Angle ' + (i + 1) + '</span>'
+      + '<span style="font-size:10px;white-space:nowrap;background:rgba(15,31,61,0.06);color:' + color + ';padding:3px 8px;border-radius:3px;font-weight:600">Angle ' + (i + 1) + ' of 5</span>'
       + '</div>'
       + '<p style="font-size:13px;color:var(--text-mid);font-style:italic;line-height:1.6;margin-bottom:10px;border-left:2px solid rgba(200,169,110,0.4);padding-left:10px">' + a.opening + '</p>'
       + '<div style="display:flex;flex-wrap:wrap;gap:12px;font-size:12px;margin-bottom:6px">'
@@ -2142,7 +2262,7 @@ async function generateEssayAngles(archProfile, pArch, intake) {
       + '</div>';
   }).join('');
 
-  el.innerHTML = '<div class="ai-badge">&#10000; ' + data.length + ' personalized essay angles for the ' + arch + '</div>'
+  el.innerHTML = '<div class="ai-badge">&#10000; 5 personalized essay angles for the ' + arch + ' archetype</div>'
     + '<div class="ai-content">' + filterHtml
     + '<div id="essay-cards-container">' + cards + '</div>'
     + '<p style="font-size:12px;color:var(--text-light);margin-top:12px;font-style:italic">Each angle is rooted in your ' + arch + ' Calling Archetype. Choose the one that feels most true — not most impressive.</p>'
