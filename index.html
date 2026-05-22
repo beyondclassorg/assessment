@@ -1328,6 +1328,25 @@ async function renderResults(r) {
   checkCounselorCodeOnResults();
   // Init sticky CTA
   setTimeout(initStickyCTA, 500);
+
+  // ── FINAL COUNSELOR/PAID CHECK ───────────────────────────
+  // Belt-and-suspenders: after everything runs, check one more time.
+  // Uses every possible source for the code.
+  setTimeout(function() {
+    var code = '';
+    if (r.intake && r.intake.schoolcode) code = r.intake.schoolcode;
+    if (!code && window._bcValidCodeEntered) code = window._bcValidCodeEntered;
+    if (!code) { var el = document.getElementById('f-schoolcode'); if (el) code = el.value || ''; }
+    code = code.trim().toUpperCase();
+    var validCodes = ['BC-PRAC-2026-X4','BC-STU-2026-X4'];
+    if (validCodes.indexOf(code) > -1) {
+      revealPremiumContent();
+    }
+    // Also render bank content one more time to make sure
+    if (window._bcPremiumData) {
+      renderPremiumBankContent(window._bcPremiumData);
+    }
+  }, 200);
 }
 
  
@@ -2986,8 +3005,9 @@ function renderCopyrightFooter() {
     // Last resort: try the DOM element (may still be in the page on some paths)
     if (!schoolCodeVal) { var liveCodeEl = document.getElementById('f-schoolcode'); if (liveCodeEl && liveCodeEl.value) schoolCodeVal = liveCodeEl.value; }
     var _sc = schoolCodeVal.trim().toUpperCase(); var hasSchoolCode = _sc === 'BC-PRAC-2026-X4' || _sc === 'BC-STU-2026-X4';
-    console.log('[BC] School code check in runPremiumReport:', _sc, '| hasSchoolCode:', hasSchoolCode);
+    console.log('[BC] School code check in runPremiumReport:', JSON.stringify(_sc), '| hasSchoolCode:', hasSchoolCode, '| r.intake.schoolcode:', JSON.stringify(r && r.intake && r.intake.schoolcode), '| _bcValidCodeEntered:', JSON.stringify(window._bcValidCodeEntered));
     if (hasSchoolCode) {
+      console.log('[BC] Calling revealPremiumContent from runPremiumReport');
       revealPremiumContent();
     }
     ['wrap-research','wrap-group','wrap-parent'].forEach(function(id){
@@ -3102,6 +3122,7 @@ function renderCopyrightFooter() {
   }
 
   function revealPremiumContent() {
+    console.log('[BC] revealPremiumContent called, already unlocked:', !!window._bcPremiumUnlocked);
     if (window._bcPremiumUnlocked) {
       // Already unlocked — just make sure UI is correct
       var prs = document.getElementById('premium-report-section');
@@ -3114,6 +3135,7 @@ function renderCopyrightFooter() {
 
     // Hide the paywall
     var cta = document.getElementById('early-premium-cta');
+    console.log('[BC] early-premium-cta element:', cta ? 'FOUND' : 'NOT FOUND');
     if (cta) cta.style.display = 'none';
     var overlay = document.getElementById('premium-overlay');
     if (overlay) overlay.style.display = 'none';
