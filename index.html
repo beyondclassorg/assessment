@@ -627,7 +627,7 @@ function restoreIntakeForm() {
 }
 
 function saveIntake() {
-  const fields = ['firstname','lastname','email','parent-email','phone','city','state','school','schoolcode','gradyear','gpa','testscores','extracurriculars','interests'];
+  const fields = ['firstname','lastname','email','parent-email','phone','city','state','school','schoolcode','gradyear','gpa','testscores','extracurriculars','interests','posthsplan'];
   fields.forEach(f => { const el = document.getElementById('f-'+f); if(el) intakeData[f] = el.value; });
   const cb = document.getElementById('f-consent'); if(cb) intakeData.consent = cb.checked;
   updateCompletionNote();
@@ -1343,16 +1343,11 @@ async function renderResults(r) {
   setTimeout(initScrollIndicator, 300);
   setTimeout(injectCounselorCard, 800);
   await Promise.all([
-    (function() {
-      var _plan = (intake && intake.posthsplan) ? intake.posthsplan : (typeof intakeData !== 'undefined' ? intakeData.posthsplan || '' : '');
-      var _nonTrad = _plan && _plan !== 'four_year' && _plan !== 'undecided';
-      if (_nonTrad) {
-        // Non-traditional path: hide college and preferences sections
-        var uniEl = document.getElementById('section-universities');
-        if (uniEl) uniEl.style.display = 'none';
-        // Also hide college fit chips row if visible
-        var cfEl = document.getElementById('college-fit-prefs-display');
-        if (cfEl) cfEl.style.display = 'none';
+    (function(){
+      var _p = (intake && intake.posthsplan) || (typeof intakeData !== 'undefined' ? intakeData.posthsplan : '');
+      if (_p && _p !== 'four_year' && _p !== 'undecided') {
+        var u = document.getElementById('section-universities');
+        if (u) u.style.display = 'none';
         return Promise.resolve();
       }
       return generateColleges(archProfile, cfPrefs, pArch, intake).catch(function(e){ console.warn('colleges:',e); });
@@ -2499,6 +2494,7 @@ function renderCopyrightFooter() {
   });
   document.addEventListener('dragstart', function(e) { e.preventDefault(); });
   document.addEventListener('selectstart', function(e) {
+    if (!e.target || !e.target.tagName) return true;
     var tag = e.target.tagName.toLowerCase();
     if (tag === 'input' || tag === 'textarea' || tag === 'select') return true;
     e.preventDefault();
@@ -5469,85 +5465,59 @@ var PATH_SUPPLEMENT_DATA = {
 
 
 async function generatePathSupplement(archProfile, intake) {
-  // Show the section wrapper directly by ID — no closest() needed
   var section = document.getElementById('section-path-supplement');
   var el = document.getElementById('prem-path-supplement');
-  if (!section || !el) {
-    console.log('[BC] pathSupplement: section or el not found');
-    return;
-  }
+  if (!section || !el) { console.log('[BC] pathSupplement: elements missing'); return; }
 
-  // Read plan from every possible source
+  // Read plan from every source
   var plan = '';
   if (intake && intake.posthsplan) plan = intake.posthsplan;
   if (!plan && typeof intakeData !== 'undefined' && intakeData.posthsplan) plan = intakeData.posthsplan;
-  if (!plan) {
-    var planEl = document.getElementById('f-posthsplan');
-    if (planEl && planEl.value) plan = planEl.value;
-  }
-
+  if (!plan) { var pe = document.getElementById('f-posthsplan'); if (pe) plan = pe.value || ''; }
   console.log('[BC] pathSupplement — plan:', plan);
 
-  // Hide for four-year / undecided / no selection
   if (!plan || plan === 'four_year' || plan === 'undecided') {
-    section.style.display = 'none';
-    return;
+    section.style.display = 'none'; return;
   }
 
   var pathData = PATH_SUPPLEMENT_DATA[plan];
-  if (!pathData) {
-    console.log('[BC] pathSupplement — no data for plan:', plan);
-    section.style.display = 'none';
-    return;
-  }
+  if (!pathData) { console.log('[BC] pathSupplement: no data for', plan); section.style.display = 'none'; return; }
 
   var arch = archProfile ? archProfile.split(' ')[0] : 'Builder';
   var archData = pathData.archetypes[arch] || pathData.archetypes['Builder'];
+  var color = {Builder:'#185FA5',Shepherd:'#0F6E56',Architect:'#533AB7',Catalyst:'#C05621',Advocate:'#9b2226',Cultivator:'#3B6D11',Peacemaker:'#854F0B'}[arch] || '#185FA5';
 
-  var archColors = {
-    Builder:'#185FA5', Shepherd:'#0F6E56', Architect:'#533AB7',
-    Catalyst:'#C05621', Advocate:'#9b2226', Cultivator:'#3B6D11', Peacemaker:'#854F0B'
-  };
-  var color = archColors[arch] || '#185FA5';
-
-  var programsHtml = archData.programs.map(function(p) {
+  var progs = archData.programs.map(function(p) {
     return '<div style="display:flex;gap:10px;padding:8px 0;border-bottom:0.5px solid rgba(0,0,0,0.06)">'
-      + '<div style="width:6px;min-width:6px;height:6px;border-radius:50%;background:' + color + ';margin-top:6px"></div>'
-      + '<div><strong style="font-size:13px;color:var(--navy)">' + p.name + '</strong>'
-      + '<span style="font-size:12px;color:var(--text-mid)"> — ' + p.note + '</span></div>'
-      + '</div>';
+      + '<div style="width:6px;min-width:6px;height:6px;border-radius:50%;background:'+color+';margin-top:6px"></div>'
+      + '<div><strong style="font-size:13px;color:var(--navy)">'+p.name+'</strong>'
+      + '<span style="font-size:12px;color:var(--text-mid)"> — '+p.note+'</span></div></div>';
   }).join('');
 
-  el.innerHTML = '<div class="ai-badge">&#10000; Your ' + pathData.label + ' Roadmap — ' + arch + ' Archetype</div>'
-    + '<div class="ai-content">'
-    + '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1.2rem">' + pathData.intro + '</p>'
-    + '<div style="background:rgba(0,0,0,0.02);border-left:3px solid ' + color + ';border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:1rem">'
-    + '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:' + color + ';margin-bottom:4px">Your ' + arch + ' approach</div>'
-    + '<div style="font-size:14px;color:var(--navy);font-weight:500;line-height:1.4">' + archData.theme + '</div>'
-    + '</div>'
-    + '<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:12px 16px;margin-bottom:1rem">'
-    + '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:6px">Your guiding question</div>'
-    + '<div style="font-size:14px;color:var(--navy);font-style:italic;line-height:1.5">' + archData.question + '</div>'
-    + '</div>'
-    + '<div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);margin-bottom:8px">Programs and pathways to explore</div>'
-    + '<div style="margin-bottom:1rem">' + programsHtml + '</div>'
-    + '<div style="background:rgba(45,106,79,0.06);border-radius:8px;padding:12px 16px;margin-bottom:1rem">'
-    + '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#2d6a4f;margin-bottom:4px">What this year should produce</div>'
-    + '<div style="font-size:13px;color:var(--navy);line-height:1.5">' + archData.deliverable + '</div>'
-    + '</div>'
-    + '<details style="margin-bottom:8px"><summary style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);cursor:pointer;padding:8px 0">Counselor guidance &#9660;</summary>'
-    + '<div style="background:rgba(24,95,165,0.04);border-radius:8px;padding:12px;margin-top:8px">'
-    + '<p style="font-size:12px;color:var(--text-mid);line-height:1.6">' + pathData.counselorNote + '</p>'
-    + '</div></details>'
-    + '<details><summary style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);cursor:pointer;padding:8px 0">For parents &#9660;</summary>'
-    + '<div style="background:rgba(200,169,110,0.06);border-radius:8px;padding:12px;margin-top:8px">'
-    + '<p style="font-size:12px;color:var(--text-mid);line-height:1.6">' + pathData.parentNote + '</p>'
-    + '</div></details>'
-    + '</div>';
+  el.innerHTML = '<div class="ai-badge">&#10000; Your '+pathData.label+' Roadmap — '+arch+' Archetype</div>'
+    +'<div class="ai-content">'
+    +'<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1.2rem">'+pathData.intro+'</p>'
+    +'<div style="background:rgba(0,0,0,0.02);border-left:3px solid '+color+';border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:1rem">'
+    +'<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:'+color+';margin-bottom:4px">Your '+arch+' approach</div>'
+    +'<div style="font-size:14px;color:var(--navy);font-weight:500;line-height:1.4">'+archData.theme+'</div></div>'
+    +'<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:12px 16px;margin-bottom:1rem">'
+    +'<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:6px">Your guiding question</div>'
+    +'<div style="font-size:14px;color:var(--navy);font-style:italic;line-height:1.5">'+archData.question+'</div></div>'
+    +'<div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);margin-bottom:8px">Programs and pathways to explore</div>'
+    +'<div style="margin-bottom:1rem">'+progs+'</div>'
+    +'<div style="background:rgba(45,106,79,0.06);border-radius:8px;padding:12px 16px;margin-bottom:1rem">'
+    +'<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#2d6a4f;margin-bottom:4px">What this year should produce</div>'
+    +'<div style="font-size:13px;color:var(--navy);line-height:1.5">'+archData.deliverable+'</div></div>'
+    +'<details style="margin-bottom:8px"><summary style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);cursor:pointer;padding:8px 0">Counselor guidance &#9660;</summary>'
+    +'<div style="background:rgba(24,95,165,0.04);border-radius:8px;padding:12px;margin-top:8px">'
+    +'<p style="font-size:12px;color:var(--text-mid);line-height:1.6">'+pathData.counselorNote+'</p></div></details>'
+    +'<details><summary style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);cursor:pointer;padding:8px 0">For parents &#9660;</summary>'
+    +'<div style="background:rgba(200,169,110,0.06);border-radius:8px;padding:12px;margin-top:8px">'
+    +'<p style="font-size:12px;color:var(--text-mid);line-height:1.6">'+pathData.parentNote+'</p></div></details>'
+    +'</div>';
 
-  // Show the section — direct getElementById, no closest()
   section.style.display = '';
-  console.log('[BC] pathSupplement — rendered successfully for:', plan, arch);
+  console.log('[BC] pathSupplement rendered:', plan, arch);
 }
 
 
