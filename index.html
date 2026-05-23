@@ -627,7 +627,7 @@ function restoreIntakeForm() {
 }
 
 function saveIntake() {
-  const fields = ['firstname','lastname','email','parent-email','phone','city','state','school','schoolcode','gradyear','gpa','testscores','extracurriculars','interests'];
+  const fields = ['firstname','lastname','email','parent-email','phone','city','state','school','schoolcode','gradyear','gpa','testscores','extracurriculars','interests','posthsplan'];
   fields.forEach(f => { const el = document.getElementById('f-'+f); if(el) intakeData[f] = el.value; });
   const cb = document.getElementById('f-consent'); if(cb) intakeData.consent = cb.checked;
   updateCompletionNote();
@@ -1365,7 +1365,7 @@ async function renderResults(r) {
   // Generate personalized premium report for this student
   runPremiumReport(r, pArch, sArch, studentName);
   // Generate path supplement for non-traditional path students
-  generatePathSupplement(archProfile, r.intake || {});
+  generatePathSupplement(archProfile, r.intake || intakeData || {});
   // Standalone counselor check (runs even if premium report fails)
   checkCounselorCodeOnResults();
   // Init sticky CTA
@@ -5459,8 +5459,11 @@ async function generatePathSupplement(archProfile, intake) {
   var el = document.getElementById('prem-path-supplement');
   if (!el) return;
 
-  var plan = intake && intake.posthsplan ? intake.posthsplan : '';
-  // Map military_academy to its track; four_year and undecided get no supplement
+  // Read posthsplan from multiple sources - intake data, DOM element, global intakeData
+  var plan = (intake && intake.posthsplan) ? intake.posthsplan : '';
+  if (!plan) { var planEl = document.getElementById('f-posthsplan'); if (planEl) plan = planEl.value || ''; }
+  if (!plan && typeof intakeData !== 'undefined') plan = intakeData.posthsplan || '';
+  // four_year and undecided get no supplement
   var skipPlans = ['four_year', 'undecided', ''];
   if (skipPlans.indexOf(plan) > -1) {
     el.closest('.results-section') && (el.closest('.results-section').style.display = 'none');
