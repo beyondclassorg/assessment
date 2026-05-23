@@ -5459,11 +5459,11 @@ async function generatePathSupplement(archProfile, intake) {
   var el = document.getElementById('prem-path-supplement');
   if (!el) return;
 
-  // Read posthsplan from multiple sources - intake data, DOM element, global intakeData
+  // Read from every possible source
   var plan = (intake && intake.posthsplan) ? intake.posthsplan : '';
   if (!plan) { var planEl = document.getElementById('f-posthsplan'); if (planEl) plan = planEl.value || ''; }
   if (!plan && typeof intakeData !== 'undefined') plan = intakeData.posthsplan || '';
-  // four_year and undecided get no supplement
+  console.log('[BC] generatePathSupplement — plan:', plan, '| intake.posthsplan:', intake && intake.posthsplan);
   var skipPlans = ['four_year', 'undecided', ''];
   if (skipPlans.indexOf(plan) > -1) {
     el.closest('.results-section') && (el.closest('.results-section').style.display = 'none');
