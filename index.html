@@ -627,7 +627,7 @@ function restoreIntakeForm() {
 }
 
 function saveIntake() {
-  const fields = ['firstname','lastname','email','parent-email','phone','city','state','school','schoolcode','gradyear','gpa','testscores','extracurriculars','interests'];
+  const fields = ['firstname','lastname','email','parent-email','phone','city','state','school','schoolcode','gradyear','gpa','testscores','extracurriculars','interests','posthsplan'];
   fields.forEach(f => { const el = document.getElementById('f-'+f); if(el) intakeData[f] = el.value; });
   const cb = document.getElementById('f-consent'); if(cb) intakeData.consent = cb.checked;
   updateCompletionNote();
