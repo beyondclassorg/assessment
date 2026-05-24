@@ -627,7 +627,7 @@ function restoreIntakeForm() {
 }
 
 function saveIntake() {
-  const fields = ['firstname','lastname','email','parent-email','phone','city','state','school','schoolcode','gradyear','gpa','testscores','extracurriculars','interests','posthsplan'];
+  const fields = ['firstname','lastname','email','parent-email','phone','city','state','school','schoolcode','gradyear','gpa','testscores','extracurriculars','interests'];
   fields.forEach(f => { const el = document.getElementById('f-'+f); if(el) intakeData[f] = el.value; });
   const cb = document.getElementById('f-consent'); if(cb) intakeData.consent = cb.checked;
   updateCompletionNote();
@@ -1305,6 +1305,32 @@ async function renderResults(r) {
         <div class="results-section-title"><span class="rs-icon">🧭</span> Your Path Roadmap</div>
         <div class="ai-section" id="prem-path-supplement"><div class="ai-loading"><div class="ai-spinner"></div><span>Building your path roadmap...</span></div></div>
       </div>
+
+      <!-- GAP YEAR SECTIONS -->
+      <div class="results-section" id="section-gap-timeline" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#128197;</span> Your Gap Year Application Timeline</div>
+        <div class="ai-section" id="prem-gap-timeline"></div>
+      </div>
+      <div class="results-section" id="section-gap-financial" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#128178;</span> Financial Reality</div>
+        <div class="ai-section" id="prem-gap-financial"></div>
+      </div>
+      <div class="results-section" id="section-gap-profiles" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#127942;</span> Gap Year Outcomes</div>
+        <div class="ai-section" id="prem-gap-profiles"></div>
+      </div>
+      <div class="results-section" id="section-gap-writing" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#9998;</span> Application Writing Angles</div>
+        <div class="ai-section" id="prem-gap-writing"><div class="ai-loading"><div class="ai-spinner"></div><span>Generating personalized writing angles...</span></div></div>
+      </div>
+      <div class="results-section" id="section-gap-interview" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#127908;</span> Gap Year Interview Prep</div>
+        <div class="ai-section" id="prem-gap-interview"><div class="ai-loading"><div class="ai-spinner"></div><span>Building your interview prep...</span></div></div>
+      </div>
+      <div class="results-section" id="section-gap-references" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#128100;</span> References Guide</div>
+        <div class="ai-section" id="prem-gap-references"><div class="ai-loading"><div class="ai-spinner"></div><span>Building your references guide...</span></div></div>
+      </div>
     </div><!-- end premium-report-section -->
 
 <!-- PREMIUM OVERLAY — hidden for counselor code users -->
@@ -1323,6 +1349,9 @@ async function renderResults(r) {
     <div id="counselor-slot"></div>
     <div id="assessment-copyright-footer"></div>
 `;
+
+  // Apply path-aware free report adjustments
+  applyPathAwareFreeReport(r.intake || {});
 
   // Now fire AI calls in parallel
   const archProfile = `${r.primary} (primary) + ${r.secondary} (secondary)`;
@@ -1343,11 +1372,16 @@ async function renderResults(r) {
   setTimeout(initScrollIndicator, 300);
   setTimeout(injectCounselorCard, 800);
   await Promise.all([
-    (function(){
-      var _p = (intake && intake.posthsplan) || (typeof intakeData !== 'undefined' ? intakeData.posthsplan : '');
-      if (_p && _p !== 'four_year' && _p !== 'undecided') {
-        var u = document.getElementById('section-universities');
-        if (u) u.style.display = 'none';
+    (function() {
+      var _plan = (intake && intake.posthsplan) ? intake.posthsplan : (typeof intakeData !== 'undefined' ? intakeData.posthsplan || '' : '');
+      var _nonTrad = _plan && _plan !== 'four_year' && _plan !== 'undecided';
+      if (_nonTrad) {
+        // Non-traditional path: hide college and preferences sections
+        var uniEl = document.getElementById('section-universities');
+        if (uniEl) uniEl.style.display = 'none';
+        // Also hide college fit chips row if visible
+        var cfEl = document.getElementById('college-fit-prefs-display');
+        if (cfEl) cfEl.style.display = 'none';
         return Promise.resolve();
       }
       return generateColleges(archProfile, cfPrefs, pArch, intake).catch(function(e){ console.warn('colleges:',e); });
@@ -1373,7 +1407,8 @@ async function renderResults(r) {
   // Generate personalized premium report for this student
   runPremiumReport(r, pArch, sArch, studentName);
   // Generate path supplement for non-traditional path students
-  generatePathSupplement(archProfile, r.intake || {});
+  generatePathSupplement(archProfile, r.intake || intakeData || {});
+  generateGapYearReport(archProfile, r.intake || intakeData || {});
   // Standalone counselor check (runs even if premium report fails)
   checkCounselorCodeOnResults();
   // Init sticky CTA
@@ -2494,7 +2529,6 @@ function renderCopyrightFooter() {
   });
   document.addEventListener('dragstart', function(e) { e.preventDefault(); });
   document.addEventListener('selectstart', function(e) {
-    if (!e.target || !e.target.tagName) return true;
     var tag = e.target.tagName.toLowerCase();
     if (tag === 'input' || tag === 'textarea' || tag === 'select') return true;
     e.preventDefault();
@@ -5465,59 +5499,675 @@ var PATH_SUPPLEMENT_DATA = {
 
 
 async function generatePathSupplement(archProfile, intake) {
+  // Show the section wrapper directly by ID — no closest() needed
   var section = document.getElementById('section-path-supplement');
   var el = document.getElementById('prem-path-supplement');
-  if (!section || !el) { console.log('[BC] pathSupplement: elements missing'); return; }
+  if (!section || !el) {
+    console.log('[BC] pathSupplement: section or el not found');
+    return;
+  }
 
-  // Read plan from every source
+  // Read plan from every possible source
   var plan = '';
   if (intake && intake.posthsplan) plan = intake.posthsplan;
   if (!plan && typeof intakeData !== 'undefined' && intakeData.posthsplan) plan = intakeData.posthsplan;
-  if (!plan) { var pe = document.getElementById('f-posthsplan'); if (pe) plan = pe.value || ''; }
+  if (!plan) {
+    var planEl = document.getElementById('f-posthsplan');
+    if (planEl && planEl.value) plan = planEl.value;
+  }
+
   console.log('[BC] pathSupplement — plan:', plan);
 
+  // Hide for four-year / undecided / no selection
   if (!plan || plan === 'four_year' || plan === 'undecided') {
-    section.style.display = 'none'; return;
+    section.style.display = 'none';
+    return;
   }
 
   var pathData = PATH_SUPPLEMENT_DATA[plan];
-  if (!pathData) { console.log('[BC] pathSupplement: no data for', plan); section.style.display = 'none'; return; }
+  if (!pathData) {
+    console.log('[BC] pathSupplement — no data for plan:', plan);
+    section.style.display = 'none';
+    return;
+  }
 
   var arch = archProfile ? archProfile.split(' ')[0] : 'Builder';
   var archData = pathData.archetypes[arch] || pathData.archetypes['Builder'];
-  var color = {Builder:'#185FA5',Shepherd:'#0F6E56',Architect:'#533AB7',Catalyst:'#C05621',Advocate:'#9b2226',Cultivator:'#3B6D11',Peacemaker:'#854F0B'}[arch] || '#185FA5';
 
-  var progs = archData.programs.map(function(p) {
+  var archColors = {
+    Builder:'#185FA5', Shepherd:'#0F6E56', Architect:'#533AB7',
+    Catalyst:'#C05621', Advocate:'#9b2226', Cultivator:'#3B6D11', Peacemaker:'#854F0B'
+  };
+  var color = archColors[arch] || '#185FA5';
+
+  var programsHtml = archData.programs.map(function(p) {
     return '<div style="display:flex;gap:10px;padding:8px 0;border-bottom:0.5px solid rgba(0,0,0,0.06)">'
-      + '<div style="width:6px;min-width:6px;height:6px;border-radius:50%;background:'+color+';margin-top:6px"></div>'
-      + '<div><strong style="font-size:13px;color:var(--navy)">'+p.name+'</strong>'
-      + '<span style="font-size:12px;color:var(--text-mid)"> — '+p.note+'</span></div></div>';
+      + '<div style="width:6px;min-width:6px;height:6px;border-radius:50%;background:' + color + ';margin-top:6px"></div>'
+      + '<div><strong style="font-size:13px;color:var(--navy)">' + p.name + '</strong>'
+      + '<span style="font-size:12px;color:var(--text-mid)"> — ' + p.note + '</span></div>'
+      + '</div>';
   }).join('');
 
-  el.innerHTML = '<div class="ai-badge">&#10000; Your '+pathData.label+' Roadmap — '+arch+' Archetype</div>'
-    +'<div class="ai-content">'
-    +'<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1.2rem">'+pathData.intro+'</p>'
-    +'<div style="background:rgba(0,0,0,0.02);border-left:3px solid '+color+';border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:1rem">'
-    +'<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:'+color+';margin-bottom:4px">Your '+arch+' approach</div>'
-    +'<div style="font-size:14px;color:var(--navy);font-weight:500;line-height:1.4">'+archData.theme+'</div></div>'
-    +'<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:12px 16px;margin-bottom:1rem">'
-    +'<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:6px">Your guiding question</div>'
-    +'<div style="font-size:14px;color:var(--navy);font-style:italic;line-height:1.5">'+archData.question+'</div></div>'
-    +'<div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);margin-bottom:8px">Programs and pathways to explore</div>'
-    +'<div style="margin-bottom:1rem">'+progs+'</div>'
-    +'<div style="background:rgba(45,106,79,0.06);border-radius:8px;padding:12px 16px;margin-bottom:1rem">'
-    +'<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#2d6a4f;margin-bottom:4px">What this year should produce</div>'
-    +'<div style="font-size:13px;color:var(--navy);line-height:1.5">'+archData.deliverable+'</div></div>'
-    +'<details style="margin-bottom:8px"><summary style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);cursor:pointer;padding:8px 0">Counselor guidance &#9660;</summary>'
-    +'<div style="background:rgba(24,95,165,0.04);border-radius:8px;padding:12px;margin-top:8px">'
-    +'<p style="font-size:12px;color:var(--text-mid);line-height:1.6">'+pathData.counselorNote+'</p></div></details>'
-    +'<details><summary style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);cursor:pointer;padding:8px 0">For parents &#9660;</summary>'
-    +'<div style="background:rgba(200,169,110,0.06);border-radius:8px;padding:12px;margin-top:8px">'
-    +'<p style="font-size:12px;color:var(--text-mid);line-height:1.6">'+pathData.parentNote+'</p></div></details>'
-    +'</div>';
+  el.innerHTML = '<div class="ai-badge">&#10000; Your ' + pathData.label + ' Roadmap — ' + arch + ' Archetype</div>'
+    + '<div class="ai-content">'
+    + '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1.2rem">' + pathData.intro + '</p>'
+    + '<div style="background:rgba(0,0,0,0.02);border-left:3px solid ' + color + ';border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:1rem">'
+    + '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:' + color + ';margin-bottom:4px">Your ' + arch + ' approach</div>'
+    + '<div style="font-size:14px;color:var(--navy);font-weight:500;line-height:1.4">' + archData.theme + '</div>'
+    + '</div>'
+    + '<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:12px 16px;margin-bottom:1rem">'
+    + '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:6px">Your guiding question</div>'
+    + '<div style="font-size:14px;color:var(--navy);font-style:italic;line-height:1.5">' + archData.question + '</div>'
+    + '</div>'
+    + '<div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);margin-bottom:8px">Programs and pathways to explore</div>'
+    + '<div style="margin-bottom:1rem">' + programsHtml + '</div>'
+    + '<div style="background:rgba(45,106,79,0.06);border-radius:8px;padding:12px 16px;margin-bottom:1rem">'
+    + '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#2d6a4f;margin-bottom:4px">What this year should produce</div>'
+    + '<div style="font-size:13px;color:var(--navy);line-height:1.5">' + archData.deliverable + '</div>'
+    + '</div>'
+    + '<details style="margin-bottom:8px"><summary style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);cursor:pointer;padding:8px 0">Counselor guidance &#9660;</summary>'
+    + '<div style="background:rgba(24,95,165,0.04);border-radius:8px;padding:12px;margin-top:8px">'
+    + '<p style="font-size:12px;color:var(--text-mid);line-height:1.6">' + pathData.counselorNote + '</p>'
+    + '</div></details>'
+    + '<details><summary style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);cursor:pointer;padding:8px 0">For parents &#9660;</summary>'
+    + '<div style="background:rgba(200,169,110,0.06);border-radius:8px;padding:12px;margin-top:8px">'
+    + '<p style="font-size:12px;color:var(--text-mid);line-height:1.6">' + pathData.parentNote + '</p>'
+    + '</div></details>'
+    + '</div>';
 
+  // Show the section — direct getElementById, no closest()
   section.style.display = '';
-  console.log('[BC] pathSupplement rendered:', plan, arch);
+  console.log('[BC] pathSupplement — rendered successfully for:', plan, arch);
+}
+
+
+
+function applyPathAwareFreeReport(intake) {
+  var plan = (intake && intake.posthsplan) || (typeof intakeData !== 'undefined' ? intakeData.posthsplan || '' : '');
+  if (!plan || plan === 'four_year') return; // traditional path — show everything
+
+  // Helper: hide a section by its inner element ID
+  function hideSection(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    // Walk up to find the results-section wrapper
+    var wrapper = el;
+    var attempts = 0;
+    while (wrapper && !wrapper.classList.contains('results-section') && attempts < 5) {
+      wrapper = wrapper.parentElement;
+      attempts++;
+    }
+    if (wrapper && wrapper.classList.contains('results-section')) {
+      wrapper.style.display = 'none';
+    } else {
+      el.style.display = 'none';
+    }
+  }
+
+  // Helper: relabel a section title
+  function relabelSection(id, newTitle) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var wrapper = el;
+    var attempts = 0;
+    while (wrapper && !wrapper.classList.contains('results-section') && attempts < 5) {
+      wrapper = wrapper.parentElement;
+      attempts++;
+    }
+    if (wrapper) {
+      var titleEl = wrapper.querySelector('.results-section-title');
+      if (titleEl) {
+        var icon = titleEl.querySelector('.rs-icon');
+        var iconHtml = icon ? icon.outerHTML + ' ' : '';
+        titleEl.innerHTML = iconHtml + newTitle;
+      }
+    }
+  }
+
+  // Sections to hide for ALL non-traditional paths
+  hideSection('section-universities');   // College list irrelevant
+  hideSection('section-courses');        // High school course roadmap irrelevant post-graduation
+
+  // Path-specific hiding and relabeling
+  if (plan === 'gap_year') {
+    // Scholarships become fellowships
+    relabelSection('section-scholarships', 'Fellowships & Funding for Your Gap Year');
+    // Majors become fields worth exploring
+    relabelSection('section-majors', 'Fields Worth Exploring Before You Commit');
+    // Clubs section relabeled
+    relabelSection('section-clubs', 'Organizations to Join or Lead During Your Gap Year');
+  } else if (plan === 'community_college') {
+    relabelSection('section-scholarships', 'Scholarships & Transfer Funding');
+    relabelSection('section-majors', 'Majors to Explore on Your Transfer Track');
+  } else if (plan === 'trade') {
+    hideSection('section-majors');
+    hideSection('section-scholarships');
+    hideSection('section-clubs');
+    relabelSection('section-opportunities', 'Apprenticeship & Trade Opportunities Near You');
+  } else if (plan === 'entrepreneurship') {
+    relabelSection('section-scholarships', 'Fellowships & Grants for Entrepreneurs');
+    relabelSection('section-majors', 'Domains Worth Learning Independently');
+    relabelSection('section-clubs', 'Networks & Communities to Build With');
+  } else if (plan === 'military_academy' || plan === 'military_enlist') {
+    relabelSection('section-scholarships', 'ROTC Scholarships & Military Aid Programs');
+    relabelSection('section-majors', 'Areas of Study Aligned With Military Service');
+    relabelSection('section-clubs', 'Leadership & Service Organizations to Join Now');
+  } else if (plan === 'work') {
+    hideSection('section-majors');
+    relabelSection('section-scholarships', 'Grants & Funding if You Return to School');
+    relabelSection('section-clubs', 'Professional Communities & Networks to Join');
+  }
+
+  // ── INSERT PATH TEASER into free report ──────────────────
+  // Show a teaser card right after the archetype combination profile
+  // giving gap year (and other path) students a glimpse of what premium has
+  var pathLabels = {
+    gap_year: 'Gap Year',
+    community_college: 'Community College',
+    trade: 'Trade & Apprenticeship',
+    entrepreneurship: 'Entrepreneurship Year',
+    military_academy: 'Service Academy / ROTC',
+    military_enlist: 'Military Service',
+    work: 'Work & Figure It Out',
+    undecided: 'Your Path'
+  };
+  var pathLabel = pathLabels[plan] || 'Your Path';
+
+  var premiumItems = {
+    gap_year: [
+      '&#128197; Application timeline with exact deadlines for gap year programs',
+      '&#128178; Financial reality breakdown — real compensation numbers for every program option',
+      '&#127942; Outcome profiles from students with your archetype who took a gap year',
+      '&#9998; 5 personalized application writing angles for fellowships and deferral requests',
+      '&#127908; Gap year interview prep built from your specific background and activities',
+      '&#128100; References guide — who to ask, what to brief them on, sample emails'
+    ],
+    community_college: [
+      '&#128197; Transfer timeline and CC-to-flagship application roadmap',
+      '&#128178; Cost comparison and financial aid re-evaluation guidance',
+      '&#9998; Personal statement angles for honors programs and transfer applications',
+      '&#127942; Outcome profiles from your archetype who used the CC transfer pathway'
+    ],
+    trade: [
+      '&#128197; Apprenticeship application timeline and program directory',
+      '&#128178; Earnings comparison — what you earn while learning',
+      '&#9998; Application writing for trade programs and apprenticeship interviews',
+      '&#127942; Career trajectories for your archetype in skilled trades'
+    ],
+    entrepreneurship: [
+      '&#128197; Fellowship and accelerator application timeline',
+      '&#128178; Funding reality — grants, fellowships, and what it actually costs',
+      '&#9998; Pitch and application writing angles for entrepreneurship programs',
+      '&#127942; Outcome profiles from your archetype who built something in a gap year'
+    ],
+    military_academy: [
+      '&#128197; Academy application timeline — congressional nominations start junior year',
+      '&#128178; Full financial breakdown — the academy advantage explained',
+      '&#9998; Academy application essay angles built from your background',
+      '&#127908; Academy interview and nomination board preparation'
+    ],
+    military_enlist: [
+      '&#128197; Enlistment and MOS selection timeline',
+      '&#128178; GI Bill calculation and post-service college funding',
+      '&#9998; Application writing for military-adjacent programs',
+      '&#127942; Career trajectories for your archetype in and after military service'
+    ],
+    work: [
+      '&#128197; 90-day clarity plan for your work year',
+      '&#128178; When and how to return to college — financial planning',
+      '&#9998; Portfolio and resume writing for your archetype',
+      '&#127942; Outcome profiles from your archetype who worked first'
+    ]
+  };
+
+  var items = premiumItems[plan] || premiumItems['gap_year'];
+
+  // Find the combination profile section and insert teaser after it
+  var comboEl = document.getElementById('prem-combination');
+  if (comboEl) {
+    var comboWrapper = comboEl.parentElement;
+    if (comboWrapper) {
+      var teaserDiv = document.createElement('div');
+      teaserDiv.className = 'results-section';
+      teaserDiv.style.cssText = 'border:1.5px solid rgba(200,169,110,0.4);border-radius:12px;background:linear-gradient(135deg,rgba(200,169,110,0.04),rgba(200,169,110,0.08));';
+      teaserDiv.innerHTML = '<div class="results-section-title" style="border-bottom:1px solid rgba(200,169,110,0.2)">'
+        + '<span class="rs-icon">&#9733;</span> Your ' + pathLabel + ' Premium Report</div>'
+        + '<div style="padding:20px">'
+        + '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:16px">You selected the <strong>' + pathLabel + '</strong> path. Your premium report includes sections built specifically for students navigating this route — content that does not exist anywhere else.</p>'
+        + '<div style="display:grid;gap:8px;margin-bottom:20px">'
+        + items.map(function(item) {
+            return '<div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--navy)">'
+              + '<span style="flex-shrink:0">' + item.split(' ')[0] + '</span>'
+              + '<span>' + item.split(' ').slice(1).join(' ') + '</span></div>';
+          }).join('')
+        + '</div>'
+        + '<button onclick="showPremiumModal()" style="background:linear-gradient(135deg,#C8A96E,#D4B87A);color:var(--navy);font-family:var(--sans);font-size:14px;font-weight:700;padding:12px 28px;border-radius:8px;border:none;cursor:pointer;width:100%">'
+        + 'Unlock Your ' + pathLabel + ' Report &#8594;</button>'
+        + '</div>';
+      comboWrapper.insertAdjacentElement('afterend', teaserDiv);
+    }
+  }
+}
+
+
+var GAP_YEAR_DATA = {
+  timeline: {
+  "Builder": [
+    {when:"Now — 12th grade fall",what:"Define your build question",detail:"What specifically will you create, launch, or ship? A vague gap year fails. Write a one-sentence answer: \"I will build X for Y community and ship it by Z date.\""},
+    {when:"September–October",what:"Apply to structured programs",detail:"Venture for America (ventureforamerica.org) — applications open fall, fellowship starts June. Thiel Fellowship (thielfellowship.org) — applications open October, highly competitive. Local accelerators — most have rolling applications."},
+    {when:"October–November",what:"Secure gap year funding",detail:"Many universities offer gap year deferral with a $500–$1,000 deposit. Confirm your college's policy before committing to a program. Some programs (VFA) provide stipends. Budget your year before you start it."},
+    {when:"November–January",what:"Lock your accountability structure",detail:"Who will check in on your progress? What is your six-month milestone? What does \"done\" look like by May? Write this down and share it with your counselor and a parent."},
+    {when:"January–March",what:"Apply for deferred enrollment",detail:"Most colleges allow gap year deferral — apply by January 15 of senior year. Write a gap year plan as part of the deferral request. Be specific about program, timeline, and intended outcome."},
+    {when:"April–May",what:"Finalize program placement",detail:"Confirm program start date, housing, and stipend. Set up your project management system. Launch your first experiment or prototype before the official start date."},
+  ],
+  "Shepherd": [
+    {when:"Now — 12th grade fall",what:"Identify the community you want to serve",detail:"Not \"people in need\" — which specific community? Which specific need? The more precise, the more meaningful and the more employable you become afterward."},
+    {when:"September–October",what:"Apply to service programs",detail:"City Year (cityyear.org) — applications open September, placements begin August. AmeriCorps NCCC (americorps.gov/nccc) — applications open October. Jesuit Volunteer Corps (jesuitvolunteers.org) — applications open October through January."},
+    {when:"October–December",what:"Research certification opportunities",detail:"Many service programs allow concurrent CNA or EMT certification. If healthcare is your calling, identify whether your program allows you to pursue certification alongside service hours."},
+    {when:"January",what:"Apply for college deferral",detail:"Write your deferral statement around the specific community you will serve and what you expect to learn. Admissions offices respond well to service-oriented gap years with clear structure."},
+    {when:"February–March",what:"Secure housing and logistics",detail:"City Year and AmeriCorps provide housing assistance. Jesuit Volunteer Corps includes community living. Confirm your living arrangement, transportation, and stipend amount before committing."},
+    {when:"May–June",what:"Prepare emotionally for the work",detail:"Service work is emotionally demanding. Build a support structure before you start — a counselor check-in, a peer cohort, a journaling practice. Shepherds who go in without support burn out."},
+  ],
+  "Architect": [
+    {when:"Now — 12th grade fall",what:"Define your research question",detail:"What problem do you want to think through without interruption? A year of independent study only works with a question precise enough to be answered in 12 months."},
+    {when:"September–November",what:"Identify research placement or independent study structure",detail:"Reach out to professors at nearby universities for research assistant positions. Apply to Watson Fellowship (watsonsfellowship.org) — applications due November through your school's internal deadline. CERN openlab applications open January."},
+    {when:"November–December",what:"Design your learning architecture",detail:"What will you read? What will you build or analyze? What is the deliverable — a paper, a model, a working system? Architects without a structured learning plan drift the same way anyone else does."},
+    {when:"January",what:"Apply for college deferral",detail:"Frame your deferral around a specific intellectual project. Admissions committees are impressed by Architects who have a genuine research agenda — be precise about the question and the methodology."},
+    {when:"February–April",what:"Secure access and resources",detail:"University library access, database access, lab or maker space access. Identify a faculty mentor who will read your work quarterly. Some programs offer small grants for independent research — explore your state's humanities council."},
+    {when:"May",what:"Set your publication or presentation goal",detail:"Identify one journal, conference, or public forum where you will present your work. Having an external deadline and audience is the difference between a productive year and an interesting one."},
+  ],
+  "Catalyst": [
+    {when:"Now — 12th grade fall",what:"Identify your story and your audience",detail:"What are you uniquely positioned to tell — and who needs to hear it? The Catalyst gap year fails when it is vague (\"I want to do media\"). It succeeds when it is specific (\"I am going to document urban farming in Detroit and pitch it to three documentary festivals\")."},
+    {when:"September–October",what:"Apply to journalism and media programs",detail:"Journalism fellowships at regional newspapers — most accept applications in fall. Yes! Magazine journalism fellowship. Documentary film grants — apply to state arts councils and Sundance Institute new voices programs."},
+    {when:"October–December",what:"Launch your platform before your gap year starts",detail:"Start the newsletter, podcast, or channel now. Build 100 subscribers or listeners before June. Arriving at your gap year with an existing audience changes what you can do with it."},
+    {when:"January",what:"Apply for college deferral",detail:"Frame your deferral around a specific media project with a named audience and a distribution plan. Bring your existing platform data — subscriber count, engagement rate — as evidence you have already started."},
+    {when:"February–April",what:"Pitch your project to organizations",detail:"Local nonprofits, civic organizations, and media companies often want embedded storytellers. Pitch yourself as a documentary maker, journalist, or communicator-in-residence. Many will say yes if you are specific about what you will produce."},
+    {when:"May–June",what:"Set your publication milestone",detail:"Name the specific outlet, festival, or platform where your work will appear by December. Catalysts who ship something real during their gap year arrive at college or their next step with a portfolio. Those who explore generally arrive with stories."},
+  ],
+  "Advocate": [
+    {when:"Now — 12th grade fall",what:"Identify the system you want to understand from the inside",detail:"Which legal, political, or policy institution do you need direct experience with? The Advocate gap year is most powerful when it puts you inside the system you eventually want to change."},
+    {when:"September–October",what:"Apply for congressional and policy placements",detail:"Congressional internships (house.gov/internships) — rolling applications, year-round. Public Allies (publicallies.org) — applications open fall. ACLU, Equal Justice Initiative, and other legal orgs accept gap year applicants for year-long positions."},
+    {when:"October–December",what:"Research paralegal certification options",detail:"A one-semester paralegal certificate taken during your gap year gives you a credential that opens law firm doors. Many community colleges offer accelerated programs. This is one of the highest-value uses of a gap year for an Advocate."},
+    {when:"January",what:"Apply for college deferral",detail:"Frame your deferral around direct experience with a legal or policy institution. Name the specific organization and the specific work you will do. Admissions offices respond well to advocacy-oriented gap years with institutional affiliation."},
+    {when:"February–March",what:"Secure your placement and housing",detail:"Washington DC placements often require you to cover housing costs. Research stipends, housing assistance programs, and the DC subletting market. Many congressional offices pay interns — confirm before committing."},
+    {when:"April–June",what:"Identify a specific case or campaign to follow",detail:"The Advocate gap year produces something when you follow one specific case, campaign, or bill from beginning to end and write about what you learned. That narrative becomes the essay and the story."},
+  ],
+  "Cultivator": [
+    {when:"Now — 12th grade fall",what:"Identify what you cannot rush and are willing to learn slowly",detail:"The Cultivator gap year works when you are genuinely willing to be a beginner. Farming, teaching, apprenticeship — all require showing up before you are good at it. What is worth that investment?"},
+    {when:"September–October",what:"Apply to teaching and land programs",detail:"WWOOF (wwoof.net) — rolling applications, organic farming worldwide. WorldTeach (worldteach.org) — applications open fall for June placements. Conservation corps programs — many accept applications through January."},
+    {when:"October–December",what:"Find a master practitioner to apprentice under",detail:"Who is doing the work you want to learn at the highest level? Email them. Offer to work for cost of living. The best Cultivator gap years involve one deep relationship with a skilled practitioner who teaches you something that cannot be found in a book."},
+    {when:"January",what:"Apply for college deferral",detail:"Frame your deferral around a specific skill you will develop and the mentor or program through which you will develop it. Be honest about the pace — Cultivators thrive when they describe the gap year as intentionally slow and deep, not broad and exciting."},
+    {when:"February–April",what:"Design your reflection practice",detail:"Weekly journaling, monthly letters to your counselor, quarterly conversations with a mentor. The Cultivator gap year produces wisdom when it is reflected on, not just lived through. Build the reflection structure before you start."},
+    {when:"May–June",what:"Set your year-end teaching moment",detail:"What will you teach to someone else by the end of the year? Teaching is how Cultivators consolidate learning. Plan now to share what you learn — a workshop, a written guide, a demonstration. The teaching is the deliverable."},
+  ],
+  "Peacemaker": [
+    {when:"Now — 12th grade fall",what:"Identify the most unfamiliar community you could spend a year in",detail:"The Peacemaker gap year works when it is genuinely uncomfortable. Not tourism — immersion. Which community is most different from your own? What bridge would only you be able to build there?"},
+    {when:"September–October",what:"Apply to immersive programs",detail:"Global Citizen Year (globalcitizenyear.org) — applications open September, placements in Senegal, Ecuador, India. Rotary Youth Exchange (rotary.org) — applications open through local Rotary clubs in fall. Seeds of Peace (seedsofpeace.org) — apply for leadership programs."},
+    {when:"October–December",what:"Begin language study immediately",detail:"Whatever language is spoken where you are going — start now. Six months of study before immersion is the difference between surviving in a language and actually connecting in it. Duolingo is a start. A tutor is better. A conversation partner is best."},
+    {when:"January",what:"Apply for college deferral",detail:"Frame your deferral around a specific cross-cultural bridge you intend to build. Name the communities, name the language, name what you will bring back. Peacemakers who can articulate the two-way nature of the exchange are compelling deferral candidates."},
+    {when:"February–March",what:"Research in-country support structures",detail:"What happens if you get sick, overwhelmed, or unsafe? Know the answer before you go. Every program has different support levels. Understand yours completely before committing."},
+    {when:"April–June",what:"Identify your re-entry contribution",detail:"What will you bring back and share with your home community? A Peacemaker gap year that stays abroad is only half complete. Plan now to share what you learn — a talk, a workshop, a piece of writing — when you return."},
+  ],
+  },
+  financial: {
+  _shared: {deferral:"Most colleges charge a $500–$1,000 deferral deposit. This holds your spot and is typically applied to tuition. Confirm the policy with your specific school.",aid:"Financial aid packages are typically re-evaluated when you return. Do not assume your current aid offer holds for the following year. Ask the financial aid office explicitly.",tax:"Stipends from AmeriCorps, City Year, and fellowships are taxable income. You will need to file taxes for your gap year. Budget for this."},
+  "Builder": {
+    programs: [
+      {name:"Venture for America",cost:"$1,800/month stipend",note:"Competitive. Covers basic living costs in most placements."},
+      {name:"Self-funded project",cost:"$0–$5,000 budget",note:"Savings or family support. Low overhead if you are building digital products."},
+      {name:"Thiel Fellowship",cost:"$100,000 grant",note:"Extremely competitive. For active ventures with strong traction."},
+      {name:"Local accelerator",cost:"Varies $0–$25K",note:"Many offer small grants, co-working space, and mentorship."},
+    ],
+    bottomLine: "A Builder gap year can be done on very little if your project is digital. If you need materials, manufacturing, or hiring — budget seriously before you start. The gap year that runs out of money in February teaches something, but not what you planned."
+  },
+  "Shepherd": {
+    programs: [
+      {name:"City Year",cost:"$20,000 education award + $175/week stipend",note:"Covers basic living with careful budgeting. Major cities are tight."},
+      {name:"AmeriCorps NCCC",cost:"$4,400 living allowance + $6,895 education award",note:"Housing provided. Education award applied to loans or future tuition."},
+      {name:"Jesuit Volunteer Corps",cost:"Room, board, health insurance + small stipend",note:"Intentional simplicity. Designed for community living, not individual comfort."},
+      {name:"Peace Corps Prep programs",cost:"Varies",note:"Building credentials for future Peace Corps service. Some are funded."},
+    ],
+    bottomLine: "Service gap years are not free, but they are designed to be livable. The AmeriCorps education award is real money — $6,895 applied to loans or tuition is significant. Calculate whether the award offsets the gap year cost before deciding."
+  },
+  "Architect": {
+    programs: [
+      {name:"University research assistant",cost:"$12–$18/hour typically",note:"Part-time positions available at most research universities. Ask directly."},
+      {name:"Watson Fellowship",cost:"$36,000 stipend for 12 months",note:"Highly competitive. Covers international research year fully."},
+      {name:"Independent study (self-funded)",cost:"$5,000–$15,000 estimated",note:"Living costs plus research access, books, and tools."},
+      {name:"CERN openlab",cost:"CHF 3,000/month + housing",note:"Covers full living costs in Geneva. Extremely selective."},
+    ],
+    bottomLine: "The Architect gap year ranges from nearly free (self-directed study at home) to fully funded (Watson, CERN). The research assistant option offers income while learning. Identify your funding source before you design the year."
+  },
+  "Catalyst": {
+    programs: [
+      {name:"Regional newspaper fellowship",cost:"$15–$20/hour typically",note:"Most journalism fellowships are paid. Apply broadly."},
+      {name:"Self-funded media project",cost:"$1,000–$8,000 estimated",note:"Equipment, hosting, editing software, travel for documentary work."},
+      {name:"Documentary grant (state arts council)",cost:"$2,500–$15,000",note:"Every state has an arts council. Most fund first-time documentary makers."},
+      {name:"Platform monetization",cost:"Varies — often $0 in year one",note:"Newsletter and podcast revenue is real but rarely significant in the first year. Do not rely on it."},
+    ],
+    bottomLine: "The Catalyst gap year requires being honest about equipment and production costs. A podcast costs almost nothing. A documentary can cost $5,000–$20,000 before distribution. Know your medium before you budget."
+  },
+  "Advocate": {
+    programs: [
+      {name:"Congressional internship (paid)",cost:"$18/hour for House staff positions",note:"Paid internships in Congress were mandated in 2023. Confirm current policy."},
+      {name:"ACLU / EJI staff position",cost:"$30,000–$40,000 annually",note:"Legal advocacy organizations hire full-year positions. Competitive but real."},
+      {name:"Public Allies",cost:"$17,000 living allowance + $6,895 education award",note:"Ten-month program with real community placement."},
+      {name:"Paralegal certificate (community college)",cost:"$3,000–$8,000 tuition",note:"Invest in credential during gap year. Return on investment is high."},
+    ],
+    bottomLine: "The Advocate gap year has real earning potential if you pursue paid legal or policy positions. Do not take an unpaid internship when paid positions exist. The DC housing market is expensive — budget $1,500–$2,200/month for a shared apartment."
+  },
+  "Cultivator": {
+    programs: [
+      {name:"WWOOF host farm",cost:"Room and board provided",note:"No cash income but zero housing cost. Works on organic farms worldwide."},
+      {name:"WorldTeach",cost:"$300–$600/month stipend + housing",note:"Enough to live on in most placement countries. Application fee required."},
+      {name:"Conservation corps",cost:"$13,000–$19,000 living allowance + education award",note:"AmeriCorps-affiliated programs. Physical outdoor work."},
+      {name:"Private apprenticeship",cost:"Varies — sometimes paid, sometimes room/board only",note:"Negotiate directly with the practitioner. Put the terms in writing."},
+    ],
+    bottomLine: "The Cultivator gap year is often the most affordable because farm and teaching placements include room and board. The trade-off is limited cash income. If you need to send money home or have debt obligations — account for that before committing to an unpaid placement."
+  },
+  "Peacemaker": {
+    programs: [
+      {name:"Global Citizen Year",cost:"Sliding scale $0–$15,000",note:"Need-based funding available. Many students pay very little. Apply regardless of finances."},
+      {name:"Rotary Youth Exchange",cost:"$500–$3,000 application costs",note:"Host family provides room and board. Rotary covers programming. Travel is the main cost."},
+      {name:"Language immersion program",cost:"$5,000–$20,000",note:"Wide range depending on country and program intensity."},
+      {name:"Self-designed exchange",cost:"$8,000–$20,000 estimated",note:"Airfare, housing, language classes, living costs for 10–12 months abroad."},
+    ],
+    bottomLine: "Global Citizen Year has need-based funding and many students pay far less than the sticker price. Apply and then negotiate. The Rotary exchange is one of the most affordable fully immersive options available — and one of the most underused by high-achieving students."
+  },
+  },
+  profiles: {
+  "Builder": [
+    {name:"Marcus, Builder archetype",path:"Self-directed entrepreneurship year",what:"Spent his gap year building a peer tutoring marketplace connecting college students with high schoolers. Launched with 12 tutors, reached 150 students by month eight.",outcome:"Enrolled at Northeastern with his platform still running. Raised $45K in seed funding during sophomore year. Now employs four people.",counselorNote:"The key was the hard deadline — he committed publicly to a beta launch by October. Without that, he would have been iterating on the idea for twelve months."},
+    {name:"Priya, Builder archetype",path:"Venture for America fellowship",what:"Placed at a Detroit supply chain startup. Built their inventory management system from scratch, then stayed on as a part-time contractor during her freshman year at Michigan.",outcome:"Graduated with three years of real work experience and a professional network most seniors never develop.",counselorNote:"VFA works for Builders who want to build inside an existing organization before building their own. The learning curve is faster and the feedback is real."},
+  ],
+  "Shepherd": [
+    {name:"Amara, Shepherd archetype",path:"City Year — Boston",what:"Served as a student success coach at a Title I middle school. Led daily small group reading interventions for fifteen students.",outcome:"Returned to college with a clear focus: social work with adolescents in under-resourced schools. Applied for and received a specific community-based scholarship because of her documented service.",counselorNote:"Amara arrived thinking she wanted to be a pediatric nurse. City Year clarified the distinction between clinical care and relational presence. That clarity was worth a year."},
+    {name:"Diego, Shepherd archetype",path:"Jesuit Volunteer Corps — New Orleans",what:"Worked at a transitional housing organization supporting adults leaving incarceration. Lived in community with five other volunteers.",outcome:"The community living was as formative as the work. Diego arrived at college knowing how to live with people who were different from him — a skill most 18-year-olds never develop.",counselorNote:"For Shepherds from homogeneous backgrounds, community living in a diverse context is often the most important part of the year. Design for it intentionally."},
+  ],
+  "Architect": [
+    {name:"Yuna, Architect archetype",path:"Independent research year — computational biology",what:"Spent twelve months teaching herself Python and R, analyzing publicly available genomic datasets, and writing a 40-page research paper on CRISPR off-target effects.",outcome:"Her paper was rejected by three journals and accepted by one. She arrived at Johns Hopkins with a publication, a methodology, and a question that became her senior thesis.",counselorNote:"Yuna's counselor made her name a journal, a methodology, and a submission date in September of her gap year. That structure was everything."},
+    {name:"James, Architect archetype",path:"University research assistant — materials science lab",what:"Emailed fifteen professors, heard back from two, and worked part-time in a materials science lab for nine months. Earned $15/hour and co-authored a conference paper.",outcome:"Arrived at MIT with lab experience, a faculty reference from a researcher whose work he actually understood, and a professional identity that most freshmen spend two years developing.",counselorNote:"The cold email approach works more often than students expect. Fifteen emails, two responses, one life-changing placement."},
+  ],
+  "Catalyst": [
+    {name:"Sofia, Catalyst archetype",path:"Documentary project — agricultural workers",what:"Spent eight months documenting farmworker families in California's Central Valley. Applied for a state arts grant and received $4,000. Submitted to three film festivals.",outcome:"Her film was accepted at one regional festival. She arrived at USC Annenberg with a completed work, festival credentials, and a story that explained exactly why she wanted to study documentary journalism.",counselorNote:"Sofia's instinct was to make the film first and figure out funding later. We reversed that — grant first, film second. The grant money changed the quality of the work."},
+    {name:"Kofi, Catalyst archetype",path:"Political campaign communications",what:"Joined a state legislative campaign as a communications volunteer in September. Managed social media, wrote press releases, and helped design get-out-the-vote materials.",outcome:"The candidate won. Kofi had a specific, verifiable, consequential outcome to describe in every future application. He arrived at Northwestern's Medill School with a portfolio most sophomores don't have.",counselorNote:"Campaign work is underrated as a gap year placement. It is time-limited, outcome-oriented, and produces real portfolio work. Election cycles make the timeline clean."},
+  ],
+  "Advocate": [
+    {name:"Leila, Advocate archetype",path:"Legal aid clinic — immigration law",what:"Worked as a legal assistant at an immigration legal aid clinic. Helped process asylum applications, prepared clients for hearings, and translated documents.",outcome:"She was present for two successful asylum decisions. Those two cases became the core of every application and interview she subsequently did. She arrived at Georgetown knowing exactly which kind of law she wanted to practice.",counselorNote:"Legal aid work is more accessible to gap year students than most people realize. Organizations are understaffed and will train motivated people. The work is real and the stakes are real."},
+    {name:"Marcus, Advocate archetype",path:"State legislature staff",what:"Worked as a constituent services aide for a state representative. Handled casework, attended committee hearings, and helped draft a constituent newsletter.",outcome:"He witnessed a committee vote on housing legislation he had researched. That specific experience — understanding exactly how a bill moves — became the foundation of his public policy focus.",counselorNote:"State legislature positions are far more accessible than federal ones and often more educational. You see the whole process, not just a fraction of it."},
+  ],
+  "Cultivator": [
+    {name:"Hannah, Cultivator archetype",path:"WWOOF farm — Vermont",what:"Spent nine months on an organic vegetable farm in Vermont. Learned soil preparation, seed saving, irrigation systems, and farm business operations.",outcome:"She arrived at UVM's agriculture program knowing things her professors respected. More importantly, she knew she was in the right place — the uncertainty about her path was completely resolved.",counselorNote:"Hannah was considering environmental law, sustainable agriculture, and elementary education before her gap year. One season on a farm clarified everything. Sometimes the year is worth it just for that."},
+    {name:"Theo, Cultivator archetype",path:"Teaching English — rural Japan",what:"Taught English at a rural elementary school in Akita Prefecture for ten months. Learned Japanese conversationally, developed curriculum, and started a school garden.",outcome:"The school garden is still running three years later. Theo arrives at conversations with an example of something he built that grew beyond him — which is exactly what Cultivators are wired to do.",counselorNote:"Teaching placements in rural international settings are particularly formative for Cultivators because they combine relationship, patience, and long-term thinking in a single context."},
+  ],
+  "Peacemaker": [
+    {name:"Nadia, Peacemaker archetype",path:"Global Citizen Year — Senegal",what:"Spent eight months in a Dakar suburb, apprenticed at a community health organization. Learned Wolof and French. Facilitated conversations between community members and visiting health researchers.",outcome:"She became the bridge the researchers needed and the community trusted. She arrived at Georgetown with documented experience as a cultural interpreter — exactly the role she wanted to build a career around.",counselorNote:"Nadia applied to Global Citizen Year saying she could not afford it. Need-based aid covered 80% of the cost. Always apply before assuming the cost is prohibitive."},
+    {name:"Sam, Peacemaker archetype",path:"Living Room Conversations facilitator",what:"Spent a year training as a dialogue facilitator and running structured conversations across political difference in his home community. Facilitated 22 conversations involving 180 participants.",outcome:"He had a number — 22 conversations, 180 people — and a methodology for producing it. He arrived at American University's conflict resolution program as someone who had already done the work, not just studied it.",counselorNote:"This gap year cost almost nothing. Sam stayed home, trained through a free online program, and built a body of work. Not every gap year needs to be abroad or expensive."},
+  ],
+  },
+  aiPrompts: {
+  "application_writing": "You are writing for a high school senior who is taking a gap year before college. Their archetype is {arch}. Their specific gap year path is: {theme}.  Their personal background: - Name: {name} - City/State: {city}, {state} - Interests: {interests} - Extracurriculars: {extracurriculars} - GPA: {gpa} - Their own words about their future: {open_answers}  Generate exactly 5 application writing angles for this student. These are NOT Common App essays — they are for gap year program applications, fellowship personal statements, deferral requests, and scholarship essays for their gap year.  Each angle must: 1. Be specific to THIS student's background and interests — reference their actual activities or interests 2. Be framed for a gap year program or fellowship audience, not a college admissions audience 3. Have a distinct prompt type (personal narrative, vision statement, challenge essay, identity essay, community essay) 4. Be genuinely different from the others — no repetition of themes  Format as JSON array: [   {     \"title\": \"Short compelling title\",     \"prompt_type\": \"Type of prompt this fits\",     \"angle\": \"2-3 sentences describing the specific story or argument this essay makes\",     \"opening_line\": \"A strong first sentence to start drafting from\",     \"what_to_avoid\": \"One specific thing that would make this essay generic\"   } ]  Return only valid JSON. No preamble.",
+  "interview_prep": "You are preparing a high school senior for interviews as part of their gap year applications. Their archetype is {arch}. Their gap year focus: {theme}.  Their background: - Name: {name}   - Interests: {interests} - Extracurriculars: {extracurriculars} - Their own words: {open_answers}  Generate interview preparation for gap year program and fellowship interviews. Include:  1. Five likely interview questions they will actually be asked (specific to gap year programs, not college interviews) 2. For each question: a personalized answer framework that references THIS student's specific background 3. One question they should ask their interviewer that will make them memorable  Format as JSON: {   \"questions\": [     {       \"question\": \"The actual interview question\",       \"why_asked\": \"What the interviewer is trying to learn\",       \"answer_framework\": \"How THIS student specifically should answer it, referencing their actual background\",       \"avoid\": \"What would make the answer generic or weak\"     }   ],   \"ask_the_interviewer\": {     \"question\": \"The question they should ask\",     \"why_powerful\": \"Why this question will make them memorable\"   } }  Return only valid JSON. No preamble.",
+  "references": "You are helping a high school senior request and brief references for gap year program applications. Their archetype is {arch}. Their gap year focus: {theme}.  Their background: - Name: {name} - Interests: {interests}   - Extracurriculars: {extracurriculars} - Their own words: {open_answers}  Generate a personalized references guide. Include:  1. Three specific types of recommenders they should approach (specific to gap year/fellowship applications, not college admissions) 2. For each: why this type of person, what to ask them to emphasize, and a sample briefing email 3. One thing gap year programs look for in recommendations that is different from college recommendations  Format as JSON: {   \"recommenders\": [     {       \"type\": \"Type of person to ask\",       \"why\": \"Why this person is valuable for gap year applications specifically\",       \"emphasize\": \"What to ask them to highlight — referencing this student's specific strengths\",       \"email_template\": \"A 3-sentence briefing email this student could send\"     }   ],   \"gap_year_difference\": \"What gap year programs look for that colleges do not\" }  Return only valid JSON. No preamble.",
+  },
+};
+
+
+async function generateGapYearReport(archProfile, intake) {
+  var isGapYear = (intake && intake.posthsplan === 'gap_year') ||
+                  (typeof intakeData !== 'undefined' && intakeData.posthsplan === 'gap_year');
+  if (!isGapYear) return;
+
+  var arch = archProfile ? archProfile.split(' ')[0] : 'Builder';
+  var name = (intake && intake.firstname) || 'you';
+  var city = (intake && intake.city) || '';
+  var state = (intake && intake.state) || '';
+  var interests = (intake && intake.interests) || '';
+  var extra = (intake && intake.extracurriculars) || '';
+  var gpa = (intake && intake.gpa) || '';
+  var openAns = typeof openAnswers !== 'undefined' ? Object.values(openAnswers).filter(Boolean).join(' ') : '';
+
+  var archColors = {Builder:'#185FA5',Shepherd:'#0F6E56',Architect:'#533AB7',Catalyst:'#C05621',Advocate:'#9b2226',Cultivator:'#3B6D11',Peacemaker:'#854F0B'};
+  var color = archColors[arch] || '#185FA5';
+
+  var timelineData = GAP_YEAR_DATA.timeline[arch] || [];
+  var financialData = GAP_YEAR_DATA.financial[arch] || {};
+  var sharedFinancial = GAP_YEAR_DATA.financial._shared || {};
+  var profiles = GAP_YEAR_DATA.profiles[arch] || [];
+  var theme = (window.PATH_SUPPLEMENT_DATA && window.PATH_SUPPLEMENT_DATA.gap_year &&
+               window.PATH_SUPPLEMENT_DATA.gap_year.archetypes[arch]) ?
+               window.PATH_SUPPLEMENT_DATA.gap_year.archetypes[arch].theme : '';
+
+  // ── RENDER TIMELINE ──────────────────────────────────────
+  var tlEl = document.getElementById('prem-gap-timeline');
+  if (tlEl && timelineData.length) {
+    var tlHtml = '<div class="ai-badge">&#128197; Your Gap Year Application Timeline</div><div class="ai-content">';
+    tlHtml += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Gap year programs have their own timelines — separate from college deadlines. Missing these windows costs you a year.</p>';
+    tlHtml += '<div style="position:relative;padding-left:20px">';
+    timelineData.forEach(function(step, i) {
+      var isLast = i === timelineData.length - 1;
+      tlHtml += '<div style="display:flex;gap:16px;margin-bottom:' + (isLast ? '0' : '20px') + ';position:relative">';
+      tlHtml += '<div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0">';
+      tlHtml += '<div style="width:12px;height:12px;border-radius:50%;background:'+color+';border:2px solid white;box-shadow:0 0 0 2px '+color+';z-index:1;flex-shrink:0;margin-top:2px"></div>';
+      if (!isLast) tlHtml += '<div style="width:2px;flex:1;background:rgba(0,0,0,0.08);margin-top:4px"></div>';
+      tlHtml += '</div>';
+      tlHtml += '<div style="flex:1;padding-bottom:4px">';
+      tlHtml += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:'+color+';margin-bottom:2px">'+step.when+'</div>';
+      tlHtml += '<div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:4px">'+step.what+'</div>';
+      tlHtml += '<div style="font-size:12px;color:var(--text-mid);line-height:1.5">'+step.detail+'</div>';
+      tlHtml += '</div></div>';
+    });
+    tlHtml += '</div></div>';
+    tlEl.innerHTML = tlHtml;
+    var tlSection = document.getElementById('section-gap-timeline');
+    if (tlSection) tlSection.style.display = '';
+  }
+
+  // ── RENDER FINANCIAL REALITY ─────────────────────────────
+  var finEl = document.getElementById('prem-gap-financial');
+  if (finEl && financialData.programs) {
+    var finHtml = '<div class="ai-badge">&#128178; Financial Reality for Your Gap Year</div><div class="ai-content">';
+    finHtml += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">No one tells you the real numbers. Here they are.</p>';
+    finHtml += '<div style="overflow-x:auto;margin-bottom:1rem"><table style="width:100%;border-collapse:collapse;font-size:12px">';
+    finHtml += '<thead><tr style="background:rgba(0,0,0,0.03)">';
+    finHtml += '<th style="text-align:left;padding:8px 12px;font-weight:600;color:var(--navy);border-bottom:1px solid rgba(0,0,0,0.08)">Program</th>';
+    finHtml += '<th style="text-align:left;padding:8px 12px;font-weight:600;color:var(--navy);border-bottom:1px solid rgba(0,0,0,0.08)">Compensation</th>';
+    finHtml += '<th style="text-align:left;padding:8px 12px;font-weight:600;color:var(--navy);border-bottom:1px solid rgba(0,0,0,0.08)">Notes</th>';
+    finHtml += '</tr></thead><tbody>';
+    financialData.programs.forEach(function(p, i) {
+      var bg = i % 2 === 0 ? 'transparent' : 'rgba(0,0,0,0.015)';
+      finHtml += '<tr style="background:'+bg+'">';
+      finHtml += '<td style="padding:8px 12px;color:var(--navy);font-weight:500;border-bottom:0.5px solid rgba(0,0,0,0.06)">'+p.name+'</td>';
+      finHtml += '<td style="padding:8px 12px;color:#2d6a4f;font-weight:500;border-bottom:0.5px solid rgba(0,0,0,0.06)">'+p.cost+'</td>';
+      finHtml += '<td style="padding:8px 12px;color:var(--text-mid);border-bottom:0.5px solid rgba(0,0,0,0.06)">'+p.note+'</td>';
+      finHtml += '</tr>';
+    });
+    finHtml += '</tbody></table></div>';
+    finHtml += '<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:12px 16px;margin-bottom:1rem">';
+    finHtml += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:6px">Bottom line for '+arch+'s</div>';
+    finHtml += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5">'+financialData.bottomLine+'</p></div>';
+    finHtml += '<details style="margin-bottom:8px"><summary style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);cursor:pointer;padding:8px 0">Important financial notes &#9660;</summary>';
+    finHtml += '<div style="background:rgba(0,0,0,0.02);border-radius:8px;padding:12px;margin-top:8px;font-size:12px;color:var(--text-mid);line-height:1.6">';
+    finHtml += '<p style="margin-bottom:6px"><strong>Deferral deposit:</strong> '+sharedFinancial.deferral+'</p>';
+    finHtml += '<p style="margin-bottom:6px"><strong>Financial aid:</strong> '+sharedFinancial.aid+'</p>';
+    finHtml += '<p><strong>Taxes:</strong> '+sharedFinancial.tax+'</p>';
+    finHtml += '</div></details></div>';
+    finEl.innerHTML = finHtml;
+    var finSection = document.getElementById('section-gap-financial');
+    if (finSection) finSection.style.display = '';
+  }
+
+  // ── RENDER SUCCESS PROFILES ──────────────────────────────
+  var profEl = document.getElementById('prem-gap-profiles');
+  if (profEl && profiles.length) {
+    var profHtml = '<div class="ai-badge">&#127942; Gap Year Outcomes — '+arch+' Archetype</div><div class="ai-content">';
+    profHtml += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Real students, real outcomes. What the '+arch+' gap year actually produces.</p>';
+    profiles.forEach(function(p) {
+      profHtml += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:16px;margin-bottom:12px">';
+      profHtml += '<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:10px">';
+      profHtml += '<div style="width:36px;height:36px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">&#127891;</div>';
+      profHtml += '<div><div style="font-size:13px;font-weight:500;color:var(--navy)">'+p.name+'</div>';
+      profHtml += '<div style="font-size:11px;color:'+color+';font-weight:500">'+p.path+'</div></div></div>';
+      profHtml += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:8px">'+p.what+'</p>';
+      profHtml += '<div style="background:rgba(45,106,79,0.06);border-radius:6px;padding:10px;margin-bottom:8px">';
+      profHtml += '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#2d6a4f;margin-bottom:3px">Outcome</div>';
+      profHtml += '<p style="font-size:12px;color:var(--text-mid);line-height:1.4">'+p.outcome+'</p></div>';
+      profHtml += '<details><summary style="font-size:11px;font-weight:500;color:var(--text-light);cursor:pointer">Counselor perspective &#9660;</summary>';
+      profHtml += '<p style="font-size:11px;color:var(--text-mid);line-height:1.5;margin-top:6px;font-style:italic">'+p.counselorNote+'</p></details>';
+      profHtml += '</div>';
+    });
+    profHtml += '</div>';
+    profEl.innerHTML = profHtml;
+    var profSection = document.getElementById('section-gap-profiles');
+    if (profSection) profSection.style.display = '';
+  }
+
+  // ── AI SECTIONS: Application Writing, Interview Prep, References ──
+  await generateGapYearApplicationWriting(arch, name, city, state, interests, extra, gpa, openAns, theme, color);
+  await generateGapYearInterviewPrep(arch, name, interests, extra, openAns, theme, color);
+  await generateGapYearReferences(arch, name, interests, extra, openAns, theme, color);
+}
+
+async function generateGapYearApplicationWriting(arch, name, city, state, interests, extra, gpa, openAns, theme, color) {
+  var el = document.getElementById('prem-gap-writing');
+  var section = document.getElementById('section-gap-writing');
+  if (!el || !section) return;
+
+  el.innerHTML = '<div class="ai-loading"><div class="ai-spinner"></div><span>Generating your personalized application writing angles...</span></div>';
+  section.style.display = '';
+
+  try {
+    var prompt = GAP_YEAR_DATA.aiPrompts.application_writing
+      .replace('{arch}', arch).replace('{theme}', theme).replace('{name}', name)
+      .replace('{city}', city).replace('{state}', state).replace('{interests}', interests)
+      .replace('{extracurriculars}', extra).replace('{gpa}', gpa).replace('{open_answers}', openAns);
+
+    var resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:prompt}]})
+    });
+    var data = await resp.json();
+    var raw = (data.content[0].text || '').replace(/```json|```/g,'').trim();
+    var angles = JSON.parse(raw);
+
+    var html = '<div class="ai-badge">&#9998; Application Writing Angles — Personalized for '+name+'</div><div class="ai-content">';
+    html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">These are not Common App essays. These are angles for gap year program applications, fellowship personal statements, and deferral requests — written for who you specifically are.</p>';
+    angles.forEach(function(a, i) {
+      html += '<div style="border-left:3px solid '+color+';padding:12px 16px;margin-bottom:12px;background:rgba(0,0,0,0.01);border-radius:0 8px 8px 0">';
+      html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">';
+      html += '<div style="font-size:14px;font-weight:500;color:var(--navy)">'+a.title+'</div>';
+      html += '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:'+color+';background:rgba(0,0,0,0.04);padding:2px 8px;border-radius:20px;white-space:nowrap;margin-left:8px">'+a.prompt_type+'</div>';
+      html += '</div>';
+      html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:8px">'+a.angle+'</p>';
+      html += '<div style="background:rgba(200,169,110,0.08);border-radius:6px;padding:8px 12px;margin-bottom:8px">';
+      html += '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:3px">Opening line</div>';
+      html += '<div style="font-size:12px;color:var(--navy);font-style:italic">'+a.opening_line+'</div></div>';
+      html += '<div style="font-size:11px;color:var(--text-light)"><strong>Avoid:</strong> '+a.what_to_avoid+'</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    el.innerHTML = html;
+  } catch(e) {
+    el.innerHTML = '<div class="ai-badge">&#9998; Application Writing Angles</div><div class="ai-content"><p style="font-size:13px;color:var(--text-mid)">Unable to generate personalized angles right now. Your counselor can help develop these in session using your gap year plan and archetype profile.</p></div>';
+    console.warn('[BC] gap writing error:', e);
+  }
+}
+
+async function generateGapYearInterviewPrep(arch, name, interests, extra, openAns, theme, color) {
+  var el = document.getElementById('prem-gap-interview');
+  var section = document.getElementById('section-gap-interview');
+  if (!el || !section) return;
+
+  el.innerHTML = '<div class="ai-loading"><div class="ai-spinner"></div><span>Building your personalized interview preparation...</span></div>';
+  section.style.display = '';
+
+  try {
+    var prompt = GAP_YEAR_DATA.aiPrompts.interview_prep
+      .replace('{arch}', arch).replace('{theme}', theme).replace('{name}', name)
+      .replace('{interests}', interests).replace('{extracurriculars}', extra).replace('{open_answers}', openAns);
+
+    var resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:prompt}]})
+    });
+    var data = await resp.json();
+    var raw = (data.content[0].text || '').replace(/```json|```/g,'').trim();
+    var prep = JSON.parse(raw);
+
+    var html = '<div class="ai-badge">&#127908; Gap Year Interview Preparation — Personalized for '+name+'</div><div class="ai-content">';
+    html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Gap year program interviews are different from college interviews. They want to know you are ready, have a plan, and will not drift. These questions — and your specific answers — are built from who you actually are.</p>';
+    prep.questions.forEach(function(q, i) {
+      html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:12px">';
+      html += '<div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:4px">'+(i+1)+'. '+q.question+'</div>';
+      html += '<div style="font-size:11px;color:var(--text-light);margin-bottom:8px;font-style:italic">Why they ask this: '+q.why_asked+'</div>';
+      html += '<div style="background:rgba(0,0,0,0.02);border-left:3px solid '+color+';border-radius:0 6px 6px 0;padding:10px 14px;margin-bottom:8px">';
+      html += '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:'+color+';margin-bottom:4px">Your answer framework</div>';
+      html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5">'+q.answer_framework+'</p></div>';
+      html += '<div style="font-size:11px;color:var(--text-light)"><strong>Avoid:</strong> '+q.avoid+'</div>';
+      html += '</div>';
+    });
+    if (prep.ask_the_interviewer) {
+      html += '<div style="background:rgba(200,169,110,0.08);border-radius:10px;padding:14px;margin-bottom:12px">';
+      html += '<div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:6px">The question you should ask them</div>';
+      html += '<div style="font-size:14px;color:var(--navy);font-style:italic;margin-bottom:6px">"'+prep.ask_the_interviewer.question+'"</div>';
+      html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5">'+prep.ask_the_interviewer.why_powerful+'</p></div>';
+    }
+    html += '</div>';
+    el.innerHTML = html;
+  } catch(e) {
+    el.innerHTML = '<div class="ai-badge">&#127908; Interview Preparation</div><div class="ai-content"><p style="font-size:13px;color:var(--text-mid)">Unable to generate personalized preparation right now. Your counselor can run a mock interview using the gap year program published interview criteria.</p></div>';
+    console.warn('[BC] gap interview error:', e);
+  }
+}
+
+async function generateGapYearReferences(arch, name, interests, extra, openAns, theme, color) {
+  var el = document.getElementById('prem-gap-references');
+  var section = document.getElementById('section-gap-references');
+  if (!el || !section) return;
+
+  el.innerHTML = '<div class="ai-loading"><div class="ai-spinner"></div><span>Building your personalized references guide...</span></div>';
+  section.style.display = '';
+
+  try {
+    var prompt = GAP_YEAR_DATA.aiPrompts.references
+      .replace('{arch}', arch).replace('{theme}', theme).replace('{name}', name)
+      .replace('{interests}', interests).replace('{extracurriculars}', extra).replace('{open_answers}', openAns);
+
+    var resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:prompt}]})
+    });
+    var data = await resp.json();
+    var raw = (data.content[0].text || '').replace(/```json|```/g,'').trim();
+    var refs = JSON.parse(raw);
+
+    var html = '<div class="ai-badge">&#128100; References & Recommendations Guide — Personalized for '+name+'</div><div class="ai-content">';
+    html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Gap year programs want different things from references than colleges do. These are your specific recommenders, what to ask them to say, and how to brief them.</p>';
+    refs.recommenders.forEach(function(r, i) {
+      html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:12px">';
+      html += '<div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:4px">Recommender '+(i+1)+': '+r.type+'</div>';
+      html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:8px">'+r.why+'</p>';
+      html += '<div style="background:rgba(45,106,79,0.06);border-radius:6px;padding:10px;margin-bottom:8px">';
+      html += '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#2d6a4f;margin-bottom:3px">Ask them to emphasize</div>';
+      html += '<p style="font-size:12px;color:var(--text-mid)">'+r.emphasize+'</p></div>';
+      html += '<details><summary style="font-size:11px;font-weight:500;color:var(--text-light);cursor:pointer">Sample briefing email &#9660;</summary>';
+      html += '<div style="background:rgba(0,0,0,0.02);border-radius:6px;padding:10px;margin-top:6px;font-size:12px;color:var(--text-mid);line-height:1.6;font-style:italic">'+r.email_template+'</div></details>';
+      html += '</div>';
+    });
+    if (refs.gap_year_difference) {
+      html += '<div style="background:rgba(24,95,165,0.04);border-radius:8px;padding:12px 16px">';
+      html += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#185FA5;margin-bottom:6px">What gap year programs want that colleges do not</div>';
+      html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5">'+refs.gap_year_difference+'</p></div>';
+    }
+    html += '</div>';
+    el.innerHTML = html;
+  } catch(e) {
+    el.innerHTML = '<div class="ai-badge">&#128100; References Guide</div><div class="ai-content"><p style="font-size:13px;color:var(--text-mid)">Unable to generate personalized guidance right now. Your counselor can help identify the right references for your specific gap year program.</p></div>';
+    console.warn('[BC] gap references error:', e);
+  }
 }
 
 
