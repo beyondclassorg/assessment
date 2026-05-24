@@ -6082,156 +6082,255 @@ async function generateGapYearReport(archProfile, intake) {
 async function generateGapYearApplicationWriting(arch, name, city, state, interests, extra, gpa, openAns, theme, color) {
   var el = document.getElementById('prem-gap-writing');
   var section = document.getElementById('section-gap-writing');
-  if (!el || !section) return;
-
-  el.innerHTML = '<div class="ai-loading"><div class="ai-spinner"></div><span>Generating your personalized application writing angles...</span></div>';
-  section.style.display = '';
-
-  try {
-    var prompt = GAP_YEAR_DATA.aiPrompts.application_writing
-      .replace('{arch}', arch).replace('{theme}', theme).replace('{name}', name)
-      .replace('{city}', city).replace('{state}', state).replace('{interests}', interests)
-      .replace('{extracurriculars}', extra).replace('{gpa}', gpa).replace('{open_answers}', openAns);
-
-    var resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:prompt}]})
-    });
-    var data = await resp.json();
-    var raw = (data.content[0].text || '').replace(/```json|```/g,'').trim();
-    var angles = JSON.parse(raw);
-
-    var html = '<div class="ai-badge">&#9998; Application Writing Angles — Personalized for '+name+'</div><div class="ai-content">';
-    html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">These are not Common App essays. These are angles for gap year program applications, fellowship personal statements, and deferral requests — written for who you specifically are.</p>';
-    angles.forEach(function(a, i) {
-      html += '<div style="border-left:3px solid '+color+';padding:12px 16px;margin-bottom:12px;background:rgba(0,0,0,0.01);border-radius:0 8px 8px 0">';
-      html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">';
-      html += '<div style="font-size:14px;font-weight:500;color:var(--navy)">'+a.title+'</div>';
-      html += '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:'+color+';background:rgba(0,0,0,0.04);padding:2px 8px;border-radius:20px;white-space:nowrap;margin-left:8px">'+a.prompt_type+'</div>';
-      html += '</div>';
-      html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:8px">'+a.angle+'</p>';
-      html += '<div style="background:rgba(200,169,110,0.08);border-radius:6px;padding:8px 12px;margin-bottom:8px">';
-      html += '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:3px">Opening line</div>';
-      html += '<div style="font-size:12px;color:var(--navy);font-style:italic">'+a.opening_line+'</div></div>';
-      html += '<div style="font-size:11px;color:var(--text-light)"><strong>Avoid:</strong> '+a.what_to_avoid+'</div>';
-      html += '</div>';
-    });
-    html += '</div>';
-    el.innerHTML = html;
-  } catch(e) {
-    var isCors = e.message && (e.message.includes('fetch') || e.message.includes('CORS') || e.message.includes('Failed'));
-    el.innerHTML = '<div class="ai-badge">&#9998; Application Writing Angles</div><div class="ai-content">'
-      + '<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:16px">'
-      + '<p style="font-size:13px;color:var(--navy);font-weight:500;margin-bottom:8px">Personalized angles generate in the full Beyond Class platform</p>'
-      + '<p style="font-size:12px;color:var(--text-mid);line-height:1.6">Your counselor can access these in session. The 5 angles are built from your archetype, interests, and extracurriculars — specific to your gap year program applications.</p>'
-      + '</div></div>';
-    console.warn('[BC] gap writing error:', e);
-  }
+  renderGapYearWritingAngles(arch, color, el, section);
 }
 
 async function generateGapYearInterviewPrep(arch, name, interests, extra, openAns, theme, color) {
   var el = document.getElementById('prem-gap-interview');
   var section = document.getElementById('section-gap-interview');
-  if (!el || !section) return;
-
-  el.innerHTML = '<div class="ai-loading"><div class="ai-spinner"></div><span>Building your personalized interview preparation...</span></div>';
-  section.style.display = '';
-
-  try {
-    var prompt = GAP_YEAR_DATA.aiPrompts.interview_prep
-      .replace('{arch}', arch).replace('{theme}', theme).replace('{name}', name)
-      .replace('{interests}', interests).replace('{extracurriculars}', extra).replace('{open_answers}', openAns);
-
-    var resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:prompt}]})
-    });
-    var data = await resp.json();
-    var raw = (data.content[0].text || '').replace(/```json|```/g,'').trim();
-    var prep = JSON.parse(raw);
-
-    var html = '<div class="ai-badge">&#127908; Gap Year Interview Preparation — Personalized for '+name+'</div><div class="ai-content">';
-    html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Gap year program interviews are different from college interviews. They want to know you are ready, have a plan, and will not drift. These questions — and your specific answers — are built from who you actually are.</p>';
-    prep.questions.forEach(function(q, i) {
-      html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:12px">';
-      html += '<div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:4px">'+(i+1)+'. '+q.question+'</div>';
-      html += '<div style="font-size:11px;color:var(--text-light);margin-bottom:8px;font-style:italic">Why they ask this: '+q.why_asked+'</div>';
-      html += '<div style="background:rgba(0,0,0,0.02);border-left:3px solid '+color+';border-radius:0 6px 6px 0;padding:10px 14px;margin-bottom:8px">';
-      html += '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:'+color+';margin-bottom:4px">Your answer framework</div>';
-      html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5">'+q.answer_framework+'</p></div>';
-      html += '<div style="font-size:11px;color:var(--text-light)"><strong>Avoid:</strong> '+q.avoid+'</div>';
-      html += '</div>';
-    });
-    if (prep.ask_the_interviewer) {
-      html += '<div style="background:rgba(200,169,110,0.08);border-radius:10px;padding:14px;margin-bottom:12px">';
-      html += '<div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:6px">The question you should ask them</div>';
-      html += '<div style="font-size:14px;color:var(--navy);font-style:italic;margin-bottom:6px">"'+prep.ask_the_interviewer.question+'"</div>';
-      html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5">'+prep.ask_the_interviewer.why_powerful+'</p></div>';
-    }
-    html += '</div>';
-    el.innerHTML = html;
-  } catch(e) {
-    el.innerHTML = '<div class="ai-badge">&#127908; Gap Year Interview Prep</div><div class="ai-content">'
-      + '<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:16px">'
-      + '<p style="font-size:13px;color:var(--navy);font-weight:500;margin-bottom:8px">Personalized interview prep generates in the full Beyond Class platform</p>'
-      + '<p style="font-size:12px;color:var(--text-mid);line-height:1.6">Your counselor can run a mock interview using program-specific criteria. The questions and answer frameworks are built from your specific background and archetype.</p>'
-      + '</div></div>';
-    console.warn('[BC] gap interview error:', e);
-  }
+  renderGapYearInterviewPrep(arch, color, el, section);
 }
 
 async function generateGapYearReferences(arch, name, interests, extra, openAns, theme, color) {
   var el = document.getElementById('prem-gap-references');
   var section = document.getElementById('section-gap-references');
+  renderGapYearReferences(arch, color, el, section);
+}
+
+
+var GAP_STATIC = {
+  writing: {
+  'Builder': [
+    {title:'The thing I built before I knew how',type:'Personal Narrative',angle:'Walk through a specific moment of building something with incomplete knowledge — the gap between what you knew and what you needed to figure out in real time. This is the Builder origin story.',opening:'I started without a plan, which turned out to be the only way I would have started at all.',avoid:'Listing everything you built. One thing, done deeply, is more compelling than a portfolio.'},
+    {title:'Why I need a year before a degree',type:'Deferral Statement',angle:'Make the case that your specific project requires time and focus that a freshman year cannot provide. Frame the gap year as the prerequisite, not the alternative.',opening:'The thing I want to build cannot wait until I graduate — and trying to build it while carrying 18 credits would produce something mediocre.',avoid:'Vague ambition. Name the specific thing, the specific deadline, the specific reason it requires a full year.'},
+    {title:'What failure taught me about starting',type:'Challenge Essay',angle:'Describe something you built that did not work and what you learned about the gap between idea and execution. Gap year programs want Builders who have already shipped something — even if it failed.',opening:'The version that shipped was not the version I imagined, and that gap was the education.',avoid:'Making failure sound like a win. Name what actually went wrong and why it mattered.'},
+    {title:'The problem nobody else sees',type:'Vision Statement',angle:'Describe a specific problem in your community or field that you are uniquely positioned to see — and explain why your gap year is the right time to address it.',opening:'Everyone uses the workaround. Nobody has built the solution.',avoid:'Grandiosity. The problem should be specific enough to actually solve in twelve months.'},
+    {title:'What I am trying to learn that cannot be taught',type:'Fellowship Application',angle:'Articulate the specific knowledge you can only gain by doing — not studying. Frame your gap year as a deliberate learning experiment with a hypothesis and a way of knowing if it worked.',opening:'There is a question I can only answer by attempting it.',avoid:'Generic growth language. What is the specific thing you will know by the end of the year that you cannot know now?'},
+  ],
+  'Shepherd': [
+    {title:'The moment I understood what helping actually means',type:'Personal Narrative',angle:'Describe a specific encounter where you realized that your instinct to help was not the same as what the person actually needed. This demonstrates the emotional intelligence that service programs are looking for.',opening:'I showed up ready to give what I had. It took me a week to understand what they actually needed.',avoid:'Making yourself the hero. The best Shepherd essays keep the other person at the center.'},
+    {title:'Why proximity matters more than good intentions',type:'Vision Statement',angle:'Make the case that your gap year is about getting close to a specific community — not helping from a distance. Articulate who you want to understand and why being physically present matters.',opening:'You cannot understand what people need from across the room.',avoid:'Vague compassion. Name the specific community and the specific reason you are drawn to them.'},
+    {title:'What I learned from someone who needed nothing from me',type:'Community Essay',angle:'Tell a story about a relationship where you were not the helper — where the other person had something to teach you. Service program interviewers are moved by Shepherds who can receive as well as give.',opening:'She did not need my help. What she offered instead changed how I understood my own.',avoid:'Positioning yourself as uniquely capable. The best helpers are also the best learners.'},
+    {title:'The year I want to spend before I specialize',type:'Deferral Statement',angle:'Frame the gap year as the necessary period of broad human contact before committing to a specific helping profession. You need to know what kind of helping calls to you before you train for it.',opening:'I know I want to spend my career in service. I do not yet know which kind of service.',avoid:'Indecision framed as virtue. The essay should show that you are actively trying to find out.'},
+    {title:'What I am willing to do that most people are not',type:'Fellowship Application',angle:'Describe the specific kind of work — emotionally demanding, unglamorous, slow — that you are drawn to rather than avoiding. Service fellowships fund people who lean into difficulty.',opening:'Most people step back at the point where I find myself leaning in.',avoid:'Performing sacrifice. This essay works when it is honest about what you actually find meaningful, not what sounds admirable.'},
+  ],
+  'Architect': [
+    {title:'The question I cannot stop thinking about',type:'Research Fellowship Application',angle:'Name a specific intellectual problem that has occupied you across multiple classes, projects, and conversations — and explain why a gap year is the right context to pursue it seriously.',opening:'I have been working around the edges of the same question for three years. I want a year to walk into it directly.',avoid:'A question that sounds impressive but is too large to actually address. Name a scope you can genuinely work within.'},
+    {title:'What I learned by designing something that had to work',type:'Personal Narrative',angle:'Describe a specific project where the stakes of failure were real — a system that would break, a structure that had to hold, a model that had to predict. Architects reveal themselves in high-consequence contexts.',opening:'When it broke, I understood for the first time what I had actually built.',avoid:'Technical jargon without stakes. The essay is not about the system — it is about what you learned about yourself while building it.'},
+    {title:'Why I need to think before I study',type:'Deferral Statement',angle:'Make the case that the gap year will produce better thinking than immediately entering a curriculum. Frame independent study as the prerequisite to formal education — not the alternative.',opening:'I want to arrive at my first day of classes with a question already in progress.',avoid:'Sounding critical of formal education. The essay should honor both — you are choosing the sequence, not rejecting the institution.'},
+    {title:'The system nobody had designed yet',type:'Vision Statement',angle:'Describe a gap — a missing structure, an unsolved coordination problem, an inefficiency nobody had addressed — that you want to spend your gap year thinking through. Architects see what is missing.',opening:'The problem was not that nobody cared. The problem was that nobody had drawn the map.',avoid:'Problems too large to address. One specific system, one specific gap, one year.'},
+    {title:'What independent study taught me about how I learn',type:'Fellowship Application',angle:'Describe a period of self-directed learning — a project, a topic, a domain you taught yourself — and what it revealed about your learning process. Research fellowships fund people who can learn without a syllabus.',opening:'Without a deadline and without a grade, I learned what I actually wanted to understand.',avoid:'Making it sound easy. Show the discomfort of learning without structure — and why you chose it anyway.'},
+  ],
+  'Catalyst': [
+    {title:'The story only I am positioned to tell',type:'Fellowship Application',angle:'Identify the specific story — a community, a subject, a perspective — that you are uniquely able to tell because of who you are and where you have been. Media fellowships fund distinctive voices, not generic ones.',opening:'There is a story that will not get told unless I tell it.',avoid:'Claiming uniqueness without evidence. Show why your specific background positions you differently.'},
+    {title:'What I learned when I tried to change someone\'s mind',type:'Personal Narrative',angle:'Tell the story of a specific communication that worked — or failed — and what it taught you about the gap between message and reception. Catalysts are defined by this gap.',opening:'I said exactly what I meant. They heard something completely different. That was the education.',avoid:'Stories where you are obviously right. The most interesting Catalyst essays involve genuine uncertainty about whether the message was correct.'},
+    {title:'Why this moment requires this story',type:'Media Grant Application',angle:'Make the case that your documentary, journalism, or campaign project is timely — that there is something happening now that requires the specific story you are trying to tell.',opening:'This story has always been true. Right now it is urgent.',avoid:'Generic urgency. The timeliness should be specific to your project, not just a claim about the current moment.'},
+    {title:'The audience I want to reach that is not being reached',type:'Vision Statement',angle:'Identify a specific community or audience that is not being served by existing media or communication — and explain how your gap year project will reach them.',opening:'The conversation is happening. It is just not happening where they are.',avoid:'Claiming to speak for a community you are not part of. Explain your access and your relationship.'},
+    {title:'What I built an audience around and what it taught me',type:'Deferral Statement',angle:'If you have already started building a platform — a newsletter, a channel, a podcast — use the deferral statement to show what you have learned and where you want to take it in the gap year.',opening:'I started without permission. I learned what people actually wanted to hear.',avoid:'Vanity metrics. The essay is not about follower counts — it is about what the audience relationship taught you.'},
+  ],
+  'Advocate': [
+    {title:'The injustice I watched happen and could not stop',type:'Personal Narrative',angle:'Describe a specific moment of witnessing injustice — in a courtroom, a school, a community meeting, a conversation — and what it ignited in you. The best Advocate essays are specific and angry in a constructive way.',opening:'I watched it happen and understood, for the first time, the difference between knowing something is wrong and being able to do anything about it.',avoid:'Abstract injustice. Name the specific person, situation, or decision. Advocates are concrete.'},
+    {title:'Why I need to understand the system before I can change it',type:'Deferral Statement',angle:'Make the case that your gap year placement inside a legal, political, or policy institution will make you a more effective advocate. Frame direct experience as a prerequisite, not a detour.',opening:'You cannot change a system you do not understand from the inside.',avoid:'Sounding like you want to observe rather than participate. Show that you are going in to do real work, not to watch.'},
+    {title:'The case that changed how I understand fairness',type:'Fellowship Application',angle:'Describe a specific legal case, policy debate, or community conflict — not something famous, something you encountered directly — and what it taught you about how justice actually works.',opening:'The outcome was technically correct. That was the problem.',avoid:'Cases where the lesson is obvious. The most powerful Advocate essays wrestle with genuine moral complexity.'},
+    {title:'Who I am fighting for and why they cannot fight for themselves',type:'Community Essay',angle:'Name the specific community you are committed to advocating for — and be honest about why they face the barriers they face. Advocacy fellowships fund people with clear, accountable commitments.',opening:'The system was not designed against them. It was just never designed with them in mind.',avoid:'Savior framing. The best Advocate essays center the community, not the advocate.'},
+    {title:'What I learned about power from being close to it',type:'Vision Statement',angle:'If you have had access to a political campaign, a legislative office, a courtroom, or another seat of power — describe what it taught you about how decisions actually get made.',opening:'I expected it to look different from the inside.',avoid:'Disillusionment without direction. The essay should end with what you will do with what you learned.'},
+  ],
+  'Cultivator': [
+    {title:'What I learned by staying with something long enough',type:'Personal Narrative',angle:'Describe a specific commitment you kept past the point where most people would have moved on — and what became visible only because you stayed. This is the Cultivator\'s core story.',opening:'Nothing had changed by the end of the first month. Everything had changed by the end of the year.',avoid:'Making patience sound passive. Show the active work of staying committed when there was no visible result yet.'},
+    {title:'Why I need to learn something slowly',type:'Deferral Statement',angle:'Make the case that the skill, relationship, or understanding you want to develop in your gap year requires time that cannot be compressed. Frame the year as the minimum necessary investment.',opening:'What I want to learn cannot be learned in a semester.',avoid:'Sounding like you want to avoid difficulty. The essay should show that you are choosing the harder path because it produces something the faster path cannot.'},
+    {title:'The teacher who changed what I thought learning was',type:'Community Essay',angle:'Describe a specific mentor, teacher, or practitioner who showed you a different way of knowing — and how that encounter shaped what you want to do with your gap year.',opening:'She did not explain it. She showed me, and then she let me try, and then she let me fail.',avoid:'Gratitude essays that are really about you. Keep the teacher at the center.'},
+    {title:'What I want to grow and why it requires a full season',type:'Vision Statement',angle:'Use the metaphor of cultivation literally — describe a specific skill, relationship, or project that requires the arc of a full year: planting, tending, harvest. Cultivators think in seasons.',opening:'Some things cannot be rushed. I want to spend a year refusing to rush.',avoid:'Metaphor without specificity. What are you actually growing? In what actual context?'},
+    {title:'What I will teach at the end of the year',type:'Fellowship Application',angle:'Describe what you plan to be able to teach someone else by the end of your gap year — because teaching is how Cultivators consolidate learning. Define your gap year by its output, not its inputs.',opening:'I will know I have learned it when I can teach it.',avoid:'Vague knowledge goals. Name the specific skill, the specific person you could teach it to, the specific context.'},
+  ],
+  'Peacemaker': [
+    {title:'The conversation I was afraid to have',type:'Personal Narrative',angle:'Describe a specific moment of facilitating a difficult conversation — across political difference, cultural difference, personal conflict — and what you learned about what makes dialogue possible.',opening:'I was the only person in the room who had a reason to listen to both sides.',avoid:'Making yourself the savior of the conversation. The best Peacemaker essays show the conversation changing you as much as it changed anyone else.'},
+    {title:'Why I am choosing unfamiliarity',type:'Deferral Statement',angle:'Make the case that your gap year placement is specifically chosen for its difficulty — the language barrier, the cultural distance, the unfamiliarity — and why that discomfort is the point.',opening:'I am not going somewhere comfortable. That is the whole idea.',avoid:'Adventure framing. The essay is not about what you will experience — it is about what you will build across difference.'},
+    {title:'What I learned from being the outsider',type:'Community Essay',angle:'Describe a specific experience of being outside your home community — a new school, a new country, a new group — and how it shaped your understanding of what bridges are made of.',opening:'I did not speak the language. That turned out to be an advantage.',avoid:'Making outsider status sound heroic. Show the discomfort honestly before showing what it taught you.'},
+    {title:'The bridge that does not exist yet',type:'Vision Statement',angle:'Name the specific connection — between communities, cultures, perspectives, institutions — that your gap year is designed to help build. Be specific about who is on each side and what prevents them from connecting now.',opening:'Two communities live within five miles of each other and have never had a real conversation.',avoid:'Abstractions like "bringing people together." Name the specific people and the specific gap.'},
+    {title:'What language taught me about how people think',type:'Fellowship Application',angle:'If language learning is part of your gap year, use it as the vehicle for a deeper essay about how acquiring another language changes your relationship to your own assumptions.',opening:'Learning a language is not learning words. It is learning a different way of cutting up the world.',avoid:'Language learning as credential. The essay is not about your proficiency — it is about what fluency reveals.'},
+  ],
+  },
+  interview: {
+  'Builder': [
+    {q:'What specifically are you planning to build during this year — and how will you know when it is done?',why:'Programs want to confirm you have a concrete plan, not an inspiring idea. Vague builders drift.',framework:'Name the product, service, or organization. Name the customer or community it serves. Define what "shipped" means — a launched product, a paying customer, a working prototype. Give a timeline.',avoid:'Talking about the process without naming the outcome. They need to believe you will finish something.'},
+    {q:'Tell me about something you built that did not work out the way you planned.',why:'They are testing resilience and self-awareness. Builders who have never failed at anything have never tried hard enough.',framework:'Describe what you built, what broke, what you learned, and specifically what you did differently as a result. End with evidence that the lesson changed your approach.',avoid:'Failure stories that are secretly success stories. Name a genuine failure and sit with it.'},
+    {q:'How will you hold yourself accountable without a teacher, deadline, or grade?',why:'This is the core concern about self-directed gap years. Programs need to know you have a structure.',framework:'Describe your accountability system specifically — a weekly check-in with a mentor, a public commitment, a milestone-based funding structure. Show that you have thought about what happens when motivation drops.',avoid:'Claiming you are self-motivated. Everyone says that. Show the system you have built.'},
+    {q:'What will you do if your original idea does not work six months in?',why:'They want to see strategic flexibility. Builders who cannot pivot waste entire gap years.',framework:'Show that you have a backup plan and that pivoting is not failure — it is data. Describe what a pivot would look like and how you would decide when to make it.',avoid:'Insisting your original plan will work. Interviewers distrust certainty.'},
+    {q:'Why a gap year instead of starting this project in college?',why:'They want to understand why the timing matters. If you could do this in college, why should they invest in your gap year?',framework:'Explain what the gap year provides that a freshman year cannot: uninterrupted time, the ability to fail publicly without academic consequences, the freedom to move or change course quickly.',avoid:'Implying that college is not useful. The answer should honor both paths while making a clear case for the sequence.'},
+  ],
+  'Shepherd': [
+    {q:'Tell me about a specific person you helped and what you learned from the experience.',why:'They want a concrete story, not general compassion. And they want to see what you learned, not just what you did.',framework:'Name one person (without identifying details). Describe the specific help. Name what you got wrong first and what you adjusted. End with what it taught you about helping.',avoid:'Making yourself the hero. The most powerful answers keep the other person at the center.'},
+    {q:'Which community do you want to serve — and why are you drawn to them specifically?',why:'Service programs fund people with accountable commitments, not general goodwill.',framework:'Name the community. Explain your connection to them — personal experience, proximity, an encounter that changed you. Be honest about the limits of your understanding and what you hope to learn.',avoid:'Vague answers like "underserved communities." Name a specific population and a specific context.'},
+    {q:'What is the difference between helping someone and doing something for them?',why:'This tests whether you understand the dignity of the people you plan to serve.',framework:'Describe the distinction — helping builds capacity and agency, doing for someone can undermine both. Give a concrete example of when you learned this distinction.',avoid:'Abstract answers. Root it in a specific experience.'},
+    {q:'How will you take care of yourself emotionally during a year of intensive service work?',why:'Service programs have seen too many volunteers burn out. They invest in people who know their limits.',framework:'Describe your actual support structures — a counselor, a peer group, a journaling practice, clear days off. Show that you have thought about this seriously.',avoid:'Claiming you will be fine. Everyone who burned out said they would be fine.'},
+    {q:'What do you hope to learn from the people you serve?',why:'The best service year is a learning year. Programs want people who see service as reciprocal.',framework:'Name something specific you expect the community to teach you — about resilience, about systems, about what you take for granted. Show genuine curiosity about their knowledge.',avoid:'Framing the relationship as one-directional. The programs that work best go both ways.'},
+  ],
+  'Architect': [
+    {q:'What is the specific research question you plan to pursue — and how did you arrive at it?',why:'Research programs need confidence that you have a real question, not just a topic area.',framework:'State the question precisely. Describe the intellectual journey — what you read, who you talked to, what adjacent questions led you here. Show that it is narrow enough to be answerable.',avoid:'A topic instead of a question. "Artificial intelligence" is a topic. "How do transformer architectures handle ambiguous pronouns in low-resource languages" is a question.'},
+    {q:'How will you know if your research is going well?',why:'Independent researchers need to be able to evaluate their own progress without a grade.',framework:'Describe your milestones — a literature review completed by month two, a working methodology by month four, a draft by month eight. Name the feedback mechanisms: a faculty mentor, a peer reader, a conference submission.',avoid:'Describing feelings ("I will feel like I am making progress"). Name specific outputs at specific dates.'},
+    {q:'Tell me about a time you had to revise a conclusion you were confident in.',why:'Research requires intellectual flexibility. Programs want people who can be wrong gracefully.',framework:'Describe what you believed, what evidence changed your mind, and how you handled the discomfort of being wrong. End with why being wrong was useful.',avoid:'A small, low-stakes revision. Find a time when the revision actually cost you something.'},
+    {q:'What will you produce by the end of the year — and who is the audience for it?',why:'Research programs want accountability for output, not just process.',framework:'Name the deliverable specifically — a paper, a working model, a database, a presentation. Name the audience — a journal, a conference, a faculty committee. Describe the submission plan.',avoid:'Saying you will learn a lot. Learning is the process. Name the product.'},
+    {q:'How do you work through a problem when you are genuinely stuck?',why:'Independent researchers get stuck with no professor to ask. Programs want people with real problem-solving processes.',framework:'Walk through your actual process — what you try first, how long you stay with it, when you seek outside input, what tools or techniques you reach for. Make it concrete and specific.',avoid:'Generic answers about persistence. Describe your actual process, including its quirks.'},
+  ],
+  'Catalyst': [
+    {q:'Tell me about a piece of work you made that changed how someone thought about something.',why:'Media and communications programs want evidence of real impact, not creative ambition.',framework:'Describe the work, describe the specific person or audience whose thinking shifted, and describe how you know the shift happened. Be honest if the impact was smaller than you intended.',avoid:'Claiming large impact without evidence. A small, documentable shift is more credible than a vague claim about changing many minds.'},
+    {q:'Who is the specific audience for your gap year project — and what do you know about them?',why:'Catalyst projects fail when they are made for everyone, which means they reach no one.',framework:'Name a specific audience — not "young people" but "16-24 year-olds in mid-sized cities who consume news through short-form video." Describe what you know about how they currently think and what might shift them.',avoid:'Audience definitions so broad they are meaningless.'},
+    {q:'What is the difference between a message that feels important and a message that actually moves people?',why:'Catalysts who mistake passion for persuasion produce work that moves themselves but not their audience.',framework:'Discuss the gap between what you want to say and what your audience is ready to hear — and how you bridge it. Use a specific example from your own work.',avoid:'Abstract communication theory. Root the answer in something you made and tried to distribute.'},
+    {q:'What will you have shipped by the end of the year — and where will it live?',why:'Programs want accountability. Ideas are cheap. Distribution plans are evidence of seriousness.',framework:'Name the format, the platform, the publication timeline, and the distribution strategy. If you have already started building an audience, name the size and the engagement rate.',avoid:'Describing the work without describing how it will reach people.'},
+    {q:'Tell me about a message you tried to deliver that did not land — and what you learned.',why:'Communication failures are more instructive than successes. Programs want self-aware Catalysts.',framework:'Describe what you were trying to communicate, how it was received differently, what you diagnosed as the gap, and what you did differently next time.',avoid:'Blaming the audience for not understanding. The gap is always the communicator\'s responsibility to close.'},
+  ],
+  'Advocate': [
+    {q:'What specific institution or system do you want to understand from the inside — and why does it matter to understand it directly?',why:'Advocacy programs want people with clear, accountable commitments to specific systems.',framework:'Name the institution. Explain what you already understand about how it works and what you believe you are missing from the inside. Name what you expect to learn that you cannot learn by reading about it.',avoid:'Vague answers about "the system." Which system, which part of it, and why that part specifically.'},
+    {q:'Tell me about a time you advocated for something and it did not work. What did you do next?',why:'Advocacy requires persistence and strategic flexibility. Programs want people who can lose without stopping.',framework:'Describe the specific advocacy, the specific failure, the specific lesson, and the specific next step you took. Show that losing clarified your strategy rather than ended your commitment.',avoid:'Stories that turn out to be wins. Name a real loss and what it taught you about tactics.'},
+    {q:'How do you stay committed to a cause while remaining open to complexity within it?',why:'The best advocates are committed but not dogmatic. Programs want nuance alongside conviction.',framework:'Describe a moment when your understanding of an issue became more complicated — when you encountered a perspective that challenged your position — and how you held both the complexity and the commitment.',avoid:'Claiming you have no doubts. The most credible advocates are the ones who have earned their certainty.'},
+    {q:'Who are you fighting for — and how have you made sure you understand what they actually want?',why:'Advocacy without accountability to the affected community can cause harm.',framework:'Name the community. Describe the specific conversations, relationships, or experiences that have given you insight into what they want — and acknowledge the limits of your understanding.',avoid:'Assuming you know what the community needs without describing how you found out.'},
+    {q:'What does justice look like in this specific context — and how will you know if the work is making progress toward it?',why:'Programs want advocates with clear frameworks for measuring impact, not just passion.',framework:'Define justice in your specific context concretely. Name specific indicators you will track during the gap year — cases resolved, policies changed, people served, community relationships built.',avoid:'Abstract definitions of justice. Make it specific and measurable.'},
+  ],
+  'Cultivator': [
+    {q:'What specifically do you want to learn during this year — and why does it require a full year to learn it?',why:'Programs want confidence that the time investment is genuinely necessary for this particular learning.',framework:'Name the skill, relationship, or understanding. Explain what a full growing cycle, season, or year provides that a summer or semester cannot. Be specific about what happens in month ten that cannot happen in month three.',avoid:'Claiming you just want to grow as a person. Name the specific thing.'},
+    {q:'Tell me about a time you stayed committed to something long after it felt easy.',why:'Cultivators are defined by sustained commitment. Programs want evidence that you have done it before.',framework:'Describe the specific commitment, the specific moment it became difficult, what kept you going, and what became visible only because you stayed.',avoid:'Short-term commitments framed as long-term. The story should involve a period of time when there was no visible result — and you stayed anyway.'},
+    {q:'Who will you learn from during this year — and how did you identify them as the right teacher?',why:'Cultivator gap years are often apprenticeship-based. Programs want to know you have found the right mentor.',framework:'Name the person or organization. Describe what specifically makes them the right teacher — their expertise, their method, their relationship to the community. Explain how you identified them.',avoid:'Vague references to learning from the experience. Name the specific person.'},
+    {q:'How will you handle the gap between what you expect to learn and what you actually encounter?',why:'Cultivators sometimes arrive with plans that the soil does not support. Programs want flexibility alongside patience.',framework:'Describe your openness to a different kind of learning than you expected — and give an example of a time when the unexpected learning turned out to be more valuable than what you planned for.',avoid:'Claiming your plan is right. Show that you hold the plan loosely.'},
+    {q:'What will you teach or share at the end of the year?',why:'Cultivators consolidate learning by passing it on. Programs want accountability for output.',framework:'Name specifically what you will be able to teach — to whom, in what context, in what format. Describe the audience for the year-end sharing and what you want them to walk away with.',avoid:'Private learning with no output. Show that the year produces something others can receive.'},
+  ],
+  'Peacemaker': [
+    {q:'Describe a specific moment when you built a connection across significant difference.',why:'Bridge-building is a skill, not a personality trait. Programs want evidence of specific competence.',framework:'Name the two sides — cultural, political, personal. Describe what prevented connection before you arrived. Describe specifically what you did and what shifted. Name what you learned about what makes bridges hold.',avoid:'Claiming you are good at listening. Show a specific moment where listening produced a specific outcome.'},
+    {q:'Why are you choosing the specific community or country where you plan to spend your gap year?',why:'Programs want deliberate placement choices, not tourism.',framework:'Explain what specifically draws you to this community — a language, a relationship, a historical connection, a professional interest. Show that you have researched the community and understand something about what you are entering.',avoid:'Choosing based on beauty or adventure. The answer should be about the bridge, not the destination.'},
+    {q:'What do you expect will be the hardest part of your gap year — and how are you preparing for it?',why:'Peacemaker gap years are emotionally and linguistically demanding. Programs want people who are honest about difficulty.',framework:'Name the specific challenge — language barrier, cultural isolation, witnessing conflict you cannot resolve. Describe what you are doing now to prepare and what you will do when you encounter it.',avoid:'Optimism without preparation. Programs distrust people who are not worried about the hard parts.'},
+    {q:'How will you maintain relationships across the cultural divide when your gap year ends?',why:'Programs want people building real relationships, not collecting experiences.',framework:'Describe your specific plan for staying in contact with the community after you leave — ongoing communication, a project you will continue, a formal relationship you will maintain. Show that the bridge does not end when you board the plane home.',avoid:'Vague commitments to "stay in touch." Name the specific mechanism.'},
+    {q:'What will you bring home from this year — and how will you share it with your home community?',why:'The best Peacemaker gap years are two-way. Programs want people who will complete the bridge.',framework:'Describe what you will carry back — a language, a perspective, a set of relationships — and your specific plan for sharing it. A talk, a workshop, a publication, a community conversation.',avoid:'Private transformation. Show that the learning has a direction — back toward the community you came from.'},
+  ],
+  },
+  references: {
+  'Builder': [
+    {type:'A mentor who has watched you build something',why:'Gap year programs and fellowship applications need someone who can speak to your ability to execute — to start something, sustain it, and finish it. This person has seen you do it.',emphasize:'Ask them to describe specifically what you built, the obstacles you encountered, and what they observed about how you handled them. The letter should show a Builder at work, not just a student with potential.',email:'I\'m applying to [program] for a gap year focused on [project]. You\'ve watched me work on [specific project] and I think you\'re uniquely positioned to speak to how I operate when building something under real constraints. Would you be willing to write a recommendation that focuses specifically on that?'},
+    {type:'A customer, user, or community member who benefited from your work',why:'Testimonials from people who actually used what you built are more powerful than endorsements from people who supervised you. They demonstrate real-world impact, not just potential.',emphasize:'Ask them to describe specifically what you built, how it helped them, and what they observed about your responsiveness and reliability. A user perspective is rare and credible.',email:'I\'m applying for a gap year fellowship and I\'d love a short recommendation from someone who has actually used what I built. You experienced [specific thing] firsthand. Would you be willing to write a few sentences about what that experience was like from your side?'},
+    {type:'A teacher or advisor who has seen you work independently',why:'Gap year programs want to know you can structure your own work without external accountability. A teacher who has given you independent projects and watched how you managed them can speak to this specifically.',emphasize:'Ask them to focus on a specific independent project or self-directed work rather than your classroom performance. The letter should address how you manage ambiguity, set your own milestones, and follow through.',email:'I\'m applying to a gap year program that specifically asks about my ability to work independently. You gave me [specific project] and watched how I approached it without much scaffolding. Could your letter focus specifically on that experience and what you observed?'},
+  ],
+  'Shepherd': [
+    {type:'A supervisor or coordinator from a service or volunteer context',why:'Service programs want to know how you show up when the work is hard, unglamorous, and ongoing. A supervisor from a direct service context can speak to this in ways no classroom teacher can.',emphasize:'Ask them to describe specifically how you handled difficult moments — an emotionally demanding interaction, a situation where helping was complicated, a time when you had to stay when it would have been easier to leave.',email:'I\'m applying to [service program] and I\'d love a recommendation from someone who has supervised me in direct service work. You saw me work with [community/context]. Could your letter focus specifically on how I showed up in the hardest moments of that work?'},
+    {type:'Someone from the community you have served',why:'The most powerful recommendation for a service-oriented gap year comes from someone who received your care — not someone who evaluated your performance. This is rare, and programs notice.',emphasize:'Ask them to describe what your presence meant to them and to the people around you — not your skills or credentials. A community voice speaks to character in a way that no professional evaluation can.',email:'I\'m applying to a service fellowship. The program asks about my commitment to community and I think a letter from you — someone I had the privilege of working alongside — would say something that no teacher or supervisor could. Would you be willing to share a few words about our time together?'},
+    {type:'A teacher or mentor who has observed your emotional intelligence',why:'Service programs are looking for people who can handle emotional complexity, not just goodwill. A recommender who can speak to your emotional intelligence — your ability to listen, regulate, and respond — makes a strong case.',emphasize:'Ask them to describe a specific moment when they observed you navigate a difficult interpersonal situation — not your academic strengths, but your human ones.',email:'My gap year application asks about emotional intelligence and interpersonal skills. You\'ve seen me navigate some genuinely complex situations with people. Could your recommendation focus specifically on those moments rather than my academic performance?'},
+  ],
+  'Architect': [
+    {type:'A research supervisor, professor, or technical mentor',why:'Research fellowships need to know you can do independent intellectual work at a high level. Someone who has supervised your research or technical projects can speak to this directly.',emphasize:'Ask them to describe your intellectual curiosity, your research process, and your ability to identify and pursue a genuine question — not just your grades or general intelligence.',email:'I\'m applying to [research program] for a gap year focused on [topic]. You\'ve supervised my work on [project] and you\'ve seen how I approach a genuine research question. Could your letter speak specifically to that — to the quality of my intellectual process, not just my outputs?'},
+    {type:'A peer or collaborator who has worked through a complex problem with you',why:'Architects often do their best thinking in intellectual partnership. A peer who has worked through a genuinely difficult problem with you can speak to your thinking process in a way no supervisor can.',emphasize:'Ask them to describe specifically how you approached a problem that did not have an obvious solution — what questions you asked, how you tested ideas, how you handled being wrong.',email:'I\'m applying to a gap year fellowship and I think a recommendation from a peer collaborator would add something different. You worked with me on [project] and saw how I think through hard problems. Would you be willing to write about that specifically?'},
+    {type:'A teacher who has given you genuinely open-ended work',why:'Research programs want to know you can function without a syllabus. A teacher who has given you significant freedom and observed what you did with it can speak to your self-direction.',emphasize:'Ask them to focus on the most open-ended assignment or project you worked on — and to describe what you chose to do with the freedom, and how you managed it.',email:'The gap year program I\'m applying to specifically asks about my ability to direct my own learning. You gave me [specific open-ended project] and I had significant latitude in how I approached it. Could your letter focus on that experience and what you observed about how I used the freedom?'},
+  ],
+  'Catalyst': [
+    {type:'An editor, producer, or communications professional who has seen your work',why:'Media fellowships want to know you can produce work that meets professional standards. Someone who has evaluated your writing, film, or communications work from a professional perspective is essential.',emphasize:'Ask them to describe the specific quality of your work — your voice, your editorial judgment, your ability to reach an audience — not your dedication or work ethic.',email:'I\'m applying to a journalism or media fellowship. You\'ve seen my work on [specific project] from a professional perspective. Could your recommendation focus specifically on the quality and originality of the work itself?'},
+    {type:'A member of your audience or community who has been affected by your work',why:'The most powerful recommendation for a communications-focused gap year comes from someone whose thinking or behavior actually shifted because of your work. Impact matters more than craft.',emphasize:'Ask them to describe specifically how they encountered your work and what it did — what they thought before and after, what action they took, how it stayed with them.',email:'I\'m applying to a communications fellowship. The program asks about real impact. You encountered my work on [project] and I believe it affected you in some way. Would you be willing to write a short recommendation describing what you experienced?'},
+    {type:'A community organizer or activist who has seen you communicate in high-stakes contexts',why:'Catalyst gap years often involve real-world campaigns. Someone who has seen you communicate under pressure — at a community meeting, during a campaign, in front of a hostile audience — speaks to something classrooms cannot measure.',emphasize:'Ask them to describe a specific high-stakes communication moment — when the room was difficult, when the stakes were real — and how you handled it.',email:'I\'m applying to a fellowship focused on communications and social change. You\'ve seen me communicate in some genuinely difficult contexts. Could your recommendation focus on a specific moment when you saw me navigate a challenging communication situation?'},
+  ],
+  'Advocate': [
+    {type:'An attorney, policy professional, or legal/policy organization supervisor',why:'Advocacy fellowships need to know you understand real institutional systems, not just ideals. A professional who has supervised your work in a legal or policy context speaks directly to this.',emphasize:'Ask them to describe your understanding of how the institution actually operates — the gap between how it is supposed to work and how it does — and how you navigated that gap.',email:'I\'m applying to [fellowship] with a focus on [issue area]. You supervised my work at [organization] and saw how I engaged with real institutional constraints. Could your recommendation speak to that — to my understanding of how systems actually function?'},
+    {type:'A community member or person directly affected by the issue you care about',why:'Advocacy without accountability to affected communities can cause harm. A recommendation from someone who has directly experienced the issue you are fighting for demonstrates that your commitment is accountable.',emphasize:'Ask them to describe your relationship to the community and your understanding of what it actually needs — not your passion or your credentials, but your ability to listen and respond.',email:'The fellowship I\'m applying to asks about my accountability to the communities I hope to serve. You are someone directly affected by [issue]. Would you be willing to write a recommendation about our relationship and what you have observed about how I listen and respond to what the community needs?'},
+    {type:'A teacher or mentor who has witnessed your analytical rigor',why:'The best advocates combine passion with precision. A recommender who can speak to your ability to analyze complex systems, hold moral complexity, and build rigorous arguments strengthens an application.',emphasize:'Ask them to describe your analytical process — how you research an issue, how you handle evidence that complicates your position, how you build an argument.',email:'My gap year application asks about my analytical approach to advocacy. You\'ve seen how I research and argue for positions. Could your recommendation focus on the rigor of my thinking — especially in moments where the evidence was complicated?'},
+  ],
+  'Cultivator': [
+    {type:'A mentor, teacher, or practitioner who has watched you sustain a long-term commitment',why:'The core Cultivator credential is the ability to stay committed through the period when nothing is visible yet. Someone who has watched you do this — for months, not weeks — speaks to your most essential quality.',emphasize:'Ask them to describe specifically the moment when you could have stopped, why you did not, and what happened because you stayed.',email:'I\'m applying to a gap year program focused on long-term learning and commitment. You watched me work on [project or commitment] for [time period]. Could your recommendation focus specifically on the period when results were not yet visible — and what you observed about how I stayed committed?'},
+    {type:'Someone you have taught, mentored, or developed',why:'Cultivators grow other people. A recommendation from someone you have taught or mentored demonstrates the impact of your patient, sustained investment in another person\'s development.',emphasize:'Ask them to describe specifically what changed for them because of your sustained attention — not a single lesson, but the arc of your relationship and what grew from it.',email:'I\'m applying to a gap year program. One of my strongest qualities is my ability to develop other people over time. You experienced that directly when we worked together on [context]. Would you be willing to write about what changed for you because of our sustained time together?'},
+    {type:'A teacher or supervisor who has observed your patience and long-term thinking',why:'Gap year programs want to know that Cultivators will invest genuinely in the people and projects they encounter — not extract experience and move on. Someone who has seen your long-term orientation can speak to this.',emphasize:'Ask them to describe a moment when you chose the slower, more patient path when a faster one was available — and what that choice produced.',email:'The fellowship I\'m applying to specifically values long-term commitment and patient investment. You\'ve seen me choose depth over speed on several occasions. Could your recommendation focus on what you observed about my orientation toward the long game?'},
+  ],
+  'Peacemaker': [
+    {type:'Someone from a different cultural, linguistic, or political background who knows you well',why:'Peacemaker gap years are built on real cross-cultural relationships. A recommendation from someone genuinely different from you — who can speak to the quality of your bridge-building — is the most powerful credential for this path.',emphasize:'Ask them to describe your specific ability to listen across difference, to understand perspectives unlike your own, and to build trust with people who have no reason to trust you by default.',email:'I\'m applying to a gap year program focused on cross-cultural bridge-building. Our relationship has crossed [cultural/linguistic/political] difference in ways that are real and ongoing. Would you be willing to write about what you have experienced in our relationship — specifically about my ability to listen and build trust across that difference?'},
+    {type:'A facilitator, mediator, or dialogue practitioner who has observed you in action',why:'Bridge-building is a skill. Someone who has watched you facilitate a difficult conversation or navigate a conflict — professionally or in a training context — can speak to your specific competence.',emphasize:'Ask them to describe a specific facilitation moment — when the room was difficult, when two sides were genuinely in conflict — and what they observed about how you moved through it.',email:'My gap year application asks about my facilitation and dialogue skills. You\'ve seen me work in a context where those skills were genuinely tested. Could your recommendation focus on a specific moment that showed what I can actually do in a difficult room?'},
+    {type:'A teacher or mentor who has observed your listening and empathy in action',why:'Peacemakers need recommenders who can speak to their quality of attention — not just their intelligence or dedication. Someone who has watched you genuinely listen, especially in difficult moments, speaks to the core of this calling.',emphasize:'Ask them to describe a specific moment when they witnessed your ability to hold two contradictory perspectives without collapsing one into the other — and what effect that had on the people involved.',email:'The fellowship I\'m applying to values the ability to listen and hold complexity. You have seen me navigate moments where the right answer was not obvious and multiple perspectives were all legitimate. Could your recommendation focus on what you observed in those moments?'},
+  ],
+  },
+};
+
+
+function renderGapYearWritingAngles(arch, color, el, section) {
   if (!el || !section) return;
+  var angles = GAP_STATIC.writing[arch] || GAP_STATIC.writing['Builder'];
+  var html = '<div class="ai-badge">&#9998; Application Writing Angles \u2014 ' + arch + ' Archetype</div>'
+    + '<div class="ai-content">'
+    + '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">These angles are written for gap year program applications, fellowship personal statements, and deferral requests \u2014 not the Common App. Each one is rooted in how the ' + arch + ' archetype naturally communicates.</p>';
 
-  el.innerHTML = '<div class="ai-loading"><div class="ai-spinner"></div><span>Building your personalized references guide...</span></div>';
+  angles.forEach(function(a, i) {
+    html += '<div style="border-left:3px solid ' + color + ';padding:12px 16px;margin-bottom:12px;background:rgba(0,0,0,0.01);border-radius:0 8px 8px 0">'
+      + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">'
+      + '<div style="font-size:14px;font-weight:500;color:var(--navy)">' + (i+1) + '. ' + a.title + '</div>'
+      + '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:' + color + ';background:rgba(0,0,0,0.04);padding:2px 8px;border-radius:20px;white-space:nowrap;margin-left:8px">' + a.type + '</div>'
+      + '</div>'
+      + '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:8px">' + a.angle + '</p>'
+      + '<div style="background:rgba(200,169,110,0.08);border-radius:6px;padding:8px 12px;margin-bottom:8px">'
+      + '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:3px">Opening line</div>'
+      + '<div style="font-size:12px;color:var(--navy);font-style:italic">' + a.opening + '</div>'
+      + '</div>'
+      + '<div style="font-size:11px;color:var(--text-light)"><strong>Avoid:</strong> ' + a.avoid + '</div>'
+      + '</div>';
+  });
+
+  html += '<p style="font-size:12px;color:var(--text-light);font-style:italic;margin-top:8px">Your counselor can help you develop any of these angles into a full draft during your session.</p>'
+    + '</div>';
+
+  el.innerHTML = html;
   section.style.display = '';
+}
 
-  try {
-    var prompt = GAP_YEAR_DATA.aiPrompts.references
-      .replace('{arch}', arch).replace('{theme}', theme).replace('{name}', name)
-      .replace('{interests}', interests).replace('{extracurriculars}', extra).replace('{open_answers}', openAns);
+function renderGapYearInterviewPrep(arch, color, el, section) {
+  if (!el || !section) return;
+  var questions = GAP_STATIC.interview[arch] || GAP_STATIC.interview['Builder'];
+  var html = '<div class="ai-badge">&#127908; Gap Year Interview Preparation \u2014 ' + arch + ' Archetype</div>'
+    + '<div class="ai-content">'
+    + '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Gap year program interviews are different from college interviews. They want to know you have a real plan, genuine self-awareness, and the ability to handle difficulty without drifting. These are the questions ' + arch + 's are most likely to face.</p>';
 
-    var resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:prompt}]})
-    });
-    var data = await resp.json();
-    var raw = (data.content[0].text || '').replace(/```json|```/g,'').trim();
-    var refs = JSON.parse(raw);
+  questions.forEach(function(q, i) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:12px">'
+      + '<div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:4px">' + (i+1) + '. ' + q.q + '</div>'
+      + '<div style="font-size:11px;color:var(--text-light);margin-bottom:8px;font-style:italic">Why they ask this: ' + q.why + '</div>'
+      + '<div style="background:rgba(0,0,0,0.02);border-left:3px solid ' + color + ';border-radius:0 6px 6px 0;padding:10px 14px;margin-bottom:8px">'
+      + '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:' + color + ';margin-bottom:4px">How to answer</div>'
+      + '<p style="font-size:12px;color:var(--text-mid);line-height:1.5">' + q.framework + '</p>'
+      + '</div>'
+      + '<div style="font-size:11px;color:var(--text-light)"><strong>Avoid:</strong> ' + q.avoid + '</div>'
+      + '</div>';
+  });
 
-    var html = '<div class="ai-badge">&#128100; References & Recommendations Guide — Personalized for '+name+'</div><div class="ai-content">';
-    html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Gap year programs want different things from references than colleges do. These are your specific recommenders, what to ask them to say, and how to brief them.</p>';
-    refs.recommenders.forEach(function(r, i) {
-      html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:12px">';
-      html += '<div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:4px">Recommender '+(i+1)+': '+r.type+'</div>';
-      html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:8px">'+r.why+'</p>';
-      html += '<div style="background:rgba(45,106,79,0.06);border-radius:6px;padding:10px;margin-bottom:8px">';
-      html += '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#2d6a4f;margin-bottom:3px">Ask them to emphasize</div>';
-      html += '<p style="font-size:12px;color:var(--text-mid)">'+r.emphasize+'</p></div>';
-      html += '<details><summary style="font-size:11px;font-weight:500;color:var(--text-light);cursor:pointer">Sample briefing email &#9660;</summary>';
-      html += '<div style="background:rgba(0,0,0,0.02);border-radius:6px;padding:10px;margin-top:6px;font-size:12px;color:var(--text-mid);line-height:1.6;font-style:italic">'+r.email_template+'</div></details>';
-      html += '</div>';
-    });
-    if (refs.gap_year_difference) {
-      html += '<div style="background:rgba(24,95,165,0.04);border-radius:8px;padding:12px 16px">';
-      html += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#185FA5;margin-bottom:6px">What gap year programs want that colleges do not</div>';
-      html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5">'+refs.gap_year_difference+'</p></div>';
-    }
-    html += '</div>';
-    el.innerHTML = html;
-  } catch(e) {
-    el.innerHTML = '<div class="ai-badge">&#128100; References & Recommendations Guide</div><div class="ai-content">'
-      + '<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:16px">'
-      + '<p style="font-size:13px;color:var(--navy);font-weight:500;margin-bottom:8px">Personalized references guide generates in the full Beyond Class platform</p>'
-      + '<p style="font-size:12px;color:var(--text-mid);line-height:1.6">Your counselor can help identify the right recommenders for your specific gap year program and brief them effectively.</p>'
-      + '</div></div>';
-    console.warn('[BC] gap references error:', e);
-  }
+  html += '<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:12px 16px;margin-top:4px">'
+    + '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:6px">The question you should ask them</div>'
+    + '<div style="font-size:13px;color:var(--navy);font-style:italic;margin-bottom:6px">"What does a gap year that truly succeeds look like to you \u2014 and what do you see in students who go on to do that?"</div>'
+    + '<p style="font-size:12px;color:var(--text-mid)">This question inverts the interview. It tells the interviewer you are evaluating fit, not just seeking approval. It also gives you genuine information about whether this program is right for you.</p>'
+    + '</div>'
+    + '<p style="font-size:12px;color:var(--text-light);font-style:italic;margin-top:12px">Practice these answers with your counselor. The first time you say them out loud should not be in the actual interview.</p>'
+    + '</div>';
+
+  el.innerHTML = html;
+  section.style.display = '';
+}
+
+function renderGapYearReferences(arch, color, el, section) {
+  if (!el || !section) return;
+  var refs = GAP_STATIC.references[arch] || GAP_STATIC.references['Builder'];
+  var html = '<div class="ai-badge">&#128100; References & Recommendations Guide \u2014 ' + arch + ' Archetype</div>'
+    + '<div class="ai-content">'
+    + '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Gap year programs want different things from references than colleges do. They want evidence of real-world commitment, emotional resilience, and the ability to execute without a syllabus. These are your three recommenders \u2014 who to ask and exactly what to tell them.</p>';
+
+  refs.forEach(function(r, i) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:12px">'
+      + '<div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:4px">Recommender ' + (i+1) + ': ' + r.type + '</div>'
+      + '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:8px">' + r.why + '</p>'
+      + '<div style="background:rgba(45,106,79,0.06);border-radius:6px;padding:10px;margin-bottom:8px">'
+      + '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#2d6a4f;margin-bottom:3px">What to ask them to emphasize</div>'
+      + '<p style="font-size:12px;color:var(--text-mid)">' + r.emphasize + '</p>'
+      + '</div>'
+      + '<details><summary style="font-size:11px;font-weight:500;color:var(--text-light);cursor:pointer">Sample request email &#9660;</summary>'
+      + '<div style="background:rgba(0,0,0,0.02);border-radius:6px;padding:10px;margin-top:6px;font-size:12px;color:var(--text-mid);line-height:1.6;font-style:italic">' + r.email + '</div>'
+      + '</details>'
+      + '</div>';
+  });
+
+  html += '<div style="background:rgba(24,95,165,0.04);border-radius:8px;padding:12px 16px;margin-top:4px">'
+    + '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#185FA5;margin-bottom:6px">What gap year programs look for that colleges do not</div>'
+    + '<p style="font-size:12px;color:var(--text-mid);line-height:1.5">Gap year programs want recommenders who can speak to how you handle difficulty, ambiguity, and sustained commitment \u2014 not your GPA or classroom performance. Choose recommenders who have seen you work under real conditions, not just academic ones. The best letter comes from someone who has seen you when things were hard.</p>'
+    + '</div>'
+    + '<p style="font-size:12px;color:var(--text-light);font-style:italic;margin-top:12px">Your counselor can help you brief your recommenders effectively before they write. A five-minute conversation dramatically improves the quality of the letter.</p>'
+    + '</div>';
+
+  el.innerHTML = html;
+  section.style.display = '';
 }
 
 
