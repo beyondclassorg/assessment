@@ -5917,6 +5917,51 @@ async function generateGapYearReport(archProfile, intake) {
   var isGapYear = (intake && intake.posthsplan === 'gap_year') ||
                   (typeof intakeData !== 'undefined' && intakeData.posthsplan === 'gap_year');
   if (!isGapYear) return;
+  // ── HIDE COLLEGE-SPECIFIC PREMIUM SECTIONS ───────────────
+  // Gap year students get path-specific versions of these
+  var sectionsToHide = [
+    'wrap-essays',       // Common App essay angles → replaced by gap year writing angles
+    'section-essays',
+    'prem-interview',    // College interview prep → replaced by gap year interview prep
+    'prem-recletter',    // College rec letter guide → replaced by gap year references guide
+    'prem-counselor-guide', // College admissions counselor guide → not relevant
+    'wrap-careers',      // Career paths section — keep but check relevance
+    'section-careers',
+  ];
+  sectionsToHide.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    // Walk up to results-section wrapper
+    var wrapper = el;
+    var tries = 0;
+    while (wrapper && !wrapper.classList.contains('results-section') && tries < 5) {
+      wrapper = wrapper.parentElement; tries++;
+    }
+    if (wrapper && wrapper.classList.contains('results-section')) {
+      wrapper.style.display = 'none';
+    } else if (el) {
+      el.style.display = 'none';
+    }
+  });
+
+  // Relabel summer programs for gap year context
+  var summerEl = document.getElementById('prem-summer');
+  if (summerEl) {
+    var sumWrapper = summerEl;
+    var t = 0;
+    while (sumWrapper && !sumWrapper.classList.contains('results-section') && t < 5) {
+      sumWrapper = sumWrapper.parentElement; t++;
+    }
+    if (sumWrapper) {
+      var titleEl = sumWrapper.querySelector('.results-section-title');
+      if (titleEl) {
+        var icon = titleEl.querySelector('.rs-icon');
+        titleEl.innerHTML = (icon ? icon.outerHTML + ' ' : '') + 'Pre-Gap Year Programs to Explore Now';
+      }
+    }
+  }
+
+
 
   var arch = archProfile ? archProfile.split(' ')[0] : 'Builder';
   var name = (intake && intake.firstname) || 'you';
@@ -6069,7 +6114,12 @@ async function generateGapYearApplicationWriting(arch, name, city, state, intere
     html += '</div>';
     el.innerHTML = html;
   } catch(e) {
-    el.innerHTML = '<div class="ai-badge">&#9998; Application Writing Angles</div><div class="ai-content"><p style="font-size:13px;color:var(--text-mid)">Unable to generate personalized angles right now. Your counselor can help develop these in session using your gap year plan and archetype profile.</p></div>';
+    var isCors = e.message && (e.message.includes('fetch') || e.message.includes('CORS') || e.message.includes('Failed'));
+    el.innerHTML = '<div class="ai-badge">&#9998; Application Writing Angles</div><div class="ai-content">'
+      + '<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:16px">'
+      + '<p style="font-size:13px;color:var(--navy);font-weight:500;margin-bottom:8px">Personalized angles generate in the full Beyond Class platform</p>'
+      + '<p style="font-size:12px;color:var(--text-mid);line-height:1.6">Your counselor can access these in session. The 5 angles are built from your archetype, interests, and extracurriculars — specific to your gap year program applications.</p>'
+      + '</div></div>';
     console.warn('[BC] gap writing error:', e);
   }
 }
@@ -6117,7 +6167,11 @@ async function generateGapYearInterviewPrep(arch, name, interests, extra, openAn
     html += '</div>';
     el.innerHTML = html;
   } catch(e) {
-    el.innerHTML = '<div class="ai-badge">&#127908; Interview Preparation</div><div class="ai-content"><p style="font-size:13px;color:var(--text-mid)">Unable to generate personalized preparation right now. Your counselor can run a mock interview using the gap year program published interview criteria.</p></div>';
+    el.innerHTML = '<div class="ai-badge">&#127908; Gap Year Interview Prep</div><div class="ai-content">'
+      + '<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:16px">'
+      + '<p style="font-size:13px;color:var(--navy);font-weight:500;margin-bottom:8px">Personalized interview prep generates in the full Beyond Class platform</p>'
+      + '<p style="font-size:12px;color:var(--text-mid);line-height:1.6">Your counselor can run a mock interview using program-specific criteria. The questions and answer frameworks are built from your specific background and archetype.</p>'
+      + '</div></div>';
     console.warn('[BC] gap interview error:', e);
   }
 }
@@ -6165,7 +6219,11 @@ async function generateGapYearReferences(arch, name, interests, extra, openAns, 
     html += '</div>';
     el.innerHTML = html;
   } catch(e) {
-    el.innerHTML = '<div class="ai-badge">&#128100; References Guide</div><div class="ai-content"><p style="font-size:13px;color:var(--text-mid)">Unable to generate personalized guidance right now. Your counselor can help identify the right references for your specific gap year program.</p></div>';
+    el.innerHTML = '<div class="ai-badge">&#128100; References & Recommendations Guide</div><div class="ai-content">'
+      + '<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:16px">'
+      + '<p style="font-size:13px;color:var(--navy);font-weight:500;margin-bottom:8px">Personalized references guide generates in the full Beyond Class platform</p>'
+      + '<p style="font-size:12px;color:var(--text-mid);line-height:1.6">Your counselor can help identify the right recommenders for your specific gap year program and brief them effectively.</p>'
+      + '</div></div>';
     console.warn('[BC] gap references error:', e);
   }
 }
