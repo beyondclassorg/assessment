@@ -3538,6 +3538,8 @@ function renderCopyrightFooter() {
       if (prs) prs.style.display = '';
       var cta = document.getElementById('early-premium-cta');
       if (cta) cta.style.display = 'none';
+      var teaser = document.getElementById('path-upgrade-teaser');
+      if (teaser) teaser.style.display = 'none';
       return;
     }
     window._bcPremiumUnlocked = true;
@@ -3545,6 +3547,9 @@ function renderCopyrightFooter() {
     // Hide the paywall
     var cta = document.getElementById('early-premium-cta');
     if (cta) cta.style.display = 'none';
+    // Hide path-specific upgrade teaser
+    var teaser = document.getElementById('path-upgrade-teaser');
+    if (teaser) teaser.style.display = 'none';
     var overlay = document.getElementById('premium-overlay');
     if (overlay) overlay.style.display = 'none';
     var sticky = document.getElementById('sticky-premium-cta');
@@ -5729,6 +5734,7 @@ function applyPathAwareFreeReport(intake) {
     if (comboWrapper) {
       var teaserDiv = document.createElement('div');
       teaserDiv.className = 'results-section';
+      teaserDiv.id = 'path-upgrade-teaser';
       teaserDiv.style.cssText = 'border:1.5px solid rgba(200,169,110,0.4);border-radius:12px;background:linear-gradient(135deg,rgba(200,169,110,0.04),rgba(200,169,110,0.08));';
       teaserDiv.innerHTML = '<div class="results-section-title" style="border-bottom:1px solid rgba(200,169,110,0.2)">'
         + '<span class="rs-icon">&#9733;</span> Your ' + pathLabel + ' Premium Report</div>'
