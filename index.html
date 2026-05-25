@@ -1331,6 +1331,32 @@ async function renderResults(r) {
         <div class="results-section-title"><span class="rs-icon">&#128100;</span> References Guide</div>
         <div class="ai-section" id="prem-gap-references"><div class="ai-loading"><div class="ai-spinner"></div><span>Building your references guide...</span></div></div>
       </div>
+
+      <!-- CC SECTIONS -->
+      <div class="results-section" id="section-cc-timeline" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#128197;</span> Your CC Application Timeline</div>
+        <div class="ai-section" id="prem-cc-timeline"></div>
+      </div>
+      <div class="results-section" id="section-cc-financial" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#128178;</span> Financial Reality</div>
+        <div class="ai-section" id="prem-cc-financial"></div>
+      </div>
+      <div class="results-section" id="section-cc-profiles" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#127942;</span> CC Transfer Outcomes</div>
+        <div class="ai-section" id="prem-cc-profiles"></div>
+      </div>
+      <div class="results-section" id="section-cc-writing" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#9998;</span> Application Writing Angles</div>
+        <div class="ai-section" id="prem-cc-writing"></div>
+      </div>
+      <div class="results-section" id="section-cc-interview" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#127908;</span> Transfer Interview Prep</div>
+        <div class="ai-section" id="prem-cc-interview"></div>
+      </div>
+      <div class="results-section" id="section-cc-references" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#128100;</span> References Guide</div>
+        <div class="ai-section" id="prem-cc-references"></div>
+      </div>
     </div><!-- end premium-report-section -->
 
 <!-- PREMIUM OVERLAY — hidden for counselor code users -->
@@ -1409,6 +1435,7 @@ async function renderResults(r) {
   // Generate path supplement for non-traditional path students
   generatePathSupplement(archProfile, r.intake || intakeData || {});
   generateGapYearReport(archProfile, r.intake || intakeData || {});
+  generateCCReport(archProfile, r.intake || intakeData || {});
   // Standalone counselor check (runs even if premium report fails)
   checkCounselorCodeOnResults();
   // Init sticky CTA
@@ -6331,6 +6358,511 @@ function renderGapYearReferences(arch, color, el, section) {
 
   el.innerHTML = html;
   section.style.display = '';
+}
+
+
+var CC_DATA = {
+  label: 'Community College',
+  intro: 'Community college is the most misunderstood pathway in American education. The stigma is a class issue, not a merit issue. The transfer pathway to flagship universities is rigorous and the outcomes are exceptional. Students who plan it intentionally often outperform direct-admit peers.',
+  counselorNote: 'The counselor primary role in CC pathways is combating stigma — the student and the family. The facts are on your side: California TAG guarantees UC admission for students with a 3.0+ GPA. CC-to-flagship graduates earn comparable salaries to direct-admit students within five years. Frame it as a strategic financial decision, not a fallback.',
+  parentNote: 'Community college is not Plan B. For many students it is the financially responsible choice — two years at $5,000 versus two years at $70,000 — with the same destination university. Your student is not settling. They are being strategic.',
+  archetypes: {
+  'Builder': {
+    theme: 'Use CC as a launchpad — lower cost, more time to build',
+    question: 'How do I use the money I am saving to fund what I am building?',
+    deliverable: 'Transfer acceptance at a top program plus a portfolio of real projects built during the two years',
+    timeline: [
+      {when:'Now — senior year',what:'Identify your transfer target and map every course',detail:'Which 4-year program are you aiming for? Use ASSIST.org to map every CC course that transfers as credit to your target. The coursework you take depends entirely on where you are going.'},
+      {when:'Week 1 at CC',what:'Meet with the transfer center immediately',detail:'Week one, book an appointment with the transfer center. They know TAG requirements, articulation agreements, and unofficial pathways. This meeting is worth more than any class you will take.'},
+      {when:'October–November',what:'Map your full 2-year course sequence',detail:'Build a term-by-term plan: which classes transfer as credit, which fulfill major prerequisites. Prioritize programming, business, and design coursework that maps directly to your 4-year curriculum.'},
+      {when:'Year 1 — concurrent',what:'Launch something real while enrolled',detail:'CC schedule flexibility is a Builder advantage. Use time outside class to build a real project. A working product built during CC is a distinctive transfer application that direct-admit students cannot match.'},
+      {when:'Year 1 — spring',what:'Apply for TAG if eligible (California students)',detail:'California TAG guarantees UC admission with a 3.0+ GPA in specific major prep courses. Apply in spring of your first year. Confirm your campus and major requirements with your transfer counselor.'},
+      {when:'Year 2 — fall',what:'Apply for transfer with your portfolio ready',detail:'Most transfer applications open August 1 and are due November–January. Your transfer personal statement should focus on the specific project you built and what it taught you about building.'},
+    ],
+    financial: {
+      programs: [
+        {name:'In-state CC tuition',cost:'$3,800–$6,000/year',note:'Often fully covered by Pell Grant. Zero out-of-pocket is realistic for qualifying students.'},
+        {name:'Transfer to UC/CSU',cost:'$14,000–$28,000/year',note:'Compared to $70,000+ at private alternatives. Same degree, fraction of the cost.'},
+        {name:'SBDC at CC',cost:'Free advising',note:'Many CCs house Small Business Development Centers — free business consulting for student entrepreneurs.'},
+        {name:'Side project budget',cost:'$0–$5,000',note:'Digital builds cost almost nothing. Physical products need capital planning from the start.'},
+      ],
+      bottomLine: 'A Builder who does CC right saves $80,000–$140,000 over two years compared to a private university — and often arrives at the 4-year program with a working product. That combination is simply not available through any other path.',
+    },
+    profiles: [
+      {name:'Marcus, Builder',path:'De Anza College → UC Berkeley EECS',what:'Completed the full calculus and CS sequence at De Anza while building a peer tutoring app used by 200 students. Applied TAG and guaranteed UC transfer with a 3.8 GPA.',outcome:'Arrived at Berkeley with a working product, two years of real startup experience, and $80,000 less debt than classmates. His app became the basis of his senior thesis.',counselorNote:'Marcus was embarrassed about CC. His counselor reframed it: every UC Berkeley EECS student took the same calculus. Marcus also had a product. That reframe changed his transfer application entirely.'},
+      {name:'Priya, Builder',path:'Santa Monica College → USC Marshall',what:'Completed SMC business coursework while launching a sustainable clothing resale platform. TAG guaranteed her USC admission with a 3.5 GPA.',outcome:'Transferred with $60,000 in savings, a functioning business, and a co-founder she met at SMC. Her business was featured in the USC entrepreneurship newsletter before she finished her first semester.',counselorNote:'The TAG program to USC from Santa Monica is one of the most underused pathways in California. A guaranteed USC admission with a 3.5 GPA is available to any student who knows it exists.'},
+    ],
+    writing: [
+      {title:'Why I chose the strategic path',type:'Transfer Personal Statement',angle:'Reframe the CC choice as a deliberate decision — lower cost, more time to build, faster path to the same destination. This works when it demonstrates self-awareness and strategic thinking.',opening:'I could have enrolled in a four-year university last fall. I chose not to.',avoid:'Defensiveness about CC. The essay should be confident and strategic, not apologetic.'},
+      {title:'The product I built while I was supposed to be studying',type:'Transfer Portfolio Statement',angle:'Describe a specific project built during CC that demonstrates real-world application. The contrast between classroom theory and actual execution is the story.',opening:'The assignment asked for a business plan. I built the business instead.',avoid:'Projects that are purely academic. The product should exist and be usable by real people.'},
+      {title:'What two years at CC taught me about building things that last',type:'Scholarship Essay',angle:'Use the CC experience as a metaphor for building — the foundation matters more than the facade.',opening:'The most important structures are built from the bottom up.',avoid:'Inspirational abstractions. Keep it grounded in specific experiences and specific lessons.'},
+      {title:'What I learned from customers that my classes could not teach',type:'Program Application',angle:'Describe the gap between academic business concepts and real customer feedback — and what that gap taught you about how businesses actually work.',opening:'My professor said build for a market. My first customer taught me to build for a person.',avoid:'Being dismissive of academic learning. Honor both — theory and reality.'},
+      {title:'The two parallel tracks I ran simultaneously',type:'Honors Program Application',angle:'Describe the discipline required to maintain academic rigor while building something real. Demonstrates the dual-track thinking that distinguishes serious Builders.',opening:'Monday through Thursday I was a student. Friday through Sunday I was trying to ship something.',avoid:'Making it sound effortless. The discipline and the tradeoffs are the story.'},
+    ],
+    interview: [
+      {q:'Why did you choose community college instead of a 4-year university?',why:'Transfer admissions want confidence and intentionality — not apologetics.',framework:'Name the specific advantages — cost savings, time to build, flexibility — and connect each to something specific you did. End with what you bring to the transfer that a direct-admit student would not have.',avoid:'Defensive or apologetic framing. Own the choice completely.'},
+      {q:'Tell me about something real you built during your time at CC.',why:'They want evidence of initiative beyond coursework.',framework:'Name the thing. Describe the problem it solved. Name one specific person who used it. Describe what broke and what you fixed. End with its current status.',avoid:'Projects that existed only as plans or that only you used.'},
+      {q:'How did you manage building something while maintaining your academic record?',why:'They want to know you can handle competing demands.',framework:'Describe your specific time management system — not willpower, but structure. Name the tradeoffs and costs you accepted.',avoid:'Making it sound effortless. Show the discipline and the sacrifice.'},
+      {q:'What do you wish you had known before starting at CC?',why:'Self-reflection and learning are key transfer qualities.',framework:'Name one specific thing — a resource, a pathway, a relationship — you discovered later than you wish. Describe what you would have done differently.',avoid:'Regret framing. Show that the late discovery still led somewhere useful.'},
+      {q:'What will you contribute to our program that other applicants would not?',why:'They want differentiation. What makes your CC experience an asset?',framework:'Name your working product, your real-world experience, and your financial discipline. These are genuine distinctions, not weaknesses dressed up.',avoid:'Generic claims about work ethic. Name specific things.'},
+    ],
+    references: [
+      {type:'A faculty member who supervised independent or applied work',why:'Transfer programs want faculty who saw you do more than complete assignments. A professor who watched you build something speaks to the initiative that distinguishes Builders.',emphasize:'Ask them to describe specifically what you built beyond required coursework and what they observed about your ability to execute independently.',email:'I am applying to transfer to [program]. You supervised my independent project on [topic]. Could your recommendation speak specifically to that work and what you observed about my initiative?'},
+      {type:'A professional contact from a real-world project or client relationship',why:'Nothing validates a Builder transfer application like a reference from someone who actually used what you built. A client speaks to impact no faculty member can verify.',emphasize:'Ask them to describe what you built, the specific problem it solved, and what they observed about your reliability and execution quality.',email:'I am applying to transfer to [program]. You were a [client/user] for [project]. A recommendation from someone who experienced the work firsthand would add something no professor can provide. Would you be willing to write about that experience?'},
+      {type:'A CC counselor or transfer advisor who guided your strategy',why:'A counselor who watched you research options, map articulation agreements, and execute a deliberate two-year plan speaks to your strategic thinking.',emphasize:'Ask them to describe your planning process — the research, the decisions, the intentionality behind your choices.',email:'I am applying to transfer to [program]. You helped me navigate the transfer planning process. Could your recommendation focus on how I approached the planning and the intentionality behind my choices?'},
+    ],
+  },
+  'Shepherd': {
+    theme: 'CC to social work, nursing, or human services — get into the work faster',
+    question: 'What certification can I earn here that puts me in the room where I can actually help people?',
+    deliverable: 'A CNA, EMT, or human services credential plus a clear transfer plan to a BSW or BSN program',
+    timeline: [
+      {when:'Now',what:'Identify your credential pathway before you enroll',detail:'What certification can you earn at CC that puts you directly into helping work? CNA, EMT, social work AA, or early childhood education certificate — know your target before you enroll.'},
+      {when:'Week 1 at CC',what:'Visit both the transfer center AND the health/human services department',detail:'Two different offices, two different pathways. The transfer center handles 4-year plans. The health programs office handles certifications, clinical placements, and licensure requirements. You need both.'},
+      {when:'Year 1',what:'Earn your first credential while taking transfer classes',detail:'Many Shepherds complete a CNA or EMT certification in 6 months while simultaneously taking general education courses that transfer to a BSW or BSN. Graduate CC with both a credential and transfer credit.'},
+      {when:'Year 1–2',what:'Secure a clinical or service placement',detail:'Your CC program likely has partnerships with local hospitals, nonprofits, and social services agencies. Get placed early. The relationships you build in the field matter more than your GPA for Shepherd careers.'},
+      {when:'Year 2',what:'Apply for transfer and licensure simultaneously',detail:'BSW and nursing programs have specific transfer requirements. Confirm them in year 1. Apply for transfer while beginning the licensure application process — some states allow CC graduates to sit for exams before the 4-year degree.'},
+      {when:'Throughout',what:'Document your clinical hours carefully from day one',detail:'Every hour of clinical experience counts. Keep a log from day one. Many licensing boards require documented hours. Your clinical supervisor signatures are legal documents — treat them that way.'},
+    ],
+    financial: {
+      programs: [
+        {name:'In-state CC tuition',cost:'$3,800–$6,000/year',note:'Often fully covered by Pell Grant for qualifying students.'},
+        {name:'CNA certification at CC',cost:'$1,000–$3,000 total',note:'Fastest path to paid patient care work. Many employers reimburse the cost after hire.'},
+        {name:'EMT certification',cost:'$1,500–$4,000 total',note:'6-month program. Immediate employment. Often leads to employer-funded paramedic upgrade.'},
+        {name:'BSN after transfer',cost:'$12,000–$22,000/year at public school',note:'Compared to $40,000–$65,000 at private nursing programs.'},
+      ],
+      bottomLine: 'A Shepherd who earns a CNA at CC while completing transfer prerequisites can be working in patient care — earning $35,000–$45,000 — within 12 months, while simultaneously completing their transfer track. The financial and professional head start is significant.',
+    },
+    profiles: [
+      {name:'Amara, Shepherd',path:'Contra Costa College → SF State BSW',what:'Earned CNA certification at CCC in 6 months while completing transfer prerequisites. Worked 20 hours/week as a CNA while finishing the transfer track.',outcome:'Transferred with a credential, 18 months of patient care experience, and enough income to avoid student loans during her BSW. Her clinical experience made her BSW application stand out immediately.',counselorNote:'The CNA-while-transferring path is underused. It requires careful scheduling but produces a student who arrives at their BSW or nursing program having already done the work they are training for.'},
+      {name:'Diego, Shepherd',path:'Hostos Community College → Fordham BSW',what:'Completed Hostos human services AA while interning at a South Bronx youth organization. Fordham transfer agreement guaranteed his admission.',outcome:'Arrived at Fordham with two years of direct service experience in the community he wanted to serve. His internship supervisor became one of his strongest professional references.',counselorNote:'Diego chose Hostos deliberately — not as a fallback but because it put him where he wanted to work. That intentionality was visible in every application he submitted.'},
+    ],
+    writing: [
+      {title:'Why I chose to start helping immediately',type:'Transfer Personal Statement',angle:'Frame the CC path as the fastest route to actual helping work. The student who earned her CNA at CC was helping people 18 months before her direct-admit peers.',opening:'I did not want to spend four years preparing to help people. I wanted to start.',avoid:'Implying that the 4-year path is wrong. Frame it as the right sequence for you.'},
+      {title:'The patient who changed what I thought healthcare meant',type:'Clinical Experience Essay',angle:'Describe a specific encounter during CC clinical or service work that revealed something about helping that no class had taught.',opening:'She did not want information. She wanted someone to stay.',avoid:'Medical detail without human detail. The story is about the relationship, not the diagnosis.'},
+      {title:'What two years of direct service taught me before I specialized',type:'Scholarship Application',angle:'Make the case that the CC path produced more genuine helping experience than any direct-admit alternative.',opening:'Most of my future colleagues will graduate from their training programs having never done the work. I have been doing it for two years.',avoid:'Superiority framing. Show depth of experience, not criticism of peers.'},
+      {title:'The community I chose and why CC helped me understand them',type:'BSW/BSN Transfer Statement',angle:'Describe how CC gave you direct access to the community you want to serve — as a student, not a visitor.',opening:'The community I want to serve was in my classroom every day.',avoid:'Romanticizing hardship. Be honest about complexity.'},
+      {title:'Why I chose depth over prestige at 18',type:'Fellows Program Application',angle:'Name the deliberate tradeoff — the less prestigious institution chosen for direct experience — and describe what that choice produced.',opening:'At 18, I had a choice between a prestigious campus and a proximate one. I chose proximity.',avoid:'Resentment toward students who made different choices.'},
+    ],
+    interview: [
+      {q:'Why did you choose community college as the path into social work or nursing?',why:'They want to hear the choice was deliberate and connected to your values.',framework:'Describe how CC gave you direct access to the community you want to serve. Name the clinical or service work you did and why it required this path.',avoid:'Financial necessity as the only explanation.'},
+      {q:'Tell me about a patient or client interaction during your clinical or service work.',why:'They want evidence of real helping experience, not academic knowledge of helping.',framework:'Describe one specific person, one situation, one thing you got wrong, one adjustment. End with what you learned about what the person actually needed.',avoid:'Generic compassion language. One specific story is worth more than any general reflection.'},
+      {q:'How did you handle the emotional demands of direct service while being a student?',why:'Burnout is the primary risk. They want evidence of self-awareness.',framework:'Describe your actual support structures — supervision, peer support, journaling, clear boundaries. Name a specific moment when the weight was significant and what you did.',avoid:'Claiming you handled it fine. Show the weight and the management.'},
+      {q:'What do you understand about this community that someone without direct experience would not?',why:'They want the specific insight that comes from proximity, not textbooks.',framework:'Name one belief you held before direct service that the work corrected. Describe what replaced it and how that correction makes you a better practitioner.',avoid:'Abstract knowledge claims. Root the answer in a specific experience.'},
+      {q:'Where do you see yourself in ten years?',why:'They want to see ambitions connected to real communities and real work.',framework:'Describe a specific role, a specific community, a specific kind of helping. Name why that combination specifically.',avoid:'Career ladder answers. The best Shepherd answers describe the work, not the title.'},
+    ],
+    references: [
+      {type:'A clinical supervisor or service organization leader',why:'Nothing matters more for nursing or social work transfer applications than a reference from someone who supervised real clinical or direct service work.',emphasize:'Ask them to describe a specific patient or client interaction — how you handled difficulty, how you maintained presence under pressure, how you cared for the person behind the presenting problem.',email:'I am applying to transfer to a [nursing/social work] program. You supervised my clinical work at [organization]. Could your recommendation describe a specific moment when you saw how I showed up for a patient or client in difficulty?'},
+      {type:'A patient, client, or community member who received your direct care',why:'A recommendation from someone you actually helped is rare and powerful. It demonstrates real outcomes for real people.',emphasize:'Ask them to describe what your presence meant to them, what they experienced in your care, and what they would want programs to know about how you show up.',email:'I am applying to transfer to [program]. You received care from me at [organization]. Would you be willing to write a short recommendation about what that experience was like for you?'},
+      {type:'A faculty member who observed your emotional intelligence in clinical simulation',why:'Social work and nursing programs want evidence of emotional regulation and empathy under pressure.',emphasize:'Ask them to describe a specific moment when they observed you navigate emotional complexity in a difficult simulation or case discussion.',email:'My transfer application asks about emotional intelligence in clinical settings. You saw me work through [simulation/case discussion]. Could your recommendation focus on what you observed in those moments?'},
+    ],
+  },
+  'Architect': {
+    theme: 'CC STEM transfer — complete the hardest prerequisites at low cost',
+    question: 'What is the most rigorous STEM sequence I can complete here — and where does it take me?',
+    deliverable: 'Completed calculus, physics, and CS sequences plus a transfer acceptance at a top engineering program',
+    timeline: [
+      {when:'Now',what:'Map the STEM transfer pathway using ASSIST.org or your state equivalent',detail:'Identify every calculus, physics, and CS course that transfers as credit to your target 4-year engineering program. Know every articulation agreement before you enroll. The coursework you take depends entirely on where you are going.'},
+      {when:'Semester 1',what:'Enroll in calculus immediately — no delays',detail:'The STEM transfer track lives and dies by the math sequence. Every semester you delay calculus pushes back your transfer date. Enroll in Calculus I your first semester regardless of other preparation gaps.'},
+      {when:'Semester 1',what:'Join the honors program if available',detail:'CC honors programs offer smaller classes, priority transfer consideration, and faculty who write strong recommendation letters. Many honors courses satisfy the same transfer requirements as standard sections.'},
+      {when:'Semester 1–2',what:'Build a relationship with a faculty research mentor',detail:'Some CC faculty maintain active research connections with 4-year universities. Find them, take their classes, and ask to be involved in whatever they are working on. A faculty letter connected to your target institution is unusually powerful.'},
+      {when:'Year 1–2',what:'Complete the full calculus and physics sequence',detail:'Most engineering transfer tracks require Calc I–III and Physics I–II with labs. Map these to a semester-by-semester schedule in week one. Architects who complete the full STEM sequence at CC arrive ahead of most direct-admit students.'},
+      {when:'Year 2 — fall',what:'Apply for transfer with a research or independent project',detail:'The strongest Architect transfer applications include independent work — a computational project, a research paper, a technical demonstration. Start this in year 1 so it is complete for your year 2 application.'},
+    ],
+    financial: {
+      programs: [
+        {name:'In-state CC STEM track',cost:'$3,800–$6,000/year',note:'Calculus, physics, and CS at a fraction of 4-year cost. Identical coursework, dramatically lower price.'},
+        {name:'Transfer to UC Engineering',cost:'$14,000–$18,000/year in-state',note:'Compared to $55,000–$75,000 at private engineering schools.'},
+        {name:'Honors program stipends',cost:'$500–$2,000/year',note:'Many CC honors programs offer small scholarships for qualifying students.'},
+        {name:'Research assistant pay',cost:'$12–$18/hour',note:'Some CC faculty with university connections hire student research assistants.'},
+      ],
+      bottomLine: 'An Architect who completes the full calculus and physics sequence at CC saves $60,000–$120,000 before transferring to an engineering program. The coursework is identical to what direct-admit students take. The cost is not.',
+    },
+    profiles: [
+      {name:'Yuna, Architect',path:'Diablo Valley College → UCLA Engineering',what:'Completed full calculus, physics, and CS sequence at DVC while auditing MIT OpenCourseWare. Submitted a research paper to a regional CS conference before applying to transfer.',outcome:'Transferred to UCLA with a research credential, complete STEM prerequisite sequence, and a faculty recommendation from a DVC professor connected to UCLA CS. Her graduation debt: $28,000. Direct-admit classmates: $85,000+.',counselorNote:'The path from Diablo Valley to UCLA Engineering is well-documented and high-success. Students who know it and plan for it outperform direct-admit students regularly. The ones who miss it never knew it existed.'},
+      {name:'James, Architect',path:'Montgomery College → University of Maryland Engineering',what:'Completed the full STEM transfer sequence at Montgomery while working part-time in IT. Built a network monitoring tool used by his employer in his second year.',outcome:'Transferred to UMD with a strong transcript, real technical work experience, and a tool in production. His employer promoted him twice before he graduated.',counselorNote:'Maryland CC-to-UMD engineering is one of the strongest transfer pipelines on the East Coast. Montgomery College has deep faculty ties to UMD. Students who use it intentionally do extraordinarily well.'},
+    ],
+    writing: [
+      {title:'The same calculus, a fraction of the cost',type:'Transfer Personal Statement',angle:'Make the case that the academic content at CC was identical to the 4-year alternative — and that the difference is purely financial. Confident framing impresses transfer committees that see too many apologetic CC essays.',opening:'I took the same calculus my future classmates took. I paid one tenth of what they paid.',avoid:'Overclaiming CC was superior. The case is equivalence plus savings, not superiority.'},
+      {title:'The research project I completed without a research university',type:'Honors Transfer Application',angle:'Describe independent intellectual work done at CC — the research question, the methodology, the output — and what it demonstrates about your ability to work without institutional scaffolding.',opening:'I did not wait for a research university to start doing research.',avoid:'Overstating the research. Be precise about what it was and what it actually found.'},
+      {title:'What teaching myself taught me about learning',type:'Scholarship Essay',angle:'Describe a period of rigorous self-directed learning at CC — a topic pursued beyond the curriculum — and what it revealed about your intellectual process.',opening:'The most interesting things I learned at CC were not in any syllabus.',avoid:'Implying you learned more outside class than in it. Frame self-direction as a complement to, not replacement for, formal coursework.'},
+      {title:'The problem I have been circling for two years',type:'Research Program Application',angle:'Name the specific intellectual problem that has organized your CC coursework — the question every class has been preparation for. This demonstrates long-term thinking that research programs want.',opening:'Every class I took was preparation for a question I had before I enrolled.',avoid:'A problem so large it cannot be addressed in scope. Name something realistically answerable.'},
+      {title:'Why I chose the foundation before the structure',type:'Engineering Program Transfer Statement',angle:'Use the architectural metaphor deliberately — CC as the foundation that makes the 4-year structure possible. Describe how the prerequisite sequence at CC was not preliminary but essential.',opening:'You cannot build a structure without understanding the ground it stands on.',avoid:'Passive framing of the CC choice. This essay should be active and intentional.'},
+    ],
+    interview: [
+      {q:'Your transcript shows strong grades at CC. How do you know you are prepared for our rigor?',why:'This is the core challenge for CC transfers. They need to believe your performance predicts performance in a more demanding environment.',framework:'Describe your most rigorous CC coursework specifically — the Calc III exam, the physics lab, the CS project — and what you did beyond the minimum. Name external validation: faculty letter, conference submission, or competition result.',avoid:'Claiming preparation without evidence. Name specific demanding experiences.'},
+      {q:'Tell me about the most intellectually challenging problem you worked on at CC.',why:'They want to see how you think, not just that you passed.',framework:'Describe the problem, your initial approach, where that approach broke down, what you tried next, and what you learned. Show thinking, not just outcome.',avoid:'Problems with clean, satisfying solutions. The most revealing problems are the ones that stayed hard.'},
+      {q:'What research or independent project did you pursue at CC?',why:'Research programs want students who can generate their own questions.',framework:'Describe your project specifically — the question, methodology, findings, output. If still in progress, describe the current state and next step.',avoid:'Overstating the work. Be precise about what you actually did.'},
+      {q:'Why this specific program?',why:'They want specific reasons, not general praise.',framework:'Name one faculty member whose research connects to your interests. Name one specific aspect of the curriculum unavailable elsewhere. Name one way your CC experience specifically prepared you for this program.',avoid:'Generic reasons that could apply to any similar program.'},
+      {q:'How do you approach learning something when there is no one to teach you?',why:'Research requires independent learning. They want evidence you can do it.',framework:'Describe your actual self-teaching process — resources, strategies, how you evaluate whether you understand, how you know when you need help.',avoid:'Claiming you just figure things out. Describe the process in detail.'},
+    ],
+    references: [
+      {type:'A STEM faculty member connected to your transfer target institution',why:'For Architect transfers, a recommendation from someone with connections to the target institution is uniquely powerful. It converts a transfer application into a referral.',emphasize:'Ask them to describe your technical problem-solving quality and intellectual independence. Ask them to mention any connection they have to your target program.',email:'I am applying to transfer to [program] at [university]. You have a research connection to faculty there. Could your recommendation speak to the quality of my technical work and, if appropriate, mention your connection to the program?'},
+      {type:'A research or project collaborator who worked through a hard problem with you',why:'A peer who worked through a genuinely difficult problem with you speaks to your thinking process in a way no supervisor can.',emphasize:'Ask them to describe specifically how you approached a problem neither of you had a solution for — what you tried, how you tested ideas, how you handled being wrong.',email:'We worked together on [project] and you saw how I approach problems without obvious solutions. Would you be willing to write about that specific collaboration and what you observed about my thinking process?'},
+      {type:'An honors program director or academic counselor',why:'CC honors programs are often the strongest evidence of academic rigor. An honors director addresses the core concern of transfer admissions directly.',emphasize:'Ask them to describe the rigor of the honors curriculum, your performance within it, and what distinguished your work from other honors students.',email:'My transfer application will face scrutiny about whether CC coursework is comparable to 4-year work. As honors director, you are best positioned to address that directly. Could your recommendation describe the rigor of the curriculum and how my work compared?'},
+    ],
+  },
+  'Catalyst': {
+    theme: 'CC as media and journalism launchpad — build your portfolio before you transfer',
+    question: 'What media can I create here that builds my portfolio before I transfer?',
+    deliverable: 'Published clips, produced media, or documented campaign work ready for portfolio review',
+    timeline: [
+      {when:'Now',what:'Identify the transfer program and its portfolio requirement',detail:'Communications and journalism programs at 4-year universities often require a portfolio for transfer admission. Know what they want before you start at CC so you can build toward it from week one.'},
+      {when:'Week 1 at CC',what:'Join campus media immediately — do not wait',detail:'The CC newspaper, radio station, podcast, or student media organization is your portfolio factory. Join week one. Catalysts who graduate CC as editors-in-chief or station managers have a distinctive transfer application.'},
+      {when:'Semester 1',what:'Publish something off-campus',detail:'A byline in a local newspaper, a piece on a community blog, a produced video for a local organization — any off-campus publication strengthens a transfer portfolio. Start pitching in month two.'},
+      {when:'Year 1',what:'Build your platform alongside your coursework',detail:'Newsletter, podcast, YouTube channel — build the audience while taking general education courses. CC schedule flexibility makes this possible. Catalysts who arrive at 4-year transfers with existing audiences skip the beginning level.'},
+      {when:'Year 1–2',what:'Apply for transfer journalism fellowships',detail:'Many regional newspapers and media organizations offer summer fellowships for CC students. Apply in spring of year 1. These fellowships often produce the best portfolio pieces for transfer applications.'},
+      {when:'Year 2',what:'Apply with a portfolio that shows range',detail:'Your transfer portfolio should include at least 5 distinct pieces across different formats. The strongest Catalyst transfer applications show a student already working like a professional.'},
+    ],
+    financial: {
+      programs: [
+        {name:'In-state CC tuition',cost:'$3,800–$6,000/year',note:'Often covered by Pell and state grants.'},
+        {name:'Campus media equipment',cost:'Free',note:'CC newspapers, radio stations, and media labs provide professional equipment at no cost.'},
+        {name:'State arts council grants',cost:'$1,000–$8,000',note:'Available to enrolled students for media and arts projects. Apply every grant cycle.'},
+        {name:'Transfer to journalism program (public)',cost:'$12,000–$25,000/year',note:'Compared to $45,000–$65,000 at private media programs.'},
+      ],
+      bottomLine: 'A Catalyst at CC builds a portfolio using professional equipment they do not pay for, publishes work that costs nothing to distribute, and saves $50,000–$100,000 before transferring. The portfolio is what matters for journalism and communications careers — not the institution where it was built.',
+    },
+    profiles: [
+      {name:'Sofia, Catalyst',path:'City College of San Francisco → SF State Journalism',what:'Joined CCSF student newspaper week one. Published 14 bylines in two years, including a story picked up by the SF Chronicle. Graduated with a complete professional portfolio.',outcome:'Transferred with a professional-grade portfolio, a Chronicle clip, and a newspaper leadership position. Her Chronicle story led to a paid summer internship before she transferred.',counselorNote:'CCSF journalism routinely produces students who outcompete direct-admit students for internships. The portfolio built there is real. The institutional prestige of where it was built is irrelevant to the people doing the hiring.'},
+      {name:'Kofi, Catalyst',path:'Community College of Denver → CU Boulder CMCI',what:'Started a campus podcast covering Denver local politics. Built 1,200 listeners in two years. CU Boulder transfer agreement guaranteed his communications admission.',outcome:'Transferred with an existing audience, two years of production experience, and a podcast that continued running during his junior year at CU. His first internship was at a Denver NPR affiliate where his podcast had already been noticed.',counselorNote:'The podcast launched because a CCD faculty member encouraged Kofi to build something rather than wait until he transferred. That encouragement was the most valuable thing the institution gave him.'},
+    ],
+    writing: [
+      {title:'The audience I built before I transferred',type:'Communications Transfer Statement',angle:'Describe the specific platform, publication, or audience built during CC — its size, its engagement, what it taught you. Transfer programs for media want students who have already started.',opening:'I did not wait until I transferred to start building an audience.',avoid:'Metrics without meaning. Describe what the audience engagement taught you, not just follower counts.'},
+      {title:'The story that got picked up beyond campus',type:'Portfolio Cover Letter',angle:'Describe the specific piece that reached beyond the CC campus — a publication, repost, or broadcast — and what it taught you about how stories travel.',opening:'I wrote it for the campus paper. Someone at the Chronicle noticed it.',avoid:'Overstating reach. One real external citation is more powerful than inflated claims.'},
+      {title:'What local journalism taught me about what matters',type:'Scholarship Essay',angle:'Frame CC as the most grounded possible context for learning journalism — serving a real local community, covering real local issues.',opening:'I covered city council meetings that affected real people in my community. That is the journalism I want to keep doing.',avoid:'Implying that local journalism is lesser. The argument is that it is more honest.'},
+      {title:'Why I believe the story and the medium are inseparable',type:'Media Program Application',angle:'Use a specific piece of work to make the case that format is not neutral — that the medium changes the message.',opening:'I tried to tell the same story four different ways before I understood which one worked.',avoid:'Abstract media theory. Root it in a specific experiment with a specific story.'},
+      {title:'The two years I spent learning by publishing',type:'Journalism Fellowship Application',angle:'Frame CC as a two-year publishing apprenticeship — learning by doing, by failing publicly, by revising and resubmitting.',opening:'I learned more from my editor\'s rejections than from any classroom lecture.',avoid:'Complaining about what CC lacked. Focus on what the experience produced.'},
+    ],
+    interview: [
+      {q:'Show me something you made during your time at CC.',why:'Portfolio evidence is more powerful than any verbal description.',framework:'Present your strongest piece. Describe the context, the audience, the impact, and one thing you would do differently. Let the work speak, but also demonstrate critical reflection.',avoid:'Presenting work without reflection. The piece matters, but so does what you learned.'},
+      {q:'What was the most important story you told during your CC years — and why did it matter?',why:'They want to understand your editorial judgment, not just your production capability.',framework:'Name the story, the audience, the medium. Describe why you chose it. Name what happened because of it.',avoid:'Stories that mattered to you but produced no visible effect on anyone else.'},
+      {q:'Tell me about a communication that failed — and what you learned.',why:'Failure is more instructive than success. They want self-awareness.',framework:'Describe what you were trying to communicate, how it was received differently, what you diagnosed as the gap, and what you tried differently next time.',avoid:'Blaming the audience. The communicator owns the gap.'},
+      {q:'What is your editorial perspective — what kinds of stories do you want to tell and why?',why:'They want to understand your voice and your values as a communicator.',framework:'Name the communities you want to serve. Name the gaps in existing coverage you want to fill. Connect your CC work to that larger vision.',avoid:'Generic answers about telling important stories. Be specific about which stories and why.'},
+      {q:'Where do you see media going — and where do you see yourself in it?',why:'They want strategic thinking about the field, not just passion for making things.',framework:'Describe one specific trend in media you think is underappreciated. Connect it to the work you want to do.',avoid:'Doom or hype about the media industry. Show nuanced analysis.'},
+    ],
+    references: [
+      {type:'An editor, journalism advisor, or media professional who evaluated your published work',why:'Transfer programs want someone who has evaluated your work professionally — not just as a teacher.',emphasize:'Ask them to describe the quality and distinctiveness of your work — your voice, editorial judgment, and ability to reach an audience.',email:'You have edited and evaluated my work at [publication]. I am applying to transfer to [program]. Could your recommendation describe the quality of my communication and why you believe this program is right for my talent?'},
+      {type:'An off-campus editor or producer who selected your work',why:'External selection validates your work at a professional standard that campus references cannot.',emphasize:'Ask them to describe why they selected your work, what distinguished it, and what they observed about your professional conduct.',email:'You published [piece] during my time at CC. A recommendation from someone who chose my work competitively would be powerful. Could you describe why you selected it and what you observed about the quality?'},
+      {type:'A community partner who participated in your storytelling',why:'Catalysts often work with communities to tell their stories. A community partner speaks to your ethics and process as a storyteller.',emphasize:'Ask them to describe how you engaged with their community and whether their perspective was represented with accuracy and respect.',email:'We collaborated on [project]. A recommendation from someone who participated in the work and can speak to how I engaged with your community would add something no editor can provide. Would you be willing to write about our collaboration?'},
+    ],
+  },
+  'Advocate': {
+    theme: 'Pre-law foundation at CC — save money for the long road to law school',
+    question: 'How do I build real legal or policy experience here while saving money for law school?',
+    deliverable: 'Strong GPA, pre-law foundation, paralegal experience, and a compelling transfer application',
+    timeline: [
+      {when:'Now',what:'Identify the pre-law transfer track and the paralegal option simultaneously',detail:'Two parallel pathways exist: transfer to a 4-year pre-law program, or complete a paralegal certificate at CC and work in legal settings immediately. Many Advocates do both simultaneously. Decide which before you enroll.'},
+      {when:'Semester 1',what:'Enroll in political science and English composition first',detail:'These two courses form the foundation of any pre-law or advocacy transfer track. Strong writing and analytical thinking are the prerequisites for everything else.'},
+      {when:'Semester 1',what:'Connect with your local legal aid clinic or law firm',detail:'Ask your CC transfer counselor about local partnerships. Many legal organizations accept CC students as clerks or volunteers. Getting inside a legal context in year 1 produces the best transfer application material.'},
+      {when:'Semester 1–2',what:'Complete the paralegal certificate if offered',detail:'Many CCs offer paralegal certificates in 2–3 semesters alongside general education coursework. This credential lets you work in legal settings immediately and dramatically strengthens transfer applications.'},
+      {when:'Year 1–2',what:'Join or start an advocacy organization on campus',detail:'CC campuses have student governments, legal aid organizations, and advocacy groups. Leading one produces the leadership experience that law school transfer applications look for.'},
+      {when:'Year 2',what:'Apply for transfer with documented legal experience',detail:'The strongest Advocate transfer applications combine strong GPA, analytical writing samples, and documented real-world legal or advocacy experience. All three are achievable in 2 years at CC.'},
+    ],
+    financial: {
+      programs: [
+        {name:'In-state CC tuition',cost:'$3,800–$6,000/year',note:'Pre-law foundation at a fraction of 4-year cost.'},
+        {name:'Paralegal certificate at CC',cost:'$2,000–$6,000 total',note:'Credential that opens legal employment immediately after completion.'},
+        {name:'Transfer to pre-law program (public)',cost:'$12,000–$25,000/year',note:'Same pre-law curriculum as at private institutions at dramatically lower cost.'},
+        {name:'Law school debt reduction',cost:'$80,000–$120,000 saved vs. private undergrad',note:'CC versus private undergrad changes the entire debt trajectory before law school even begins.'},
+      ],
+      bottomLine: 'The lawyer who attended CC for two years before a state flagship, then law school, begins their career with $100,000–$200,000 less debt than the lawyer who attended a private university throughout. That debt difference determines which cases they can afford to take.',
+    },
+    profiles: [
+      {name:'Leila, Advocate',path:'Northern Virginia CC → George Mason Political Science',what:'Completed NOVA pre-law track while interning at a Northern Virginia legal aid clinic. Earned her paralegal certificate in semester 3.',outcome:'Transferred with a paralegal credential, 18 months of real case experience, and a legal supervisor who became her strongest advocate. Was accepted to GMU Law School before finishing her undergraduate degree.',counselorNote:'NOVA to GMU is one of the strongest transfer pipelines in the country. The legal aid clinic connection is not advertised — Leila\'s counselor told her about it. That connection was worth more than any course she took.'},
+      {name:'Marcus, Advocate',path:'Houston Community College → University of Houston Political Science',what:'Completed HCC transfer track while volunteering on a city council campaign. Led voter registration drives that reached 800 residents.',outcome:'Transferred to UH with documented civic leadership, a city council contact who had watched him work, and a clear policy focus. His UH thesis was built on data he collected during the voter registration drives.',counselorNote:'Civic experience during CC years is almost always more valuable than an extracurricular at a 4-year institution. Marcus was doing real political work. His 4-year peers were joining clubs.'},
+    ],
+    writing: [
+      {title:'The cases I worked before I studied law',type:'Pre-Law Transfer Statement',angle:'Describe real legal or policy work done at CC — actual cases, actual campaigns, actual community impact — and what it taught you about how the law operates in practice versus theory.',opening:'I understood legal theory better after working a real case than after reading a hundred pages of precedent.',avoid:'Overstating your role. Be precise about what you actually did.'},
+      {title:'Why I chose the paralegal certificate before the law degree',type:'Scholarship Application',angle:'Make the case that the paralegal credential from CC produced real legal experience that the straight 4-year path cannot match.',opening:'My peers will start law school knowing how law is supposed to work. I will start knowing how it actually works.',avoid:'Arrogance about the credential. The argument is experience, not superiority.'},
+      {title:'The injustice I addressed from inside the system',type:'Policy Fellowship Application',angle:'Describe a specific advocacy action taken during CC where you worked within institutional constraints rather than against them.',opening:'I wanted to fight the system. My first year taught me to understand it first.',avoid:'Naive anti-institutionalism. Show that you have learned to use systems to change systems.'},
+      {title:'What two years in a CC classroom taught me about access to justice',type:'Social Justice Fellowship',angle:'Use CC itself as the subject — the diversity, the economic pressures, the gaps in access — and what it taught you about the systems you want to change.',opening:'My classroom was more representative of America than most law schools will ever be.',avoid:'Using classmates as props in your story. Keep focus on what you observed, not their particulars.'},
+      {title:'The community I organized before I studied organizing',type:'Public Service Fellowship',angle:'Describe specific community organizing or civic engagement done during CC — with a real community, on a real issue.',opening:'I learned more about organizing from my community than from any political science textbook.',avoid:'Overstating your organizing experience. Name what specifically you did and what specifically changed.'},
+    ],
+    interview: [
+      {q:'Tell me about a case or policy issue you worked on at CC.',why:'They want evidence of real advocacy experience, not just academic knowledge of policy.',framework:'Describe the issue, your specific role, one thing you learned about how the system actually operates, and what happened as a result of the work.',avoid:'Issues you studied without working on. The distinction between knowing and acting is significant.'},
+      {q:'Why do you want to practice law or work in policy specifically?',why:'They want to understand what specifically drives you, not general justice motivation.',framework:'Name the specific community, the specific type of law or policy, the specific injustice. Connect each to a specific experience.',avoid:'Generic justice motivation. Name specifically what you care about.'},
+      {q:'Describe a time you disagreed with a decision made by an institution you worked within.',why:'They want to know if you can hold conviction and institutional loyalty simultaneously.',framework:'Describe the disagreement specifically. Describe what you did — worked within the system or raised the issue formally. Describe what you learned.',avoid:'Stories where you were obviously right and the institution obviously wrong.'},
+      {q:'Tell me about someone whose perspective on an issue changed your own.',why:'Advocates must be able to update their understanding. This tests intellectual flexibility.',framework:'Describe the person, the perspective, the specific thing it changed in your analysis. Show that you hold positions because of evidence, not in spite of it.',avoid:'Minor updates to peripheral positions. Show a genuine revision.'},
+      {q:'What is the most important skill for an effective advocate?',why:'They want to understand your theory of change.',framework:'Name the skill — listening, coalition-building, narrative — and connect it to a specific moment from your CC experience where you saw it make a difference.',avoid:'Generic answers about passion. Name a specific skill and a specific example.'},
+    ],
+    references: [
+      {type:'An attorney, policy professional, or legal supervisor who oversaw your work',why:'Law and policy programs want someone who evaluated your work in the field, not just the classroom.',emphasize:'Ask them to describe your understanding of how the institution actually operates and how you navigated that gap effectively.',email:'I am applying to transfer to a pre-law or public policy program. You supervised my work at [organization] on real cases. Could your recommendation describe specifically how I engaged with the institutional reality of legal or policy work?'},
+      {type:'A community member or affected party from an advocacy context',why:'Advocacy programs want to know your commitment is accountable to real communities, not just abstract ideals.',emphasize:'Ask them to describe your relationship to the community and your understanding of what it actually needs — not your passion or credentials, but your ability to listen and respond.',email:'My transfer application asks about accountability to the communities I hope to serve. You are directly affected by [issue]. Would you be willing to write about our relationship and what you have observed about how I engage with and listen to what the community needs?'},
+      {type:'A debate coach, mock trial advisor, or argumentation faculty member',why:'Someone who coached you in formal argumentation can speak to your logical rigor and ability to argue under pressure.',emphasize:'Ask them to describe your analytical process — how you research a position, handle evidence that complicates your argument, and perform under real opposition.',email:'I am applying to transfer to a pre-law program. You coached me in [debate/mock trial]. Could your recommendation focus on the quality of my analytical thinking and how I handle arguments that challenge my position?'},
+    ],
+  },
+  'Cultivator': {
+    theme: 'CC for education, agriculture, and sustainability — fields that reward deep roots',
+    question: 'What credential can I earn here that puts me in direct contact with the work I care about?',
+    deliverable: 'A hands-on credential or clear transfer plan with real field experience already documented',
+    timeline: [
+      {when:'Now',what:'Identify the teaching or agriculture transfer pathway',detail:'Education and agricultural science are among the strongest CC-to-4-year transfer tracks. Many states have specific agreements that guarantee transfer into education degree programs for CC students with qualifying GPAs.'},
+      {when:'Semester 1',what:'Connect directly with the education or agriculture department',detail:'These departments often have small cohorts, dedicated faculty mentors, and community partnerships that general enrollment students never encounter. Get known in your department in semester one — not semester three.'},
+      {when:'Semester 1',what:'Secure a placement in a school or land setting',detail:'Cultivators need direct experience with the work early. Ask your department about partnerships with local elementary schools, farms, or environmental organizations. A placement in year 1 produces better transfer applications than any class.'},
+      {when:'Year 1',what:'Complete the early childhood or agricultural certificate if offered',detail:'Many CCs offer certificates in early childhood education, sustainable agriculture, or environmental technology. These credentials let Cultivators begin working in their field while completing transfer coursework.'},
+      {when:'Year 1–2',what:'Build a sustained relationship in your field placement',detail:'Cultivators who return to the same school, farm, or organization every semester — and deepen a relationship over time — produce transfer applications that demonstrate exactly what the archetype is: sustained, patient commitment.'},
+      {when:'Year 2',what:'Apply for transfer with a sustained field project documented',detail:'The strongest Cultivator transfer applications describe something they grew — a classroom garden, a tutoring relationship over two years, a restoration project. Name the thing, the time, and what it produced.'},
+    ],
+    financial: {
+      programs: [
+        {name:'In-state CC tuition',cost:'$3,800–$6,000/year',note:'Education and agricultural programs often have additional state funding beyond standard Pell.'},
+        {name:'Early childhood education certificate',cost:'$1,500–$4,000 total',note:'Opens immediate employment in schools and childcare centers at $28,000–$40,000/year.'},
+        {name:'Sustainable agriculture certificate',cost:'$2,000–$5,000 total',note:'USDA programs sometimes subsidize for students in agricultural pathways.'},
+        {name:'Transfer to education program (public)',cost:'$10,000–$22,000/year',note:'Most state flagship education programs have strong CC transfer agreements.'},
+      ],
+      bottomLine: 'A Cultivator who earns a teaching assistant or agricultural certificate at CC can begin working in their calling within a year — while simultaneously building the academic record needed for the 4-year transfer. Work experience during school often leads to direct employer sponsorship of the 4-year degree.',
+    },
+    profiles: [
+      {name:'Hannah, Cultivator',path:'Vermont Technical College → UVM Environmental Studies',what:'Completed VTC sustainable agriculture certificate while working at a local CSA farm. Built a soil health monitoring system used by the farm in her second year.',outcome:'Transferred to UVM with a certification, two years of farm work, and a technical project that impressed the Environmental Studies faculty. Her farm supervisor wrote her strongest recommendation.',counselorNote:'Vermont Tech to UVM is a well-documented transfer pathway. The farm work made Hannah\'s application unusual in the best way — she was already doing what UVM students aspire to do.'},
+      {name:'Theo, Cultivator',path:'Cabrillo College → UC Santa Cruz Education',what:'Completed Cabrillo early childhood education certificate while tutoring at a local elementary school for two years. Built a mentorship relationship with one student sustained across both years.',outcome:'Transferred to UCSC with a certification, two years of sustained relationship with a single student whose progress he documented, and an elementary school supervisor who became a career-long mentor.',counselorNote:'Theo\'s transfer application described two years with one child. Not a program. Not a volunteering hour count. One child, two years, documented growth. That specificity made his application unforgettable.'},
+    ],
+    writing: [
+      {title:'The growing season that taught me to teach',type:'Education Transfer Statement',angle:'Use the metaphor of cultivation — a garden, a crop, a restoration project — and connect it to your understanding of how learning and development work. Cultivators who can speak both languages are rare.',opening:'I spent my CC years learning two curricula simultaneously: what grows and how to teach it.',avoid:'Forcing the metaphor. It works when the connection is genuine and specific.'},
+      {title:'The student I mentored for two years',type:'Education Program Transfer Essay',angle:'Describe a sustained mentorship or tutoring relationship built during CC — one student, two years, documented growth.',opening:'I could have worked with twenty different students. I chose to stay with one.',avoid:'Using the student as a vehicle for your story. Keep their growth at the center.'},
+      {title:'Why I chose the slower path',type:'Scholarship Essay',angle:'Make the case for patience as a professional value — that the CC path, with its direct community connections and credential options, produced something the faster alternative could not.',opening:'Some things cannot be rushed. I chose two years at a community college specifically because I did not want to rush them.',avoid:'Implying the 4-year path is hasty or superficial. Frame your choice without diminishing others.'},
+      {title:'What the land taught me that the classroom confirmed',type:'Agricultural Program Transfer Statement',angle:'Describe what the physical, seasonal, outdoor work taught — and how the classroom made sense of it afterward.',opening:'I understood the theory better after I had felt the soil.',avoid:'Romanticizing outdoor work. The essay is about learning, not aesthetics.'},
+      {title:'The program I built that outlasted my enrollment',type:'Community Organization Grant',angle:'Describe a program, initiative, or project built during CC that continued after you left — and what its persistence says about how you build.',opening:'I built it to outlast me. It did.',avoid:'Taking credit that belongs to others. Name your specific contribution clearly.'},
+    ],
+    interview: [
+      {q:'Tell me about the longest commitment you have sustained and what it produced.',why:'Cultivator programs want evidence of patience and follow-through.',framework:'Describe the commitment — its duration, the point when you could have stopped, what happened because you stayed. Name the output that is only possible because of the length.',avoid:'Projects measured in weeks. The story should involve time measured in semesters.'},
+      {q:'Describe a student or mentee you worked with over an extended period.',why:'Education programs want to see the arc of a sustained developmental relationship.',framework:'Describe the student at the beginning, the challenges, your approach, the adjustments, the progress over time. End with where they are now and what you learned.',avoid:'Programs or group outcomes. One student, one relationship, one arc.'},
+      {q:'What does teaching mean to you — and how does your CC experience reflect that?',why:'They want a personal theory of teaching, not a textbook definition.',framework:'Define teaching in your own terms. Connect the definition to a specific moment from your CC teaching or mentoring experience.',avoid:'Definitions that could have come from any teacher education textbook.'},
+      {q:'How do you handle a student or project that is not responding to your approach?',why:'Cultivators need adaptability alongside patience. Persistence without adjustment is stubbornness.',framework:'Describe a specific situation where your initial approach was not working. Describe what you diagnosed and what you tried differently.',avoid:'Stories where your patience alone solved the problem. Show the adjustment.'},
+      {q:'What is the most important thing you want students to learn from you beyond your subject?',why:'The best teachers cultivate character alongside content.',framework:'Name one quality and describe a specific moment from your CC teaching where you saw it take root in a student.',avoid:'Abstract values without concrete illustration. The answer should live in a specific story.'},
+    ],
+    references: [
+      {type:'A cooperating teacher or field supervisor who watched you teach or mentor over an extended period',why:'Education programs need to know you can teach — not that you want to. A supervisor who observed your development as a practitioner over multiple semesters speaks directly to this.',emphasize:'Ask them to describe your growth as a teacher or mentor over the full period — the adjustments you made, the moments of difficulty, the evidence of development over time.',email:'I am applying to transfer to an education program. You supervised my teaching at [school] over [time period]. Could your recommendation describe my development as a teacher over that full period — including what I struggled with and how I grew?'},
+      {type:'A student or mentee you worked with over an extended period',why:'A letter from someone you taught or developed over time is rare and powerful. It demonstrates that your investment produced real growth.',emphasize:'Ask them to describe what changed for them over the course of your relationship — what became possible that was not possible at the beginning.',email:'We worked together for [time period] and I believe you experienced firsthand what sustained mentorship produces. Would you be willing to write about what changed for you and what you would want education programs to know about how I work with students?'},
+      {type:'An agricultural supervisor, land director, or environmental mentor',why:'For Cultivators with farm or environmental experience, a supervisor from that context speaks to a dimension no classroom teacher can access.',emphasize:'Ask them to describe your relationship to the work — your patience, your willingness to start over, your attention to the long-term trajectory rather than the immediate result.',email:'My transfer application includes my farm and land work at [organization]. You supervised that work over [time period]. Could your recommendation describe what you observed about how I engage with work that requires patience?'},
+    ],
+  },
+  'Peacemaker': {
+    theme: 'Language, international studies, and diplomacy foundation at CC',
+    question: 'What language or cultural foundation can I build here before I transfer to an IR program?',
+    deliverable: 'Demonstrated language proficiency and a transfer acceptance to an international relations or peace studies program',
+    timeline: [
+      {when:'Now',what:'Identify the international studies or language transfer pathway',detail:'Many 4-year IR and peace studies programs have specific CC articulation agreements. Use ASSIST.org or your state transfer guide to map every language, political science, and IR course that transfers as credit.'},
+      {when:'Semester 1',what:'Enroll in a language course immediately — no delays',detail:'Language acquisition is time-dependent — every semester matters. Enroll in the language relevant to your international interests in semester one, even if it means adjusting other coursework.'},
+      {when:'Semester 1',what:'Connect with immigrant and refugee communities on campus or nearby',detail:'CC campuses serve diverse populations that most 4-year universities do not. Peacemakers who spend two years building real cross-cultural relationships at CC arrive at IR programs with experience most students do not have.'},
+      {when:'Year 1',what:'Study abroad from CC if possible — ask about options',detail:'It is less common but possible. Some CC programs have exchange agreements. Even a summer abroad funded by a CC scholarship is significant. Ask your international student office what is available.'},
+      {when:'Year 1–2',what:'Pursue interpreter or community health worker certification',detail:'Many CCs offer interpreter training, CHW certification, or cultural competency credentials. These open real employment and volunteer doors for Peacemakers and strengthen transfer applications.'},
+      {when:'Year 2',what:'Apply for transfer with documented bridge-building work',detail:'The strongest Peacemaker transfer applications describe a specific cross-cultural relationship, project, or mediation — something real that demonstrates the archetype at work, not just the interest in it.'},
+    ],
+    financial: {
+      programs: [
+        {name:'In-state CC tuition',cost:'$3,800–$6,000/year',note:'Language and social science courses at minimal cost.'},
+        {name:'Interpreter certification',cost:'$1,500–$4,000 total',note:'High demand. Immediate employment for bilingual students at $25–$50/hour.'},
+        {name:'Community health worker certification',cost:'$1,000–$3,000 total',note:'Federal funding available through workforce development programs.'},
+        {name:'Transfer to IR/Peace Studies (public)',cost:'$12,000–$25,000/year',note:'Same curriculum as private IR programs at a fraction of the cost.'},
+      ],
+      bottomLine: 'A Peacemaker who earns an interpreter or CHW certification at CC begins building the cross-cultural professional relationships that define their career — while saving $60,000–$120,000 on the undergraduate degree. Language and community credibility, not institutional prestige, determine Peacemaker career success.',
+    },
+    profiles: [
+      {name:'Nadia, Peacemaker',path:'Miami Dade College → FIU International Relations',what:'Earned interpreter certification at MDC while facilitating a cross-cultural dialogue program between MDC Haitian and Cuban student communities. Built a formal exchange program between the two groups.',outcome:'Transferred to FIU with an interpreter credential, a running cross-cultural program she founded, and documented outcomes from two years of dialogue facilitation. Her exchange program is still operating.',counselorNote:'MDC is one of the most diverse institutions in the country. Nadia used that diversity as a laboratory for the bridge-building work she wanted to do. The program she built at MDC became her strongest professional credential.'},
+      {name:'Sam, Peacemaker',path:'Portland Community College → Lewis & Clark International Affairs',what:'Completed PCC community health worker certification while building a dialogue program for PCC refugee student population. Facilitated 18 cross-cultural conversations over two years.',outcome:'Transferred to Lewis & Clark with a CHW credential, a running program, 18 documented conversations, and a faculty mentor from PCC who had introduced him to Lewis & Clark peace studies faculty.',counselorNote:'The PCC to Lewis & Clark pathway exists because two faculty members know each other. Sam\'s counselor knew this. Access to that kind of informal knowledge is exactly what counselors are for.'},
+    ],
+    writing: [
+      {title:'The bridge I built in my classroom before I studied international relations',type:'IR Transfer Statement',angle:'Describe the cross-cultural bridge-building that happened at CC — among the diverse student body, in a dialogue program, through interpreter work — and what it taught you about what bridge-building actually requires.',opening:'I did not need to go abroad to encounter profound cultural difference. It was in my classroom.',avoid:'Exoticizing classmates. Keep the focus on the relationship and the learning.'},
+      {title:'The language I learned and what it taught me about my own',type:'Language Program Essay',angle:'Describe the experience of acquiring a second language during CC and what it revealed about how language shapes thought.',opening:'Learning a second language did not just give me words. It gave me a different way to see.',avoid:'Overstating proficiency. Be honest about where you are in the language.'},
+      {title:'The dialogue program I ran that nobody asked me to run',type:'Fellowship Application',angle:'Describe a cross-cultural dialogue initiative started at CC without an institutional mandate.',opening:'Nobody asked me to run the dialogue. I looked around and saw that nobody else was going to.',avoid:'Claiming credit for institutional support. Name specifically what you built and what you were given.'},
+      {title:'What I learned about peace from a community that has been denied it',type:'Scholarship Essay',angle:'If the CC served a community with documented systemic disadvantage, describe what you learned from being part of that community about what peace and justice actually require.',opening:'I enrolled expecting to get an education. I also received one I had not anticipated.',avoid:'Speaking for the community. Speak about what you observed and what it taught you.'},
+      {title:'The interpreter in the room nobody knew was necessary',type:'Community Service Fellowship',angle:'Describe a specific moment where your ability to move between languages or cultures made something possible that would not have happened otherwise.',opening:'Nobody in the room could understand the other side. I happened to understand both.',avoid:'Making it about your linguistic skill. The story is about what became possible when the gap closed.'},
+    ],
+    interview: [
+      {q:'Describe a specific cross-cultural relationship you built at CC.',why:'IR and peace studies programs want evidence of real bridge-building, not just interest in it.',framework:'Describe who was on the other side, what made the relationship possible, and what you learned that you could not have learned any other way.',avoid:'Tourism-adjacent relationships. The relationship should be genuine and ongoing.'},
+      {q:'Tell me about a conflict you helped navigate at CC.',why:'Peacemakers need practical conflict resolution experience.',framework:'Describe the conflict, the parties, what was making it intractable. Describe your specific role. Describe what shifted and what remains unresolved.',avoid:'Conflicts you resolved cleanly. Honest answers about partial resolution are more credible.'},
+      {q:'What is your strongest language after your native language — and what did it open for you?',why:'Language is a proxy for genuine cross-cultural engagement.',framework:'Describe your proficiency honestly. Then describe one specific cultural insight that the language gave you access to.',avoid:'Overstating proficiency. A specific cultural insight proves more than claiming fluency.'},
+      {q:'What does building peace actually mean to you in practice?',why:'Peace is an abstraction. They want to hear it made concrete.',framework:'Define peace not as an absence but as something you have seen — a specific conversation or relationship that produced something a hostile dynamic could not.',avoid:'Abstract definitions. Ground the answer in something you witnessed or participated in.'},
+      {q:'What is the most important thing you do not yet understand about the community or region you want to work in?',why:'Intellectual humility is a core Peacemaker competence.',framework:'Name the gap in your understanding honestly. Describe what you are doing to close it. Show that the not-knowing is motivating.',avoid:'Claiming comprehensive understanding. The best Peacemakers are always learning.'},
+    ],
+    references: [
+      {type:'Someone from a different cultural or linguistic background who can speak to your bridge-building firsthand',why:'The most powerful reference for a Peacemaker is someone from the other side of the bridge. It validates that the connection is real and mutual.',emphasize:'Ask them to describe your ability to listen across difference, earn trust across cultural distance, and create connection where it was not automatic.',email:'Our relationship has crossed [cultural/linguistic] difference in a genuine and ongoing way. I am applying to transfer to [program]. Would you be willing to write about what you have experienced in our relationship — specifically my ability to listen and build trust across that difference?'},
+      {type:'A dialogue facilitator, interpreter supervisor, or mediation program director',why:'Facilitation and mediation are specific skills. Someone who evaluated your performance in these contexts speaks to your specific competence.',emphasize:'Ask them to describe a specific facilitation moment — when it was genuinely difficult — and what they observed about your technique and composure.',email:'You observed my facilitation work at [organization]. My program application asks about facilitation skills. Could your recommendation describe a specific moment that demonstrated what I can do when the facilitation is genuinely challenging?'},
+      {type:'A language faculty member who observed your cross-cultural engagement',why:'A faculty member who observed not just your language performance but your cultural engagement speaks to both dimensions.',emphasize:'Ask them to describe not just your linguistic progress but what you did with the language outside class — the relationships you built and the contexts you entered.',email:'You observed my language learning over [time period] — not just in class, but in the relationships I built using the language. Could your recommendation speak to both the linguistic progress and the cultural engagement that happened alongside it?'},
+    ],
+  },
+  },
+};
+
+
+// ── CC RENDERER FUNCTIONS ─────────────────────────────────────
+
+function renderCCTimeline(arch, color, el, section) {
+  if (!el || !section) return;
+  var steps = (CC_DATA.archetypes[arch] || CC_DATA.archetypes['Builder']).timeline;
+  var html = '<div class="ai-badge">&#128197; Your CC Application Timeline \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Community college transfer has its own timelines and deadlines. Missing these windows costs you an entire year. These milestones are specific to the ' + arch + ' pathway at CC.</p>';
+  html += '<div style="position:relative;padding-left:4px">';
+  steps.forEach(function(step, i) {
+    var isLast = i === steps.length - 1;
+    html += '<div style="display:flex;gap:16px;margin-bottom:' + (isLast?'0':'20px') + '">';
+    html += '<div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0">';
+    html += '<div style="width:12px;height:12px;border-radius:50%;background:'+color+';border:2px solid white;box-shadow:0 0 0 2px '+color+';z-index:1;margin-top:2px;flex-shrink:0"></div>';
+    if (!isLast) html += '<div style="width:2px;flex:1;background:rgba(0,0,0,0.08);margin-top:4px"></div>';
+    html += '</div>';
+    html += '<div style="flex:1;padding-bottom:4px">';
+    html += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:'+color+';margin-bottom:2px">'+step.when+'</div>';
+    html += '<div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:4px">'+step.what+'</div>';
+    html += '<div style="font-size:12px;color:var(--text-mid);line-height:1.5">'+step.detail+'</div>';
+    html += '</div></div>';
+  });
+  html += '</div></div>';
+  el.innerHTML = html;
+  section.style.display = '';
+}
+
+function renderCCFinancial(arch, color, el, section) {
+  if (!el || !section) return;
+  var archData = CC_DATA.archetypes[arch] || CC_DATA.archetypes['Builder'];
+  var fin = archData.financial;
+  var html = '<div class="ai-badge">&#128178; Financial Reality for CC \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">The numbers that make the case for community college. Specific to the ' + arch + ' pathway.</p>';
+  html += '<div style="overflow-x:auto;margin-bottom:1rem"><table style="width:100%;border-collapse:collapse;font-size:12px">';
+  html += '<thead><tr style="background:rgba(0,0,0,0.03)"><th style="text-align:left;padding:8px 12px;font-weight:600;color:var(--navy);border-bottom:1px solid rgba(0,0,0,0.08)">Program / Option</th><th style="text-align:left;padding:8px 12px;font-weight:600;color:var(--navy);border-bottom:1px solid rgba(0,0,0,0.08)">Cost</th><th style="text-align:left;padding:8px 12px;font-weight:600;color:var(--navy);border-bottom:1px solid rgba(0,0,0,0.08)">Notes</th></tr></thead><tbody>';
+  fin.programs.forEach(function(p, i) {
+    var bg = i%2===0?'transparent':'rgba(0,0,0,0.015)';
+    html += '<tr style="background:'+bg+'"><td style="padding:8px 12px;color:var(--navy);font-weight:500;border-bottom:0.5px solid rgba(0,0,0,0.06)">'+p.name+'</td><td style="padding:8px 12px;color:#2d6a4f;font-weight:500;border-bottom:0.5px solid rgba(0,0,0,0.06)">'+p.cost+'</td><td style="padding:8px 12px;color:var(--text-mid);border-bottom:0.5px solid rgba(0,0,0,0.06)">'+p.note+'</td></tr>';
+  });
+  html += '</tbody></table></div>';
+  html += '<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:12px 16px;margin-bottom:1rem"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:6px">Bottom line for ' + arch + 's</div>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5">'+fin.bottomLine+'</p></div>';
+  html += '<div style="background:rgba(24,95,165,0.04);border-radius:8px;padding:12px 16px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#185FA5;margin-bottom:6px">Important notes for all CC students</div>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:6px"><strong>Pell Grant:</strong> File the FAFSA regardless of expected income. Pell Grants fully cover tuition at many community colleges for qualifying students.</p>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:6px"><strong>TAG programs:</strong> California TAG guarantees UC admission for CC students with a 3.0+ GPA in specific courses. Other states have similar agreements. Confirm yours in week one.</p>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5"><strong>Financial aid upon transfer:</strong> Aid packages are re-evaluated when you transfer. Do not assume your current aid offer holds for the following year. Ask the financial aid office explicitly.</p>';
+  html += '</div></div>';
+  el.innerHTML = html;
+  section.style.display = '';
+}
+
+function renderCCProfiles(arch, color, el, section) {
+  if (!el || !section) return;
+  var profiles = (CC_DATA.archetypes[arch] || CC_DATA.archetypes['Builder']).profiles;
+  var html = '<div class="ai-badge">&#127942; CC Transfer Outcomes \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Real students, real outcomes. What the ' + arch + ' CC transfer pathway actually produces.</p>';
+  profiles.forEach(function(p) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:16px;margin-bottom:12px">';
+    html += '<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:10px">';
+    html += '<div style="width:36px;height:36px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">&#127891;</div>';
+    html += '<div><div style="font-size:13px;font-weight:500;color:var(--navy)">'+p.name+'</div><div style="font-size:11px;color:'+color+';font-weight:500">'+p.path+'</div></div></div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:8px">'+p.what+'</p>';
+    html += '<div style="background:rgba(45,106,79,0.06);border-radius:6px;padding:10px;margin-bottom:8px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#2d6a4f;margin-bottom:3px">Outcome</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.4">'+p.outcome+'</p></div>';
+    html += '<details><summary style="font-size:11px;font-weight:500;color:var(--text-light);cursor:pointer">Counselor perspective &#9660;</summary>';
+    html += '<p style="font-size:11px;color:var(--text-mid);line-height:1.5;margin-top:6px;font-style:italic">'+p.counselorNote+'</p></details></div>';
+  });
+  html += '</div>';
+  el.innerHTML = html;
+  section.style.display = '';
+}
+
+function renderCCWritingAngles(arch, color, el, section) {
+  if (!el || !section) return;
+  var angles = (CC_DATA.archetypes[arch] || CC_DATA.archetypes['Builder']).writing;
+  var html = '<div class="ai-badge">&#9998; Application Writing Angles \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">These angles are written for CC transfer personal statements, scholarship applications, and program essays \u2014 rooted in how the ' + arch + ' archetype naturally communicates and what makes the CC path distinctive.</p>';
+  angles.forEach(function(a, i) {
+    html += '<div style="border-left:3px solid '+color+';padding:12px 16px;margin-bottom:12px;background:rgba(0,0,0,0.01);border-radius:0 8px 8px 0">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">';
+    html += '<div style="font-size:14px;font-weight:500;color:var(--navy)">'+(i+1)+'. '+a.title+'</div>';
+    html += '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:'+color+';background:rgba(0,0,0,0.04);padding:2px 8px;border-radius:20px;white-space:nowrap;margin-left:8px">'+a.type+'</div></div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:8px">'+a.angle+'</p>';
+    html += '<div style="background:rgba(200,169,110,0.08);border-radius:6px;padding:8px 12px;margin-bottom:8px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:3px">Opening line</div>';
+    html += '<div style="font-size:12px;color:var(--navy);font-style:italic">'+a.opening+'</div></div>';
+    html += '<div style="font-size:11px;color:var(--text-light)"><strong>Avoid:</strong> '+a.avoid+'</div></div>';
+  });
+  html += '<p style="font-size:12px;color:var(--text-light);font-style:italic;margin-top:8px">Your counselor can help you develop any of these into a full draft during your session.</p></div>';
+  el.innerHTML = html;
+  section.style.display = '';
+}
+
+function renderCCInterviewPrep(arch, color, el, section) {
+  if (!el || !section) return;
+  var questions = (CC_DATA.archetypes[arch] || CC_DATA.archetypes['Builder']).interview;
+  var html = '<div class="ai-badge">&#127908; Transfer Interview Preparation \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Transfer interviews want to know you chose CC deliberately and that your two years produced something real. These are the questions ' + arch + 's are most likely to face.</p>';
+  questions.forEach(function(q, i) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:12px">';
+    html += '<div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:4px">'+(i+1)+'. '+q.q+'</div>';
+    html += '<div style="font-size:11px;color:var(--text-light);margin-bottom:8px;font-style:italic">Why they ask: '+q.why+'</div>';
+    html += '<div style="background:rgba(0,0,0,0.02);border-left:3px solid '+color+';border-radius:0 6px 6px 0;padding:10px 14px;margin-bottom:8px">';
+    html += '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:'+color+';margin-bottom:4px">How to answer</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5">'+q.framework+'</p></div>';
+    html += '<div style="font-size:11px;color:var(--text-light)"><strong>Avoid:</strong> '+q.avoid+'</div></div>';
+  });
+  html += '<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:12px 16px;margin-top:4px">';
+  html += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:6px">The question you should ask them</div>';
+  html += '<div style="font-size:13px;color:var(--navy);font-style:italic;margin-bottom:6px">"What do students who succeed in the transfer program have in common that distinguishes them from those who struggle to catch up?"</div>';
+  html += '<p style="font-size:12px;color:var(--text-mid)">This question demonstrates that you take the transition seriously and that you are evaluating the program, not just hoping to be admitted.</p></div>';
+  html += '<p style="font-size:12px;color:var(--text-light);font-style:italic;margin-top:12px">Practice these answers with your counselor before the actual interview. The first time you say them out loud should not be in the room that matters.</p></div>';
+  el.innerHTML = html;
+  section.style.display = '';
+}
+
+function renderCCReferences(arch, color, el, section) {
+  if (!el || !section) return;
+  var refs = (CC_DATA.archetypes[arch] || CC_DATA.archetypes['Builder']).references;
+  var html = '<div class="ai-badge">&#128100; References & Recommendations Guide \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Transfer programs want references that validate the CC path as a deliberate choice \u2014 and that the two years produced something real. These are your three recommenders and exactly what to ask each one to address.</p>';
+  refs.forEach(function(r, i) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:12px">';
+    html += '<div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:4px">Recommender '+(i+1)+': '+r.type+'</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:8px">'+r.why+'</p>';
+    html += '<div style="background:rgba(45,106,79,0.06);border-radius:6px;padding:10px;margin-bottom:8px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#2d6a4f;margin-bottom:3px">Ask them to emphasize</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid)">'+r.emphasize+'</p></div>';
+    html += '<details><summary style="font-size:11px;font-weight:500;color:var(--text-light);cursor:pointer">Sample request email &#9660;</summary>';
+    html += '<div style="background:rgba(0,0,0,0.02);border-radius:6px;padding:10px;margin-top:6px;font-size:12px;color:var(--text-mid);line-height:1.6;font-style:italic">'+r.email+'</div></details></div>';
+  });
+  html += '<div style="background:rgba(24,95,165,0.04);border-radius:8px;padding:12px 16px;margin-top:4px">';
+  html += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#185FA5;margin-bottom:6px">What transfer programs look for that college applications do not</div>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5">Transfer recommenders need to address the gap: why you chose CC, what you did with the two years, and why you are ready for the 4-year environment. Ask your recommenders explicitly to address these three things. A letter that only describes your academic ability misses the point.</p></div>';
+  html += '<p style="font-size:12px;color:var(--text-light);font-style:italic;margin-top:12px">Your counselor can help you brief your recommenders. A five-minute conversation before they write dramatically improves the quality of the letter.</p></div>';
+  el.innerHTML = html;
+  section.style.display = '';
+}
+
+// ── MAIN CC GENERATOR ─────────────────────────────────────────
+async function generateCCReport(archProfile, intake) {
+  var plan = (intake && intake.posthsplan) ||
+             (typeof intakeData !== 'undefined' ? intakeData.posthsplan : '');
+  if (!plan) { var pe = document.getElementById('f-posthsplan'); if (pe) plan = pe.value || ''; }
+  if (plan !== 'community_college') return;
+
+  var arch = archProfile ? archProfile.split(' ')[0] : 'Builder';
+  var archColors = {Builder:'#185FA5',Shepherd:'#0F6E56',Architect:'#533AB7',Catalyst:'#C05621',Advocate:'#9b2226',Cultivator:'#3B6D11',Peacemaker:'#854F0B'};
+  var color = archColors[arch] || '#185FA5';
+
+  console.log('[BC] generateCCReport:', arch);
+
+  // Hide college-specific premium sections not relevant for CC students
+  ['wrap-essays','section-essays','prem-interview','prem-recletter','prem-counselor-guide'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var wrap = el;
+    var t = 0;
+    while (wrap && !wrap.classList.contains('results-section') && t < 5) { wrap = wrap.parentElement; t++; }
+    if (wrap && wrap.classList.contains('results-section')) wrap.style.display = 'none';
+    else if (el) el.style.display = 'none';
+  });
+
+  // Relabel summer programs for CC context
+  var sumEl = document.getElementById('prem-summer');
+  if (sumEl) {
+    var sw = sumEl; var st = 0;
+    while (sw && !sw.classList.contains('results-section') && st < 5) { sw = sw.parentElement; st++; }
+    if (sw) { var te = sw.querySelector('.results-section-title'); if (te) { var ic = te.querySelector('.rs-icon'); te.innerHTML = (ic ? ic.outerHTML + ' ' : '') + 'Pre-Transfer Programs to Explore Now'; } }
+  }
+
+  // Render all 6 CC sections
+  renderCCTimeline(arch, color, document.getElementById('prem-cc-timeline'), document.getElementById('section-cc-timeline'));
+  renderCCFinancial(arch, color, document.getElementById('prem-cc-financial'), document.getElementById('section-cc-financial'));
+  renderCCProfiles(arch, color, document.getElementById('prem-cc-profiles'), document.getElementById('section-cc-profiles'));
+  renderCCWritingAngles(arch, color, document.getElementById('prem-cc-writing'), document.getElementById('section-cc-writing'));
+  renderCCInterviewPrep(arch, color, document.getElementById('prem-cc-interview'), document.getElementById('section-cc-interview'));
+  renderCCReferences(arch, color, document.getElementById('prem-cc-references'), document.getElementById('section-cc-references'));
+
+  console.log('[BC] CC report rendered for', arch);
 }
 
 
