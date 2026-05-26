@@ -7356,17 +7356,289 @@ console.log('Trade replacement content loaded: career paths, pre-apprenticeship 
 
 
 
+var TRADE_CAREER_PATHS = {
+  Builder: [
+    {title:'Journeyman Electrician → Electrical Contractor',timeline:'5–8 years',salary:'$75,000–$150,000+',path:'IBEW apprenticeship → journeyman license → project foreman → start electrical contracting LLC. Builders who own their own shop run the most profitable trade businesses.'},
+    {title:'Software Engineering Apprentice → Senior Engineer → Technical Lead',timeline:'3–6 years',salary:'$70,000–$160,000',path:'Apprenti or Multiverse placement → junior engineer → senior engineer → staff or lead. Technical Builders advance faster than most CS graduates because they have real production experience from year one.'},
+    {title:'Construction Technology → Project Manager → GC Owner',timeline:'6–10 years',salary:'$90,000–$200,000+',path:'Apprenticeship in construction management → project coordinator → project manager → general contractor. The Builders who start as apprentices and move into GC roles earn more than architects with four-year degrees.'},
+    {title:'HVAC Technician → Building Automation Specialist → Systems Engineer',timeline:'4–7 years',salary:'$65,000–$120,000',path:'HVAC apprenticeship → journeyman → specialize in building controls and automation → systems engineering role. This intersection of physical trades and software is the fastest-growing segment in commercial construction.'},
+  ],
+  Shepherd: [
+    {title:'CNA → EMT → Paramedic → Flight Medic',timeline:'4–8 years',salary:'$55,000–$85,000',path:'CNA certification → EMT certification → paramedic program (employer-funded) → critical care or flight medic. Each step is employer-sponsored once you have the prior credential. This is one of the clearest ladders in healthcare.'},
+    {title:'Medical Assistant → Clinical Coordinator → Practice Manager',timeline:'5–10 years',salary:'$50,000–$95,000',path:'MA certification → 2–3 years clinical experience → lead MA or coordinator role → practice or clinic manager. Healthcare administration is built on people who started in clinical roles and understand the work from the inside.'},
+    {title:'Dental Hygienist → Practice Partner → Clinic Owner',timeline:'5–12 years',salary:'$77,000–$180,000+',path:'Dental hygienist credential → associate hygienist → lead hygienist → buy into a practice as a partner. Dental hygienists who understand the business side often become practice owners without a dental school degree.'},
+    {title:'Community Health Worker → Program Director → Health Equity Leader',timeline:'5–10 years',salary:'$45,000–$90,000',path:'CHW certification → community health navigator → program coordinator → director of community health. This pathway is growing rapidly as health systems recognize that community trust is built from within communities, not from outside them.'},
+  ],
+  Architect: [
+    {title:'IBEW Electrician → Data Center Specialist → Systems Engineer',timeline:'5–8 years',salary:'$90,000–$140,000',path:'IBEW apprenticeship → journeyman → data center power and cooling specialization → systems engineering role at a tech company or data center firm. The most technically demanding electrical specialization, and the most highly compensated.'},
+    {title:'IT Apprentice → Network Engineer → Infrastructure Architect',timeline:'4–8 years',salary:'$80,000–$150,000',path:'CompTIA certifications → IT apprenticeship → network administrator → senior network engineer → infrastructure architect. The Architect who builds entire enterprise networks without a CS degree is not unusual — it is the norm in this field.'},
+    {title:'HVAC Technician → Building Controls Engineer → Sustainability Director',timeline:'6–10 years',salary:'$75,000–$130,000',path:'HVAC apprenticeship → building automation system (BAS) specialization → controls engineer → energy and sustainability director. Commercial buildings are becoming increasingly complex systems. The people who understand both the physical plant and the digital controls are in extreme demand.'},
+    {title:'Industrial Electrician → Process Controls Technician → Plant Engineer',timeline:'5–9 years',salary:'$80,000–$130,000',path:'Industrial electrical apprenticeship → PLC and process controls specialization → plant maintenance engineer → plant engineer. Manufacturing and chemical plants require the most rigorous technical knowledge in the electrical trades.'},
+  ],
+  Catalyst: [
+    {title:'Broadcast Apprentice → Producer → Executive Producer',timeline:'5–10 years',salary:'$55,000–$150,000+',path:'NABET apprenticeship → associate producer → producer → executive producer. The broadcast industry promotes from within the union. Catalysts who demonstrate editorial judgment alongside technical skill move into producing roles faster than peers from communications programs.'},
+    {title:'Recording Engineer → Independent Producer → Label Owner',timeline:'4–8 years',salary:'$40,000–$200,000+',path:'Studio apprenticeship → staff engineer → independent producer → build client roster → start label or production company. Income varies enormously. The Catalysts who build sustainable businesses are those who treat production as a business from day one.'},
+    {title:'Graphic Designer/UX → Senior Designer → Creative Director',timeline:'4–8 years',salary:'$55,000–$140,000',path:'Adobe certification + portfolio → junior designer → senior designer → art director → creative director. The design field is fully portfolio-based. Where you studied matters less than what you have produced.'},
+    {title:'Digital Marketing Specialist → Campaign Manager → Agency Owner',timeline:'3–7 years',salary:'$50,000–$120,000',path:'Google Career Certificate → marketing coordinator → campaign manager → senior manager → start boutique agency. Digital marketing agencies are among the most accessible entrepreneurial ventures in the Catalyst trade space.'},
+  ],
+  Advocate: [
+    {title:'Paralegal → Senior Paralegal → Paralegal Manager',timeline:'4–8 years',salary:'$55,000–$95,000',path:'ABA paralegal certificate → junior paralegal → senior paralegal → paralegal supervisor or manager. Large law firms and corporate legal departments have structured paralegal career ladders that do not require a law degree.'},
+    {title:'Paralegal → Law School → Attorney',timeline:'7–10 years',salary:'$70,000–$200,000+',path:'Paralegal experience → law school application strengthened by real case experience → attorney → senior associate → partner. Paralegals who go to law school are consistently stronger students and stronger attorneys than those who go directly from undergraduate.'},
+    {title:'Court Reporter → CART Provider → Deposition Services Owner',timeline:'3–7 years',salary:'$65,000–$150,000+',path:'Court reporter certification → staff reporter at courthouse or firm → CART (Communication Access Realtime Translation) provider → start deposition services company. The most entrepreneurial pathway in legal trades.'},
+    {title:'Victim Advocate → Case Manager → Program Director',timeline:'4–8 years',salary:'$40,000–$80,000',path:'Victim advocate certification → case manager → senior advocate → program coordinator → director of victim services. Nonprofits and county government agencies have clear ladders for advocates who demonstrate leadership.'},
+  ],
+  Cultivator: [
+    {title:'Teaching Assistant → Licensed Teacher → Instructional Coach',timeline:'4–8 years',salary:'$40,000–$80,000',path:'Teaching assistant → district-funded education degree → licensed teacher → lead teacher → instructional coach. Many districts fund the entire degree while you work as a TA. The instructional coach role often pays more than classroom teaching.'},
+    {title:'ISA Arborist → Urban Forestry Supervisor → City Forestry Director',timeline:'5–10 years',salary:'$50,000–$100,000',path:'ISA arborist certification → municipal arborist → crew supervisor → urban forestry program manager → director. Municipal government provides strong job security, pension benefits, and a clear promotion pathway for certified arborists.'},
+    {title:'Agricultural Apprentice → Farm Manager → Agricultural Entrepreneur',timeline:'5–10 years',salary:'$40,000–$120,000+',path:'USDA agricultural apprenticeship → farm worker → assistant manager → farm manager → start CSA, cooperative, or specialty farm operation. Agricultural entrepreneurship is one of the most viable self-employment paths for Cultivators.'},
+    {title:'Horticulture Technician → Landscape Designer → Landscape Business Owner',timeline:'4–8 years',salary:'$45,000–$100,000+',path:'Horticulture technician certification → landscape technician → senior technician → landscape designer → start landscape company. Landscape businesses are among the most accessible trade entrepreneurship opportunities.'},
+  ],
+  Peacemaker: [
+    {title:'Medical Interpreter → Language Access Program Manager → Healthcare Equity Director',timeline:'4–8 years',salary:'$45,000–$95,000',path:'CCHI certification → staff interpreter → lead interpreter → language access coordinator → program manager → director. Health systems are building entire language access departments. The Peacemaker who starts as an interpreter and learns the healthcare system from the inside is positioned to lead this work.'},
+    {title:'Community Health Worker → Navigator → Health Equity Program Director',timeline:'5–10 years',salary:'$40,000–$90,000',path:'CHW certification → community navigator → senior CHW → program coordinator → director of community health equity. Federal funding for CHW programs has grown significantly. Program director roles are real and reachable within 8–10 years from certification.'},
+    {title:'Conflict Resolution Practitioner → Mediation Program Manager → Dialogue Organization Founder',timeline:'4–9 years',salary:'$45,000–$85,000',path:'Mediation training → community mediator → senior mediator → program manager → found or lead a dialogue organization. The Peacemaker who builds an organization that institutionalizes bridge-building is doing the most impactful work in this field.'},
+    {title:'Translation Specialist → Localization Project Manager → Language Services Director',timeline:'4–8 years',salary:'$55,000–$110,000',path:'Translation certification → junior translator → senior translator/editor → localization project manager → language services director at a tech company, NGO, or government agency. Bilingual Peacemakers with professional translation credentials are in high demand globally.'},
+  ],
+};
+
+var TRADE_PRE_APPRENTICESHIP = {
+  Builder: [
+    {name:'Apprenti Pre-Apprenticeship Program',org:'Apprenti (apprenticareers.org)',detail:'Free online pre-apprenticeship that prepares you for software engineering apprenticeship applications. Covers programming fundamentals, professional skills, and the application process. Completion significantly improves acceptance rates.'},
+    {name:'IBEW NJATC Aptitude Test Preparation',org:'IBEW Local Union',detail:'Your local IBEW union hall offers free or low-cost study materials for the apprenticeship aptitude test. The test covers algebra and reading comprehension. Scoring in the top 20% dramatically improves your placement chances. Ask your local hall directly.'},
+    {name:'Mike Rowe Works Foundation Scholarship',org:'mikeroweworks.org',detail:'Scholarships specifically for students pursuing trade and technical education. Up to $25,000 available. Application is competitive but specifically designed for trade-bound students — not the students applying to college scholarships.'},
+    {name:'SkillsUSA Competition and Training',org:'skillsusa.org',detail:'National organization for trade and technical students. Competitions in electrical, HVAC, construction, and dozens of other trades. Competition participation demonstrates genuine interest and provides real skill development that strengthens apprenticeship applications.'},
+    {name:'Job Shadow a Journeyman',org:'Through your school or union hall',detail:'Contact your local trade union hall and ask to arrange a job shadow. Most journeymen are willing to show serious students what the work actually looks like. A job shadow is often the most useful step you can take before applying.'},
+  ],
+  Shepherd: [
+    {name:'CNA Certification Prep Course',org:'Community college or Red Cross',detail:'A 4–6 week course that prepares you for the CNA certification exam and first clinical experiences. Many are free or low-cost at community colleges. Completing this before your formal certification program puts you ahead from day one.'},
+    {name:'EMT Basic Course',org:'Local fire department or vocational school',detail:'Many fire departments offer free or subsidized EMT Basic courses. Completing EMT Basic before your apprenticeship or certification program gives you clinical vocabulary and confidence that significantly helps in the first months.'},
+    {name:'Healthcare Job Shadow Program',org:'Through your high school counselor or local hospital',detail:'Ask your counselor to connect you with a local hospital or clinic that offers structured job shadow programs for high school students. Many hospitals have formal programs — they are not widely advertised but they exist.'},
+    {name:'National Health Career Association (NHA) Study Resources',org:'nhanow.com',detail:'Free study materials for CNA, medical assistant, phlebotomy, and other healthcare certifications. Begin studying before your formal program starts. Arriving prepared reduces the time to certification.'},
+    {name:'Volunteer EMT or First Responder Program',org:'Local volunteer fire department',detail:'Many communities have volunteer EMS programs that train and certify high school students. This is real clinical experience before you have a credential — one of the most valuable things you can put on an apprenticeship application.'},
+  ],
+  Architect: [
+    {name:'CompTIA A+ Self-Study',org:'comptia.org',detail:'The foundational IT certification. Study guides are available free at many libraries and low-cost online. Earning CompTIA A+ before your technical apprenticeship begins demonstrates aptitude and reduces the time to your first promotion.'},
+    {name:'IBEW NJATC Aptitude Test Preparation',org:'IBEW Local Union',detail:'Your local union hall offers free study materials for the apprenticeship aptitude test. The electrical aptitude test is genuinely challenging — preparation matters. Scoring in the top 20% significantly improves your placement.'},
+    {name:'SkillsUSA and Science Olympiad',org:'skillsusa.org / soinc.org',detail:'Both organizations have competitions directly relevant to technical trades — electrical systems, robotics, engineering design. Competition participation demonstrates technical aptitude and genuine commitment that apprenticeship programs notice.'},
+    {name:'Khan Academy Algebra and Physics',org:'khanacademy.org — free',detail:'The IBEW aptitude test is algebra-heavy. Physics understanding helps with electrical and HVAC fundamentals. Khan Academy covers both at the level the tests require, completely free. Work through the relevant units before you apply.'},
+    {name:'Job Shadow in Your Target Trade',org:'Through your school or union hall',detail:'Contact your local trade union hall and arrange a job shadow with a journeyman. Ask specifically to see the most technically complex work the journeyman does. Understanding the ceiling of the trade is as important as understanding the entry point.'},
+  ],
+  Catalyst: [
+    {name:'Adobe Creative Suite Certification',org:'adobe.com/certifications',detail:'Industry-recognized certification for Photoshop, Premiere Pro, Illustrator, and other Adobe tools. Completing certifications before your apprenticeship begins demonstrates professional-level technical commitment and is noticed by studios and production companies.'},
+    {name:'Google Career Certificate — Digital Marketing',org:'grow.google/certificates',detail:'Fully online, $0–$300 total, recognized by 150+ employers. Completing this before your trade program begins gives you a credential that opens doors at agencies and marketing departments while you build toward your primary trade goal.'},
+    {name:'Local Media Internship or Job Shadow',org:'Through your school or local station',detail:'Contact your local TV station, radio station, recording studio, or newspaper and ask about high school internships or job shadow programs. These are not always advertised — a direct email or phone call to the production manager is often all it takes.'},
+    {name:'Build a Portfolio Before You Apply',org:'Self-directed',detail:'The single most powerful thing a Catalyst can do before applying to any media trade program is produce 3 real pieces of work. A 3-minute produced audio piece, a designed publication, or a produced video demonstrates capability in a way that no resume line can.'},
+    {name:'SkillsUSA — Commercial Art and Graphic Design',org:'skillsusa.org',detail:'SkillsUSA has competitions in commercial art, graphic design, and audio/video production. Competition experience demonstrates technical skill and professional work ethic that media and communications apprenticeship programs specifically look for.'},
+  ],
+  Advocate: [
+    {name:'ABA Paralegal Program Research',org:'americanbar.org/paralegals',detail:'The American Bar Association maintains a directory of ABA-approved paralegal programs. Identify the closest ABA-approved program before committing to any paralegal certification — the ABA stamp matters significantly for law firm employment.'},
+    {name:'Volunteer at a Legal Aid Organization',org:'Through your local bar association or law school',detail:'Legal aid organizations frequently accept high school volunteers for filing, research, and client support work. This is the most direct way to understand whether you want to work in legal settings before you commit to a paralegal certification program.'},
+    {name:'Mock Trial or Debate Program',org:'Through your school',detail:'If your school offers mock trial or competitive debate, participate seriously. These programs develop the analytical and argumentation skills that legal professionals notice and mention in recommendations. Winning is not the point — developing the skills is.'},
+    {name:'Court Observation',org:'Your local courthouse — public access',detail:'All courtrooms are open to the public. Spend an afternoon watching proceedings at your local courthouse — a civil motion hearing, a criminal arraignment, a family court session. This direct exposure shapes your understanding of what legal work actually looks like.'},
+    {name:'Political Campaign or Government Internship',org:'Through your local elected officials',detail:'Most city council members, state legislators, and congressional offices welcome high school interns or volunteers. This direct experience with how policy and law are made at the institutional level is unusually valuable for Advocates before they enter legal training.'},
+  ],
+  Cultivator: [
+    {name:'WWOOF — Organic Farm Placement',org:'wwoof.net',detail:'Worldwide Opportunities on Organic Farms connects volunteers with host farms for work-in-exchange-for-room-and-board placements. A summer WWOOF placement is one of the best ways to test agricultural interest and build real land skills before committing to a full apprenticeship program.'},
+    {name:'Teaching Assistant or Tutor Role',org:'Through your school or local tutoring program',detail:'Many schools offer paid or volunteer teaching assistant and tutor roles for high school students. Even a semester of working with younger students in a formal context builds the evidence of teaching instinct that education trade programs look for.'},
+    {name:'Master Gardener Youth Program',org:'Through your local cooperative extension office',detail:'USDA cooperative extension offices in most counties offer Master Gardener youth programs. These programs provide hands-on horticultural training and, in some states, produce a recognized credential that counts toward ISA arborist pre-qualification.'},
+    {name:'4-H Agricultural Education',org:'4-h.org',detail:'4-H has the most robust pre-agricultural apprenticeship education available to high school students. Project work in animal science, horticulture, agronomy, and farm business directly prepares students for USDA agricultural apprenticeships.'},
+    {name:'School Garden Leadership Role',org:'Through your school',detail:'If your school has a garden, seek a leadership role — or propose starting one. Running a school garden from planting through harvest is a complete agricultural management experience. The planning, the problem-solving, and the documentation you produce can become your strongest application material.'},
+  ],
+  Peacemaker: [
+    {name:'Medical Interpreter Training — Community Course',org:'Through local hospitals or community organizations',detail:'Many hospitals and community health centers offer free or low-cost interpreter training for community members. These courses build the vocabulary, protocol knowledge, and ethical framework you need before sitting for CCHI or NBCMI certification.'},
+    {name:'Community Health Worker Pre-Certification Training',org:'Through your state health department',detail:'Many states offer free or subsidized CHW pre-certification training through workforce development programs. Search "[your state] community health worker certification training" and contact your state health department directly.'},
+    {name:'Dialogue Facilitation Training',org:'Essential Partners (whatisessentialpartners.org) or Living Room Conversations (livingroomconversations.org)',detail:'Both organizations offer free facilitation training and structured facilitation curricula. Completing facilitation training and then running documented conversations builds a portfolio of bridge-building work that is directly relevant to mediation and community health worker trade certifications.'},
+    {name:'Interpreter Volunteer at Community Organizations',org:'Through local immigrant services organizations, hospitals, or courts',detail:'Many organizations that serve immigrant and refugee communities need volunteer interpreters who are not yet certified. This is real interpreting experience — ethically supervised — that builds vocabulary, protocol knowledge, and the human skills that certification training reinforces but does not create.'},
+    {name:'Peace Corps Prep Program',org:'peacecorps.gov/vol/peace-corps-prep',detail:'The Peace Corps Prep program is available at many universities but also has online components accessible to high school students planning careers in international health, community development, and cross-cultural work. Completion demonstrates commitment that community health and mediation trade programs notice.'},
+  ],
+};
+
+var TRADE_MENTOR_MATCH = {
+  Builder: [
+    {type:'Journeyman in Your Target Trade',why:'The most valuable mentor for a Builder is someone 5–10 years ahead of you in the specific trade you are pursuing. They know the real hiring landscape, the best specializations, and which programs produce the best outcomes.',how:'Ask your local union hall or apprenticeship program coordinator to connect you with a journeyman mentor. Many programs have formal mentorship components. If not, ask directly — most journeymen are willing.'},
+    {type:'Trade Business Owner',why:'Builders who want to eventually own their own shop need to understand the business side from early in the apprenticeship. A contractor or trade business owner can teach you what the transition from journeyman to owner actually involves.',how:'SBDC (Small Business Development Centers) often facilitate connections between aspiring entrepreneurs and established business owners. Your local chamber of commerce is another resource.'},
+    {type:'Technical Apprenticeship Alumnus',why:'Someone who completed the specific apprenticeship program you are applying to and is now working in the field can tell you exactly what the program produces and what you should focus on during the apprenticeship years.',how:'Ask your program coordinator for alumni contacts. Many programs maintain alumni networks specifically for this purpose.'},
+  ],
+  Shepherd: [
+    {type:'Practicing Clinician in Your Target Role',why:'The CNA, EMT, or medical assistant who is 5 years into their career can tell you what the daily work actually looks and feels like — the parts that textbooks do not describe and orientation does not cover.',how:'Ask your clinical supervisor to connect you with a practicing clinician who is willing to speak with you. Healthcare organizations often have formal preceptorship programs. Ask your program coordinator about mentorship opportunities.'},
+    {type:'Healthcare Administrator Who Started in Clinical Work',why:'The pathway from clinical certification to administrative leadership is real and increasingly common. A healthcare administrator who started as a CNA or MA can show you what the full trajectory looks like.',how:'LinkedIn is the most effective tool for this search. Search "[hospital name] administrator" and look for people whose profiles show they started in clinical roles. A direct, specific message about your path often gets a response.'},
+    {type:'Employer-Sponsored Program Graduate',why:'If you are pursuing an employer-sponsored certification program, the most valuable mentor is someone who completed that specific program and stayed with that employer. They can tell you how to succeed in the program and what opportunities open up afterward.',how:'Ask the program coordinator for alumni contacts. Employer-sponsored programs almost always have alumni who are willing to speak with prospective students.'},
+  ],
+  Architect: [
+    {type:'Senior Journeyman or Master in Your Target Trade',why:'The technical complexity of your chosen trade becomes fully visible only when you talk to someone who has been working at the journeyman level for 5–10 years. They know what the hard problems actually are and which specializations are most technically demanding.',how:'Ask your local union hall to connect you with a senior journeyman mentor. IBEW and other unions have formal apprenticeship mentorship programs. If not, ask the apprenticeship coordinator directly.'},
+    {type:'Technical Specialist in Your Target Specialization',why:'If you are targeting data center electrical, building automation, or network infrastructure, talk to someone who specializes in that area specifically. The specialization landscape in technical trades is diverse and rapidly changing.',how:'LinkedIn, professional association events (IEEE, ASHRAE, CompTIA), and trade shows are the best places to identify and connect with technical specialists in your area of interest.'},
+    {type:'Trade-to-Tech Career Changer',why:'Many software engineers, IT architects, and systems engineers started in the trades. These people understand both worlds and can speak to what the transition looks like and what trade experience adds to a technology career.',how:'Search LinkedIn for people with both trade credentials (IBEW, NECA, CompTIA) and technology career titles. Their career trajectory is the map you are looking for.'},
+  ],
+  Catalyst: [
+    {type:'Working Producer or Engineer in Your Target Medium',why:'The person 5 years ahead of you in your specific medium — broadcast, recording, design, digital — can tell you what the real career landscape looks like, what clients actually want, and which technical skills matter most in the first three years.',how:'Contact your local union hall (NABET, IATSE) or professional association (AES for audio, AIGA for design) for mentor connections. Most have formal or informal mentorship programs.'},
+    {type:'Independent Freelancer in Your Field',why:'The Catalyst who wants to eventually work independently needs to understand what freelance economics actually look like — how clients are found, how rates are set, how to survive the slow months. A working freelancer is the only person who can tell you this accurately.',how:'LinkedIn and professional association networks are the best sources. Look for people who describe themselves as freelance or independent in your target medium and send a direct, specific message about your path.'},
+    {type:'Studio or Agency Owner',why:'Catalysts who want to eventually own their own operation need to understand what building a media business requires — not just the creative work, but the operations, the client relationships, and the financial management.',how:'SBDC and local creative industry associations (advertising councils, film commissions) often facilitate connections between emerging creatives and established business owners. Ask your apprenticeship program coordinator as well.'},
+  ],
+  Advocate: [
+    {type:'Paralegal or Legal Assistant with 5+ Years of Experience',why:'The working paralegal can tell you what the daily practice of legal work actually looks and feels like — the document management, the client relationships, the billable hour pressure — in a way that no program description can.',how:'The National Federation of Paralegal Associations (paralegals.org) has local chapters that offer mentorship connections. Your paralegal program coordinator is also a good source.'},
+    {type:'Attorney Who Began as a Paralegal',why:'The attorney who started as a paralegal can describe the transition — what paralegal experience adds to law school, what it changes about how you practice, and whether the trajectory is right for you specifically.',how:'The American Bar Association (americanbar.org) and local bar association mentorship programs sometimes connect paralegals with attorneys who started in the field. Ask your program coordinator.'},
+    {type:'Legal Aid Organization Director',why:'Advocates who want to serve underrepresented communities need to understand how legal aid organizations work — their funding, their case selection criteria, their relationship to the communities they serve.',how:'Contact your local legal aid organization directly and ask to speak with the director or a senior attorney about the organization\'s career paths. Most legal aid directors will speak with motivated students who are genuinely interested in the work.'},
+  ],
+  Cultivator: [
+    {type:'Experienced Teacher or Instructional Coach',why:'The teacher who has been in the classroom for 10+ years can tell you what the work actually requires — the patience, the planning, the relationship management, the bureaucratic navigation — in a way that no program can prepare you for.',how:'Ask your school principal or district HR office to connect you with a master teacher or instructional coach who is willing to mentor aspiring teachers. Most school districts have formal teacher mentoring programs that accept pre-service mentees.'},
+    {type:'ISA Certified Arborist or Farm Manager',why:'The arborist or farm manager who has been working the land for a decade can show you what the full arc of a land-based career actually looks like — what the work demands, what it produces, and what the business side involves.',how:'The International Society of Arboriculture (isa-arbor.com) and the National Young Farmers Coalition (youngfarmers.org) both facilitate mentor connections for aspiring arborists and farmers.'},
+    {type:'Cooperative or Social Enterprise Founder',why:'Cultivators who want to build sustainable enterprises — cooperatives, CSAs, community gardens, tutoring organizations — need mentors who have built something that outlasted them. A cooperative founder can teach you what designing for persistence actually requires.',how:'Your local cooperative development organization and USDA cooperative extension office are the best resources for finding cooperative and social enterprise mentors in your specific field.'},
+  ],
+  Peacemaker: [
+    {type:'Certified Medical Interpreter with 5+ Years of Experience',why:'The working medical interpreter can describe what the daily reality of interpretation work looks and feels like — the emotional demands, the ethical complexity, the specific medical vocabulary challenges — in a way that no training program can fully convey.',how:'The National Council on Interpreting in Health Care (ncihc.org) has a membership directory and mentorship resources. Your local hospital language access department is also a direct source of potential mentors.'},
+    {type:'Community Health Worker Program Director',why:'The CHW program director has seen what distinguishes effective CHWs from those who burn out. They can tell you what the work requires emotionally, what professional development matters, and how to build a sustainable career in community health.',how:'Your state\'s community health worker association (search "[your state] community health worker association") often has mentorship programs. Your certification program coordinator is another good source.'},
+    {type:'Professional Mediator or Dialogue Practitioner',why:'The experienced mediator can show you what professional conflict resolution work actually looks like — the specific techniques, the ethical challenges, the institutional relationships, and the career pathways in this field.',how:'The Association for Conflict Resolution (acrnet.org) has local chapters and mentorship programs. Essential Partners and Living Room Conversations also maintain networks of experienced practitioners who mentor emerging facilitators.'},
+  ],
+};
+
+console.log('Trade replacement content loaded: career paths, pre-apprenticeship programs, mentor match');
+
+
+
+
+function renderTradeTimeline(arch, color, el, section) {
+  if (!el || !section) return;
+  var steps = (TRADE_DATA.archetypes[arch] || TRADE_DATA.archetypes['Builder']).timeline;
+  var html = '<div class="ai-badge">&#128197; Your Trade & Apprenticeship Timeline \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Apprenticeship applications have their own windows and sequences. Missing them costs you a year. These milestones are specific to the ' + arch + ' trade pathway.</p>';
+  html += '<div style="position:relative;padding-left:4px">';
+  steps.forEach(function(step, i) {
+    var isLast = i === steps.length - 1;
+    html += '<div style="display:flex;gap:16px;margin-bottom:' + (isLast?'0':'20px') + '">';
+    html += '<div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0">';
+    html += '<div style="width:12px;height:12px;border-radius:50%;background:'+color+';border:2px solid white;box-shadow:0 0 0 2px '+color+';z-index:1;margin-top:2px;flex-shrink:0"></div>';
+    if (!isLast) html += '<div style="width:2px;flex:1;background:rgba(0,0,0,0.08);margin-top:4px"></div>';
+    html += '</div><div style="flex:1;padding-bottom:4px">';
+    html += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:'+color+';margin-bottom:2px">'+step.when+'</div>';
+    html += '<div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:4px">'+step.what+'</div>';
+    html += '<div style="font-size:12px;color:var(--text-mid);line-height:1.5">'+step.detail+'</div>';
+    html += '</div></div>';
+  });
+  html += '</div></div>';
+  el.innerHTML = html;
+  section.style.display = '';
+}
+
+function renderTradeFinancial(arch, color, el, section) {
+  if (!el || !section) return;
+  var fin = (TRADE_DATA.archetypes[arch] || TRADE_DATA.archetypes['Builder']).financial;
+  var html = '<div class="ai-badge">&#128178; Financial Reality for Trade & Apprenticeship \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">The financial case for trade apprenticeship is strong. These are the real numbers for the ' + arch + ' pathway.</p>';
+  html += '<div style="overflow-x:auto;margin-bottom:1rem"><table style="width:100%;border-collapse:collapse;font-size:12px">';
+  html += '<thead><tr style="background:rgba(0,0,0,0.03)"><th style="text-align:left;padding:8px 12px;font-weight:600;color:var(--navy);border-bottom:1px solid rgba(0,0,0,0.08)">Program / Option</th><th style="text-align:left;padding:8px 12px;font-weight:600;color:var(--navy);border-bottom:1px solid rgba(0,0,0,0.08)">Compensation</th><th style="text-align:left;padding:8px 12px;font-weight:600;color:var(--navy);border-bottom:1px solid rgba(0,0,0,0.08)">Notes</th></tr></thead><tbody>';
+  fin.programs.forEach(function(p, i) {
+    var bg = i%2===0?'transparent':'rgba(0,0,0,0.015)';
+    html += '<tr style="background:'+bg+'"><td style="padding:8px 12px;color:var(--navy);font-weight:500;border-bottom:0.5px solid rgba(0,0,0,0.06)">'+p.name+'</td><td style="padding:8px 12px;color:#2d6a4f;font-weight:500;border-bottom:0.5px solid rgba(0,0,0,0.06)">'+p.cost+'</td><td style="padding:8px 12px;color:var(--text-mid);border-bottom:0.5px solid rgba(0,0,0,0.06)">'+p.note+'</td></tr>';
+  });
+  html += '</tbody></table></div>';
+  html += '<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:12px 16px;margin-bottom:1rem"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:6px">Bottom line for ' + arch + 's</div>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5">'+fin.bottomLine+'</p></div>';
+  html += '<div style="background:rgba(24,95,165,0.04);border-radius:8px;padding:12px 16px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#185FA5;margin-bottom:6px">Important notes for all apprenticeship students</div>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:6px"><strong>Apprentice wages:</strong> First-year apprentice wages are typically 40\u201350% of journeyman scale. They increase as you advance through the program. Know your scale before you start.</p>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:6px"><strong>Benefits:</strong> Union apprenticeships include health insurance, pension contributions, and paid time off from year one. Include these when comparing total compensation to other options.</p>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5"><strong>Employer-sponsored programs:</strong> Many healthcare and technology employers sponsor certification training in exchange for a 1\u20132 year work commitment. Net tuition cost is often zero. Ask before assuming you must pay.</p>';
+  html += '</div></div>';
+  el.innerHTML = html;
+  section.style.display = '';
+}
+
+function renderTradeProfiles(arch, color, el, section) {
+  if (!el || !section) return;
+  var profiles = (TRADE_DATA.archetypes[arch] || TRADE_DATA.archetypes['Builder']).profiles;
+  var html = '<div class="ai-badge">&#127942; Trade Outcomes \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Real students, real outcomes. What the ' + arch + ' trade pathway actually produces.</p>';
+  profiles.forEach(function(p) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:16px;margin-bottom:12px">';
+    html += '<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:10px">';
+    html += '<div style="width:36px;height:36px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">&#128736;</div>';
+    html += '<div><div style="font-size:13px;font-weight:500;color:var(--navy)">'+p.name+'</div><div style="font-size:11px;color:'+color+';font-weight:500">'+p.path+'</div></div></div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:8px">'+p.what+'</p>';
+    html += '<div style="background:rgba(45,106,79,0.06);border-radius:6px;padding:10px;margin-bottom:8px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#2d6a4f;margin-bottom:3px">Outcome</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.4">'+p.outcome+'</p></div>';
+    html += '<details><summary style="font-size:11px;font-weight:500;color:var(--text-light);cursor:pointer">Counselor perspective &#9660;</summary>';
+    html += '<p style="font-size:11px;color:var(--text-mid);line-height:1.5;margin-top:6px;font-style:italic">'+p.counselorNote+'</p></details></div>';
+  });
+  html += '</div>';
+  el.innerHTML = html;
+  section.style.display = '';
+}
+
+function renderTradeWritingAngles(arch, color, el, section) {
+  if (!el || !section) return;
+  var angles = (TRADE_DATA.archetypes[arch] || TRADE_DATA.archetypes['Builder']).writing;
+  var html = '<div class="ai-badge">&#9998; Application Writing Angles \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">These angles are written for apprenticeship program applications, scholarship essays, and fellowship statements \u2014 rooted in how the ' + arch + ' archetype communicates and what makes the trade path distinctive.</p>';
+  angles.forEach(function(a, i) {
+    html += '<div style="border-left:3px solid '+color+';padding:12px 16px;margin-bottom:12px;background:rgba(0,0,0,0.01);border-radius:0 8px 8px 0">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">';
+    html += '<div style="font-size:14px;font-weight:500;color:var(--navy)">'+(i+1)+'. '+a.title+'</div>';
+    html += '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:'+color+';background:rgba(0,0,0,0.04);padding:2px 8px;border-radius:20px;white-space:nowrap;margin-left:8px">'+a.type+'</div></div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:8px">'+a.angle+'</p>';
+    html += '<div style="background:rgba(200,169,110,0.08);border-radius:6px;padding:8px 12px;margin-bottom:8px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:3px">Opening line</div>';
+    html += '<div style="font-size:12px;color:var(--navy);font-style:italic">'+a.opening+'</div></div>';
+    html += '<div style="font-size:11px;color:var(--text-light)"><strong>Avoid:</strong> '+a.avoid+'</div></div>';
+  });
+  html += '<p style="font-size:12px;color:var(--text-light);font-style:italic;margin-top:8px">Your counselor can help you develop any of these into a full draft during your session.</p></div>';
+  el.innerHTML = html;
+  section.style.display = '';
+}
+
+function renderTradeInterviewPrep(arch, color, el, section) {
+  if (!el || !section) return;
+  var questions = (TRADE_DATA.archetypes[arch] || TRADE_DATA.archetypes['Builder']).interview;
+  var html = '<div class="ai-badge">&#127908; Trade & Apprenticeship Interview Preparation \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Apprenticeship interviews want to know you chose this path deliberately and that you have evidence of real aptitude. These are the questions ' + arch + 's are most likely to face.</p>';
+  questions.forEach(function(q, i) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:12px">';
+    html += '<div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:4px">'+(i+1)+'. '+q.q+'</div>';
+    html += '<div style="font-size:11px;color:var(--text-light);margin-bottom:8px;font-style:italic">Why they ask: '+q.why+'</div>';
+    html += '<div style="background:rgba(0,0,0,0.02);border-left:3px solid '+color+';border-radius:0 6px 6px 0;padding:10px 14px;margin-bottom:8px">';
+    html += '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:'+color+';margin-bottom:4px">How to answer</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5">'+q.framework+'</p></div>';
+    html += '<div style="font-size:11px;color:var(--text-light)"><strong>Avoid:</strong> '+q.avoid+'</div></div>';
+  });
+  html += '<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:12px 16px;margin-top:4px">';
+  html += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:6px">The question you should ask them</div>';
+  html += '<div style="font-size:13px;color:var(--navy);font-style:italic;margin-bottom:6px">"What distinguishes the apprentices who advance quickly from those who plateau in the first two years?"</div>';
+  html += '<p style="font-size:12px;color:var(--text-mid)">This demonstrates that you are thinking about the full arc of the apprenticeship, not just getting in the door. It also gives you real information about what the program values.</p></div>';
+  html += '<p style="font-size:12px;color:var(--text-light);font-style:italic;margin-top:12px">Practice these answers with your counselor before the actual interview. The first time you say them out loud should not be in the room that matters.</p></div>';
+  el.innerHTML = html;
+  section.style.display = '';
+}
+
+function renderTradeReferences(arch, color, el, section) {
+  if (!el || !section) return;
+  var refs = (TRADE_DATA.archetypes[arch] || TRADE_DATA.archetypes['Builder']).references;
+  var html = '<div class="ai-badge">&#128100; References & Recommendations Guide \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Trade programs want references that validate your aptitude and your genuine interest in the work \u2014 not just your academic record. These are your three recommenders and exactly what to ask each one to address.</p>';
+  refs.forEach(function(r, i) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:12px">';
+    html += '<div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:4px">Recommender '+(i+1)+': '+r.type+'</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:8px">'+r.why+'</p>';
+    html += '<div style="background:rgba(45,106,79,0.06);border-radius:6px;padding:10px;margin-bottom:8px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#2d6a4f;margin-bottom:3px">Ask them to emphasize</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid)">'+r.emphasize+'</p></div>';
+    html += '<details><summary style="font-size:11px;font-weight:500;color:var(--text-light);cursor:pointer">Sample request email &#9660;</summary>';
+    html += '<div style="background:rgba(0,0,0,0.02);border-radius:6px;padding:10px;margin-top:6px;font-size:12px;color:var(--text-mid);line-height:1.6;font-style:italic">'+r.email+'</div></details></div>';
+  });
+  html += '<div style="background:rgba(24,95,165,0.04);border-radius:8px;padding:12px 16px;margin-top:4px">';
+  html += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#185FA5;margin-bottom:6px">What trade programs look for that colleges do not</div>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5">Apprenticeship programs want references that address practical aptitude, reliability under real working conditions, and genuine curiosity about the trade. Academic performance is secondary. A letter from a tradesperson who has seen you work — even informally — is worth more than a letter from a teacher who has seen you test well.</p></div>';
+  html += '<p style="font-size:12px;color:var(--text-light);font-style:italic;margin-top:12px">Your counselor can help you brief your recommenders. A five-minute conversation before they write dramatically improves the quality of the letter.</p></div>';
+  el.innerHTML = html;
+  section.style.display = '';
+}
+
 function renderTradeCareerPaths(arch, color, el, section) {
   if (!el || !section) return;
   var paths = TRADE_CAREER_PATHS[arch] || TRADE_CAREER_PATHS['Builder'];
   var html = '<div class="ai-badge">&#128188; Trade Career Trajectories \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
-  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Four real career trajectories for ' + arch + 's in the trades \u2014 where the path goes, how long it takes, and what it pays at each stage. These are not theoretical; they are the actual pathways working practitioners have followed.</p>';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Four real career trajectories for ' + arch + 's in the trades \u2014 where the path goes, how long it takes, and what it pays at each stage. These are the actual pathways working practitioners have followed, not theoretical projections.</p>';
   paths.forEach(function(p) {
     html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:16px;margin-bottom:12px">';
     html += '<div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:8px">'+p.title+'</div>';
-    html += '<div style="display:flex;gap:16px;margin-bottom:10px;flex-wrap:wrap">';
-    html += '<div style="background:rgba(45,106,79,0.06);border-radius:6px;padding:6px 12px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#2d6a4f;margin-bottom:2px">Timeline</div><div style="font-size:12px;color:var(--navy)">'+p.timeline+'</div></div>';
-    html += '<div style="background:rgba(24,95,165,0.06);border-radius:6px;padding:6px 12px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#185FA5;margin-bottom:2px">Earning Range</div><div style="font-size:12px;color:var(--navy)">'+p.salary+'</div></div>';
+    html += '<div style="display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap">';
+    html += '<div style="background:rgba(45,106,79,0.06);border-radius:6px;padding:6px 12px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#2d6a4f;margin-bottom:2px">Timeline</div><div style="font-size:12px;color:var(--navy);font-weight:500">'+p.timeline+'</div></div>';
+    html += '<div style="background:rgba(24,95,165,0.06);border-radius:6px;padding:6px 12px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#185FA5;margin-bottom:2px">Earning Range</div><div style="font-size:12px;color:var(--navy);font-weight:500">'+p.salary+'</div></div>';
     html += '</div>';
     html += '<div style="border-left:3px solid '+color+';padding-left:12px"><p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0">'+p.path+'</p></div></div>';
   });
@@ -7401,16 +7673,38 @@ function renderTradeMentorMatch(arch, color, el, section) {
     html += '<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:8px">';
     html += '<div style="width:32px;height:32px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;color:white;font-weight:600">'+(i+1)+'</div>';
     html += '<div style="font-size:13px;font-weight:500;color:var(--navy);padding-top:6px">'+m.type+'</div></div>';
-    html += '<div style="background:rgba(200,169,110,0.06);border-radius:6px;padding:10px;margin-bottom:8px">';
-    html += '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:4px">Why this person</div>';
+    html += '<div style="background:rgba(200,169,110,0.06);border-radius:6px;padding:10px;margin-bottom:8px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:4px">Why this person</div>';
     html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0">'+m.why+'</p></div>';
-    html += '<div style="background:rgba(24,95,165,0.04);border-radius:6px;padding:10px">';
-    html += '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#185FA5;margin-bottom:4px">How to find them</div>';
+    html += '<div style="background:rgba(24,95,165,0.04);border-radius:6px;padding:10px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#185FA5;margin-bottom:4px">How to find them</div>';
     html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0">'+m.how+'</p></div></div>';
   });
   html += '</div>';
   el.innerHTML = html;
   section.style.display = '';
+}
+
+// Helper to hide a section by any child element ID
+function hideTradeSection(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var wrap = el; var t = 0;
+  while (wrap && !wrap.classList.contains('results-section') && t < 6) { wrap = wrap.parentElement; t++; }
+  if (wrap && wrap.classList.contains('results-section')) wrap.style.display = 'none';
+  else el.style.display = 'none';
+}
+
+// Helper to relabel a section title
+function relabelTradeSection(wrapperId, newTitle) {
+  var el = document.getElementById(wrapperId);
+  if (!el) return;
+  var wrap = el; var t = 0;
+  while (wrap && !wrap.classList.contains('results-section') && t < 6) { wrap = wrap.parentElement; t++; }
+  if (!wrap || !wrap.classList.contains('results-section')) wrap = el;
+  var titleEl = wrap.querySelector('.results-section-title');
+  if (titleEl) {
+    var icon = titleEl.querySelector('.rs-icon');
+    titleEl.innerHTML = (icon ? icon.outerHTML + ' ' : '') + newTitle;
+  }
 }
 
 async function generateTradeReport(archProfile, intake) {
@@ -7422,71 +7716,68 @@ async function generateTradeReport(archProfile, intake) {
   var arch = archProfile ? archProfile.split(' ')[0] : 'Builder';
   var archColors = {Builder:'#185FA5',Shepherd:'#0F6E56',Architect:'#533AB7',Catalyst:'#C05621',Advocate:'#9b2226',Cultivator:'#3B6D11',Peacemaker:'#854F0B'};
   var color = archColors[arch] || '#185FA5';
-
   console.log('[BC] generateTradeReport:', arch);
 
-  // Hide college-specific premium sections completely
-  ['wrap-essays','section-essays','prem-interview','prem-recletter','prem-counselor-guide','prem-research'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (!el) return;
-    var wrap = el; var t = 0;
-    while (wrap && !wrap.classList.contains('results-section') && t < 5) { wrap = wrap.parentElement; t++; }
-    if (wrap && wrap.classList.contains('results-section')) wrap.style.display = 'none';
-    else if (el) el.style.display = 'none';
-  });
+  // ── Hide college-specific sections completely ─────────────
+  // Essay angles, college interview, rec letters, research paper, counselor guide
+  ['wrap-essays','section-essays','prem-interview','prem-recletter',
+   'prem-counselor-guide','prem-research'].forEach(hideTradeSection);
 
-  // Replace Career Paths with trade-specific career trajectories
-  var careersEl = document.getElementById('prem-careers');
-  var careersSection = document.getElementById('section-careers') || document.getElementById('wrap-careers');
-  if (!careersSection && careersEl) {
-    var w = careersEl; var t = 0;
-    while (w && !w.classList.contains('results-section') && t < 5) { w = w.parentElement; t++; }
-    careersSection = w;
-  }
-  if (careersEl && careersSection) {
-    var titleEl = careersSection.querySelector('.results-section-title');
-    if (titleEl) { var ic = titleEl.querySelector('.rs-icon'); titleEl.innerHTML = (ic ? ic.outerHTML + ' ' : '') + 'Trade Career Trajectories'; }
-    renderTradeCareerPaths(arch, color, careersEl, careersSection);
+  // ── Replace Career Paths with trade career trajectories ───
+  // Career section: wrapper=#wrap-careers, content=#section-careers
+  var careersWrap = document.getElementById('wrap-careers');
+  var careersContent = document.getElementById('section-careers');
+  if (careersWrap && careersContent) {
+    var careersTitle = careersWrap.querySelector('.results-section-title');
+    if (careersTitle) {
+      var ic = careersTitle.querySelector('.rs-icon');
+      careersTitle.innerHTML = (ic ? ic.outerHTML + ' ' : '') + 'Trade Career Trajectories';
+    }
+    renderTradeCareerPaths(arch, color, careersContent, careersWrap);
   }
 
-  // Replace Summer Programs with pre-apprenticeship programs
-  var sumEl = document.getElementById('prem-summer');
-  if (sumEl) {
-    var sw = sumEl; var st = 0;
-    while (sw && !sw.classList.contains('results-section') && st < 5) { sw = sw.parentElement; st++; }
-    if (sw) {
-      var te = sw.querySelector('.results-section-title');
-      if (te) { var ic2 = te.querySelector('.rs-icon'); te.innerHTML = (ic2 ? ic2.outerHTML + ' ' : '') + 'Pre-Apprenticeship Programs & Certifications'; }
-      renderTradePreApprenticeship(arch, color, sumEl, sw);
+  // ── Replace Summer Programs with pre-apprenticeship ───────
+  // Summer section: content=#prem-summer, walk up for wrapper
+  var summerContent = document.getElementById('prem-summer');
+  if (summerContent) {
+    var sumWrap = summerContent; var sw = 0;
+    while (sumWrap && !sumWrap.classList.contains('results-section') && sw < 6) { sumWrap = sumWrap.parentElement; sw++; }
+    if (sumWrap && sumWrap.classList.contains('results-section')) {
+      var sumTitle = sumWrap.querySelector('.results-section-title');
+      if (sumTitle) {
+        var ic2 = sumTitle.querySelector('.rs-icon');
+        sumTitle.innerHTML = (ic2 ? ic2.outerHTML + ' ' : '') + 'Pre-Apprenticeship Programs & Certifications';
+      }
+      renderTradePreApprenticeship(arch, color, summerContent, sumWrap);
     }
   }
 
-  // Replace Mentor Match with trade-specific mentors
-  var mentorEl = document.getElementById('prem-mentor') || document.getElementById('section-mentor');
-  if (!mentorEl) mentorEl = document.getElementById('wrap-mentor');
-  var mentorContentEl = document.getElementById('prem-mentor-content') || mentorEl;
-  if (mentorEl) {
-    var mw = mentorEl; var mt = 0;
-    while (mw && !mw.classList.contains('results-section') && mt < 5) { mw = mw.parentElement; mt++; }
-    var mSection = mw && mw.classList.contains('results-section') ? mw : mentorEl;
-    var mTitle = mSection.querySelector('.results-section-title');
-    if (mTitle) { var ic3 = mTitle.querySelector('.rs-icon'); mTitle.innerHTML = (ic3 ? ic3.outerHTML + ' ' : '') + 'Trade Mentor Match'; }
-    var mContent = mSection.querySelector('.ai-section');
-    if (mContent) renderTradeMentorMatch(arch, color, mContent, mSection);
+  // ── Replace Mentor Match with trade mentors ───────────────
+  // Mentor section: wrapper=#wrap-mentor, content=#section-mentor
+  var mentorWrap = document.getElementById('wrap-mentor');
+  var mentorContent = document.getElementById('section-mentor');
+  if (mentorWrap && mentorContent) {
+    var mentorTitle = mentorWrap.querySelector('.results-section-title');
+    if (mentorTitle) {
+      var ic3 = mentorTitle.querySelector('.rs-icon');
+      mentorTitle.innerHTML = (ic3 ? ic3.outerHTML + ' ' : '') + 'Trade Mentor Match';
+    }
+    renderTradeMentorMatch(arch, color, mentorContent, mentorWrap);
   }
 
-  // Relabel Parent Guide for trade context
-  var parentEl = document.getElementById('prem-parent');
-  if (parentEl) {
-    var pw = parentEl; var pt = 0;
-    while (pw && !pw.classList.contains('results-section') && pt < 5) { pw = pw.parentElement; pt++; }
-    if (pw) {
-      var pTitle = pw.querySelector('.results-section-title');
+  // ── Relabel Parent Guide for trade families ───────────────
+  // Parent guide has no wrapper ID — find via prem-parent
+  var parentContent = document.getElementById('prem-parent');
+  if (parentContent) {
+    var parentWrap = parentContent; var pw = 0;
+    while (parentWrap && !parentWrap.classList.contains('results-section') && pw < 6) { parentWrap = parentWrap.parentElement; pw++; }
+    if (parentWrap && parentWrap.classList.contains('results-section')) {
+      var pTitle = parentWrap.querySelector('.results-section-title');
       if (pTitle) { var ic4 = pTitle.querySelector('.rs-icon'); pTitle.innerHTML = (ic4 ? ic4.outerHTML + ' ' : '') + 'Parent\'s Guide to Trade & Apprenticeship'; }
     }
   }
 
-  // Render all 6 new trade-specific sections
+  // ── Render the 6 new trade-specific sections ──────────────
   renderTradeTimeline(arch, color, document.getElementById('prem-trade-timeline'), document.getElementById('section-trade-timeline'));
   renderTradeFinancial(arch, color, document.getElementById('prem-trade-financial'), document.getElementById('section-trade-financial'));
   renderTradeProfiles(arch, color, document.getElementById('prem-trade-profiles'), document.getElementById('section-trade-profiles'));
@@ -7494,8 +7785,9 @@ async function generateTradeReport(archProfile, intake) {
   renderTradeInterviewPrep(arch, color, document.getElementById('prem-trade-interview'), document.getElementById('section-trade-interview'));
   renderTradeReferences(arch, color, document.getElementById('prem-trade-references'), document.getElementById('section-trade-references'));
 
-  console.log('[BC] Trade report rendered for', arch);
+  console.log('[BC] Trade report fully rendered for', arch);
 }
+
 
 
 window.calculateResults        = calculateResults;
