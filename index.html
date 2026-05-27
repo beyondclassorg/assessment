@@ -9130,11 +9130,6 @@ function renderMilAcadTimeline(arch, color, el, section) {
   if (!el || !section) return;
   var d = MILACAD_DATA[arch] || MILACAD_DATA['Builder'];
   var html = '<div class="ai-badge">&#128197; Your Service Academy Application Timeline \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
-  html += '<div style="background:rgba(155,34,38,0.06);border-radius:8px;padding:12px 16px;margin-bottom:1rem">';
-  html += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#9b2226;margin-bottom:6px">Your guiding question</div>';
-  html += '<p style="font-size:13px;color:var(--navy);font-style:italic;margin:0">' + d.question + '</p></div>';
-  html += '<div style="background:rgba(0,0,0,0.03);border-radius:8px;padding:10px 14px;margin-bottom:1rem">';
-  html += '<p style="font-size:12px;color:var(--text-mid);margin:0"><strong>Year-end deliverable:</strong> ' + d.deliverable + '</p></div>';
   html += '<div style="position:relative;padding-left:4px">';
   d.timeline.forEach(function(step, i) {
     var isLast = i === d.timeline.length - 1;
@@ -9329,8 +9324,8 @@ async function generateMilAcadReport(archProfile, intake) {
   console.log('[BC] generateMilAcadReport:', arch);
 
   // ── Military academy KEEPS: course roadmap, majors, clubs, activities, shadow, group dynamics ─
-  // ── HIDES: research paper ideas ───────────────────────────
-  ['prem-research'].forEach(function(id) {
+  // ── HIDES: research paper ideas, old AI essay/interview/recletter (replaced by static milacad sections) ─
+  ['prem-research','wrap-essays','section-essays','prem-interview','prem-recletter'].forEach(function(id) {
     var el = document.getElementById(id);
     if (!el) return;
     var wrap = el; var t = 0;
@@ -9348,34 +9343,11 @@ async function generateMilAcadReport(archProfile, intake) {
     renderMilAcadCareerPaths(arch, color, careersContent, careersWrap);
   }
 
-  // ── Replace Essay Angles label for academy context ──────────
-  var essaysWrap = document.getElementById('wrap-essays');
-  if (essaysWrap) {
-    var et = essaysWrap.querySelector('.results-section-title');
-    if (et) { var ic2 = et.querySelector('.rs-icon'); et.innerHTML = (ic2 ? ic2.outerHTML+' ' : '') + 'Academy Application Essay Angles'; }
-  }
+  // wrap-essays is hidden — replaced by section-milacad-writing
 
-  // ── Replace College Interview Prep with Academy/Nomination Interview ─
-  var interviewEl = document.getElementById('prem-interview');
-  if (interviewEl) {
-    var iw = interviewEl; var it = 0;
-    while (iw && !iw.classList.contains('results-section') && it < 6) { iw = iw.parentElement; it++; }
-    if (iw && iw.classList.contains('results-section')) {
-      var iTitleEl = iw.querySelector('.results-section-title');
-      if (iTitleEl) { var ic3 = iTitleEl.querySelector('.rs-icon'); iTitleEl.innerHTML = (ic3 ? ic3.outerHTML+' ' : '') + 'Academy & Nomination Interview Prep'; }
-    }
-  }
+  // prem-interview is hidden — replaced by section-milacad-interview
 
-  // ── Replace Rec Letter Guide with Nomination/Academy references ─
-  var recEl = document.getElementById('prem-recletter');
-  if (recEl) {
-    var rw = recEl; var rt = 0;
-    while (rw && !rw.classList.contains('results-section') && rt < 6) { rw = rw.parentElement; rt++; }
-    if (rw && rw.classList.contains('results-section')) {
-      var rTitleEl = rw.querySelector('.results-section-title');
-      if (rTitleEl) { var ic4 = rTitleEl.querySelector('.rs-icon'); rTitleEl.innerHTML = (ic4 ? ic4.outerHTML+' ' : '') + 'Nomination & Academy References Guide'; }
-    }
-  }
+  // prem-recletter is hidden — replaced by section-milacad-references
 
   // ── Replace Summer Programs with academy-specific programs ──
   var sumEl = document.getElementById('prem-summer');
