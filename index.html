@@ -7720,8 +7720,11 @@ async function generateTradeReport(archProfile, intake) {
 
   // ── Hide college-specific sections completely ─────────────
   // Essay angles, college interview, rec letters, research paper, counselor guide
-  ['wrap-essays','section-essays','prem-interview','prem-recletter',
-   'prem-counselor-guide','prem-research'].forEach(hideTradeSection);
+  ['wrap-essays','section-essays','prem-interview','prem-recletter','prem-counselor-guide','prem-research','wrap-activities','section-activities'].forEach(hideTradeSection);
+
+  // ── Replace free-report opportunities with trade-specific content ─
+  var oppEl = document.getElementById('section-opportunities');
+  if (oppEl) { oppEl.innerHTML = renderTradeOpportunities(arch, color); }
 
   // ── Replace Career Paths with trade career trajectories ───
   // Career section: wrapper=#wrap-careers, content=#section-careers
@@ -7788,6 +7791,77 @@ async function generateTradeReport(archProfile, intake) {
   console.log('[BC] Trade report fully rendered for', arch);
 }
 
+
+
+
+var TRADE_OPPORTUNITIES_DATA = {
+  Builder: [
+    {name:'IBEW Local Union Hall',type:'Union Hall',detail:'Visit your local IBEW union hall in person. Ask about pre-apprenticeship programs, aptitude test dates, and whether they offer any high school student tours or job shadows. This single visit is more useful than any website.'},
+    {name:'Apprenti — apprenticareers.org',type:'Apprenticeship Program',detail:'National tech apprenticeship program placing students with companies in software engineering, IT, cybersecurity, and data science. Apply directly. Accepts high school graduates. Paid from day one.'},
+    {name:'Local electrical or construction contractor',type:'Job Shadow',detail:'Cold-call or email 5 local electrical, plumbing, or construction contractors and ask for a job shadow day. Most will say yes. The job shadow is often the most useful step you can take before applying to any apprenticeship.'},
+    {name:'SkillsUSA — skillsusa.org',type:'Competition & Training',detail:'National organization for trade and technical students with competitions in electrical, construction, HVAC, and dozens of other trades. Ask your school if they have a chapter. If not, ask how to start one.'},
+    {name:'Mike Rowe Works Foundation — mikeroweworks.org',type:'Scholarship',detail:'Scholarships specifically for students pursuing trade and technical education. Up to $25,000. Designed for trade-bound students, not college-bound ones. Apply every cycle.'},
+  ],
+  Shepherd: [
+    {name:'Local hospital volunteer services office',type:'Volunteer',detail:'Every hospital has a volunteer services department. Call or email and ask about high school volunteer programs in clinical areas. This is your fastest path to real patient contact before certification.'},
+    {name:'Your local fire department',type:'Volunteer / Training',detail:'Many fire departments offer volunteer EMT or first responder training for high school students. Call your local department directly and ask. This is real clinical experience before you have a credential.'},
+    {name:'American Red Cross — redcross.org',type:'Training',detail:'Offers CNA preparation, first aid certification, and CPR training. Many programs are free or low-cost. Completing these before your formal certification program puts you ahead from day one.'},
+    {name:'Federally Qualified Health Centers (FQHCs)',type:'Employment & Sponsorship',detail:'FQHCs often sponsor CNA, medical assistant, and CHW training for community members who commit to working there. Search "FQHC near me" and call the HR department. These are often unpublicized sponsorships.'},
+    {name:'National Health Career Association — nhanow.com',type:'Certification Resources',detail:'Free and low-cost study materials for CNA, medical assistant, phlebotomy, and other healthcare certifications. Begin studying before your formal program starts to reduce time to certification.'},
+  ],
+  Architect: [
+    {name:'IBEW Local Union Hall',type:'Union Hall',detail:'Visit your local IBEW union hall and ask about the electrical apprenticeship aptitude test schedule, pre-apprenticeship resources, and whether they offer student tours. The most technically demanding and best-compensated trade apprenticeship available.'},
+    {name:'CompTIA Certifications — comptia.org',type:'Self-Study Certification',detail:'CompTIA A+, Network+, and Security+ are the foundational IT certifications. Study materials are available free at many libraries. Earning these before your technical apprenticeship begins demonstrates aptitude and accelerates advancement.'},
+    {name:'SkillsUSA — skillsusa.org',type:'Competition & Training',detail:'SkillsUSA has competitions directly relevant to technical trades — electrical systems, electronics, robotics, mechatronics. Competition participation is the most visible demonstration of genuine technical interest available to high school students.'},
+    {name:'Khan Academy — khanacademy.org',type:'Free Preparation',detail:'The IBEW aptitude battery is algebra-heavy. Physics understanding helps with electrical and HVAC fundamentals. Khan Academy covers both completely free. Work through Algebra 1, 2, and introductory physics before applying.'},
+    {name:'Local technical or trade contractor',type:'Job Shadow',detail:'Contact local electrical, HVAC, or network infrastructure contractors and ask for a job shadow day. Ask specifically to see the most technically complex work. Understanding what journeymen actually do at the ceiling of the trade changes how you prepare.'},
+  ],
+  Catalyst: [
+    {name:'Your local TV or radio station',type:'Job Shadow / Internship',detail:'Call or email the production manager at your local TV or radio station and ask about high school internships or job shadow programs. These are not always advertised. A direct call is often all it takes.'},
+    {name:'NABET Local — nabetcwa.com',type:'Union Information',detail:'The National Association of Broadcast Employees and Technicians is the primary union for broadcast workers. Contact your regional NABET office and ask about apprenticeship programs and how to get started in union broadcast work.'},
+    {name:'Adobe Certification — adobe.com/certifications',type:'Self-Study Certification',detail:'Adobe Creative Suite certifications (Premiere Pro, Photoshop, Illustrator, After Effects) are industry-recognized and can be earned independently. Completing certifications before your trade program demonstrates professional-level commitment.'},
+    {name:'Google Career Certificates — grow.google/certificates',type:'Online Certification',detail:'$0–$300 total. Digital Marketing and UX Design certificates recognized by 150+ employers. Complete this before your formal trade program begins to open additional doors while you build toward your primary goal.'},
+    {name:'Local recording studio or production company',type:'Informal Apprenticeship',detail:'Email or call local recording studios and production companies and ask if they take informal apprentices or assistants. Many do. Offer to assist for free in exchange for observation and basic training. This is how most media trade careers actually begin.'},
+  ],
+  Advocate: [
+    {name:'Local legal aid organization',type:'Volunteer / Work Experience',detail:'Legal aid organizations frequently accept high school volunteers for filing, research, and client support work. Contact the one in your area directly. This is the most direct way to understand whether you want to work in legal settings before committing to a paralegal program.'},
+    {name:'Local courthouse — public gallery',type:'Court Observation',detail:'All courtrooms are open to the public. Spend an afternoon watching proceedings at your local courthouse — a civil motion hearing, a criminal arraignment, a family court session. Direct exposure to what legal work actually looks like is irreplaceable preparation.'},
+    {name:'Your local elected official\'s office',type:'Internship / Volunteer',detail:'Most city council members, state legislators, and congressional offices welcome high school interns or volunteers. A direct email to the office is usually all it takes. This direct experience with how policy and law are made is unusually valuable.'},
+    {name:'ABA Paralegal Program Directory — americanbar.org',type:'Program Research',detail:'The American Bar Association maintains a directory of ABA-approved paralegal programs. Identify the closest ABA-approved program in your area before committing to any paralegal certification. The ABA stamp matters significantly for law firm employment.'},
+    {name:'Your school\'s mock trial or debate program',type:'Skill Development',detail:'If your school offers mock trial or competitive debate, participate seriously. These programs develop the analytical and argumentation skills that legal professionals notice and mention in recommendations. Participation strengthens paralegal applications specifically.'},
+  ],
+  Cultivator: [
+    {name:'WWOOF host farms — wwoof.net',type:'Farm Placement',detail:'Worldwide Opportunities on Organic Farms connects volunteers with host farms for work-in-exchange-for-room-and-board placements. A summer WWOOF placement is one of the best ways to test agricultural interest and build real land skills before committing to a formal program.'},
+    {name:'Your school or a nearby elementary school',type:'Teaching Assistant',detail:'Ask your school principal or a nearby elementary school about teaching assistant or tutoring volunteer positions for high school students. Even a semester of working with younger students in a formal context builds the evidence of teaching instinct that education programs look for.'},
+    {name:'Local parks and recreation department',type:'Employment / Apprenticeship',detail:'City and county parks departments hire seasonal workers and sometimes offer structured training in arboriculture, horticulture, and land management. Call your local parks department and ask about youth employment and apprenticeship programs.'},
+    {name:'USDA Cooperative Extension Office',type:'Training & Connection',detail:'Every county in the US has a USDA cooperative extension office. They offer Master Gardener youth programs, 4-H agricultural education, and connections to local agricultural apprenticeship opportunities. Call yours directly.'},
+    {name:'4-H Agricultural Education — 4-h.org',type:'Program',detail:'4-H has the most robust pre-agricultural apprenticeship education available to high school students. Project work in animal science, horticulture, agronomy, and farm business directly prepares students for USDA agricultural apprenticeships.'},
+  ],
+  Peacemaker: [
+    {name:'Local hospital language access department',type:'Volunteer Interpreting',detail:'Many hospitals and community health centers need volunteer interpreters who are not yet certified. Contact the language access department directly. This is real interpreting experience — ethically supervised — that builds the vocabulary and human skills that certification training reinforces but does not create.'},
+    {name:'Local immigrant and refugee services organization',type:'Volunteer',detail:'Organizations that serve immigrant and refugee communities almost always need bilingual volunteers for outreach, navigation, and interpretation. A direct call or email to the volunteer coordinator is usually all it takes. This is the most direct way to build the community connections that Peacemaker trade careers depend on.'},
+    {name:'Living Room Conversations — livingroomconversations.org',type:'Facilitation Training',detail:'Free facilitation training and structured facilitation curricula. Completing the training and then running documented conversations builds a portfolio of bridge-building work that is directly relevant to mediation and community health worker certification applications.'},
+    {name:'Your state health department',type:'CHW Pre-Certification Training',detail:'Many states offer free or subsidized Community Health Worker pre-certification training through workforce development programs. Search "[your state] community health worker certification training" and contact your state health department directly. Many students qualify for fully funded programs.'},
+    {name:'Essential Partners — whatisessentialpartners.org',type:'Dialogue Training',detail:'Offers dialogue facilitation training and resources for community practitioners. Completing this training and documenting the conversations you facilitate builds a portfolio that strengthens CHW and mediation certification applications significantly.'},
+  ],
+};
+
+function renderTradeOpportunities(arch, color) {
+  var opps = TRADE_OPPORTUNITIES_DATA[arch] || TRADE_OPPORTUNITIES_DATA['Builder'];
+  var html = '<div class="ai-badge">&#128205; Apprenticeship & Trade Opportunities \u2014 ' + arch + ' Archetype</div>';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin:12px 0 16px">The most important thing is not doing all of these \u2014 it is choosing 2\u20133 and pursuing them seriously enough to have a real story to tell. These are specific to the ' + arch + ' trade pathway.</p>';
+  html += '<div style="display:flex;flex-direction:column;gap:10px">';
+  opps.forEach(function(o) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">';
+    html += '<div style="font-size:13px;font-weight:500;color:var(--navy)">'+o.name+'</div>';
+    html += '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;background:rgba(0,0,0,0.04);color:'+color+';padding:2px 8px;border-radius:20px;white-space:nowrap;margin-left:8px">'+o.type+'</div>';
+    html += '</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0">'+o.detail+'</p></div>';
+  });
+  html += '</div>';
+  return html;
+}
 
 
 window.calculateResults        = calculateResults;
