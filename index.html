@@ -1409,6 +1409,32 @@ async function renderResults(r) {
         <div class="results-section-title"><span class="rs-icon">&#128100;</span> References Guide</div>
         <div class="ai-section" id="prem-entre-references"></div>
       </div>
+
+      <!-- MILITARY ACADEMY SECTIONS -->
+      <div class="results-section" id="section-milacad-timeline" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#128197;</span> Your Academy Application Timeline</div>
+        <div class="ai-section" id="prem-milacad-timeline"></div>
+      </div>
+      <div class="results-section" id="section-milacad-financial" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#128178;</span> Financial Reality</div>
+        <div class="ai-section" id="prem-milacad-financial"></div>
+      </div>
+      <div class="results-section" id="section-milacad-profiles" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#127942;</span> Service Academy Outcomes</div>
+        <div class="ai-section" id="prem-milacad-profiles"></div>
+      </div>
+      <div class="results-section" id="section-milacad-writing" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#9998;</span> Academy Writing Angles</div>
+        <div class="ai-section" id="prem-milacad-writing"></div>
+      </div>
+      <div class="results-section" id="section-milacad-interview" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#127908;</span> Academy Interview Preparation</div>
+        <div class="ai-section" id="prem-milacad-interview"></div>
+      </div>
+      <div class="results-section" id="section-milacad-references" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#128100;</span> Nomination References Guide</div>
+        <div class="ai-section" id="prem-milacad-references"></div>
+      </div>
     </div><!-- end premium-report-section -->
 
 <!-- PREMIUM OVERLAY — hidden for counselor code users -->
@@ -1490,6 +1516,7 @@ async function renderResults(r) {
   generateCCReport(archProfile, r.intake || intakeData || {});
   generateTradeReport(archProfile, r.intake || intakeData || {});
   generateEntreReport(archProfile, r.intake || intakeData || {});
+  generateMilAcadReport(archProfile, r.intake || intakeData || {});
   // Standalone counselor check (runs even if premium report fails)
   checkCounselorCodeOnResults();
   // Init sticky CTA
@@ -8623,6 +8650,811 @@ async function generateEntreReport(archProfile, intake) {
   renderEntreReferences(arch, color, document.getElementById('prem-entre-references'), document.getElementById('section-entre-references'));
 
   console.log('[BC] Entre report fully rendered for', arch);
+}
+
+
+var MILACAD_DATA = {
+  'Builder': {
+    theme: 'Lead the teams that build the systems that make everything else possible',
+    question: 'Which academy and which technical or engineering track gives me access to the most complex systems and the authority to build them?',
+    deliverable: 'A service academy appointment or ROTC scholarship, a clear technical track, and an honest accounting of the 5-year service commitment',
+    timeline: [
+      {when:'9th-10th grade (start here if possible)',what:'Contact all three nomination sources immediately',detail:'You need nominations from your US Representative AND both US Senators. Contact all three congressional offices now — not junior year. Nomination processes vary by office: some interview in fall of senior year, some require essays in summer. Know their process before junior year begins.'},
+      {when:'Junior year — fall',what:'Register at academy Candidate Portals and complete Preliminary Application',detail:'West Point, Annapolis, Air Force Academy, Coast Guard Academy, and Merchant Marine Academy all have candidate portals. Register at all that interest you by October of junior year. The preliminary application generates your Candidate Number, which unlocks the full process.'},
+      {when:'Junior year — fall/winter',what:'Schedule DoDMERB medical examination',detail:'The Department of Defense Medical Examination Review Board physical is required for all academies. Schedule it in the fall of junior year — not senior year. Medical issues take time to remediate, and some conditions are disqualifying. Vision, weight, and mental health history are the most common DoDMERB issues.'},
+      {when:'Junior year — spring',what:'Apply for Academy Summer Programs',detail:'West Point Summer Leader Experience, Naval Academy Summer Seminar, USAFA Summer Seminar, and USCGA AIM are held in June/July after junior year. Applications open in January. Attendance strongly correlates with appointment. Apply to every academy you are considering.'},
+      {when:'Senior year — August-October',what:'Complete full applications and submit nomination requests',detail:'Full applications are due November 1 at most academies. Nomination requests to congressional offices are due September-November depending on the office. Submit everything early. Your nomination essays, recommendation letters, and CFA scores must all be complete before the nomination interview.'},
+      {when:'Senior year — September-January',what:'Complete Candidate Fitness Assessment (CFA) and nomination interviews',detail:'The CFA tests basketball throw, pull-ups/flexed-arm hang, shuttle run, modified sit-ups, push-ups, and one-mile run. Train for it specifically. Nomination interviews are conducted by each congressional office separately. Dress in professional attire. Prepare to answer why you chose this academy over all others.'},
+    ],
+    financial: { programs: [
+      {name:'Service academy appointment',cost:'Full scholarship: $0 tuition + $1,100/month cadet pay',note:'The most generous full-ride in American higher education. Every expense paid plus a salary. The cost is the 5-year active duty service commitment upon graduation.'},
+      {name:'ROTC 4-year scholarship',cost:'Full tuition + $420/month stipend',note:'Available at 1,700+ universities. Same commission upon graduation. 4-year active duty commitment. More geographic flexibility than an academy.'},
+      {name:'ROTC 2- or 3-year scholarship',cost:'Partial tuition',note:'Awarded after beginning ROTC in college. Highly competitive. Apply for 4-year and let it convert if needed.'},
+      {name:'5-year service commitment (the real cost)',cost:'Your time, ages 22-27',note:'The financial aid is exceptional. The commitment is genuine. Model what the alternative looks like. Both officer service and civilian careers are legitimate paths. Choose honestly.'},
+    ], bottomLine: 'A Builder who attends a service academy graduates with zero debt, a commission, real leadership experience, and security clearance access that civilian engineers spend years trying to obtain. The 5-year commitment produces advantages — financial, professional, and credential — that extend decades beyond the service period.' },
+    profiles: [
+      {name:'Marcus, Builder',path:'West Point → Army Corps of Engineers → Infrastructure firm founder',what:'Appointed to West Point after earning nominations from his Representative and one Senator. Studied civil engineering. Led a combat engineering platoon in Germany. Commanded infrastructure projects in three countries.',outcome:'Separated at 27 with a PE license, TS clearance, and leadership of a 40-person team. Founded an infrastructure consulting firm at 28. His West Point network generates more contracts than his marketing budget. Debt at graduation: zero.',counselorNote:'Marcus almost chose MIT. His counselor helped him see that the West Point path produced the same engineering credential plus leadership authority, government access, and zero debt. He made a deliberate, fully-informed choice. That is the only way to make this decision.'},
+      {name:'Priya, Builder',path:'ROTC at Georgia Tech → Signal officer → Tech sector',what:'Earned a 4-year Army ROTC scholarship to Georgia Tech. Electrical engineering degree. Led Army communications systems operations in Korea for 4 years.',outcome:'Transitioned at 26 with a TS/SCI clearance, zero debt, four years of systems leadership, and a $140,000 first-year civilian salary at a defense contractor. Her clearance added $30,000 to her starting salary.',counselorNote:'Priya is evidence that ROTC at a strong technical school produces outcomes equivalent to an academy — with more academic flexibility. Some Builders are better served by ROTC at their ideal technical program than by an academy.'},
+    ],
+    writing: [
+      {title:'Why I am choosing to build systems that require a clearance to touch',type:'Academy Application Essay',angle:'Name the specific technical systems — military communications, weapons systems, logistics infrastructure, cyber defense — that require a commission and clearance to access. Make the case that your Builder calling specifically requires the authority and access that military service provides.',opening:'The most technically demanding systems in the world are classified. I want to work on them.',avoid:'Generic engineering ambition. Name the specific systems and the specific reason they require the military pathway.'},
+      {title:'The team I led and what I learned about building with people not just tools',type:'Nomination Essay',angle:'Describe a specific leadership experience — a team you organized, a project you led, a crisis you managed — and what it taught you about the relationship between technical excellence and human leadership.',opening:'I can build systems. What I have been learning is how to build teams.',avoid:'Pure technical achievement without leadership dimension. Academies are leadership schools first.'},
+      {title:'Why I chose the 5-year commitment honestly',type:'Congressional Nomination Essay',angle:'Address the service commitment directly and honestly. Show that you have calculated what you are committing to, weighed the alternatives, and chosen freely with complete information.',opening:'I did the math on what I am committing to. I want to show you what I calculated.',avoid:'Treating the commitment as a cost to minimize. Show that you chose it because of what it produces.'},
+      {title:'What the academy offers that no civilian engineering school can',type:'Academy Application Essay',angle:'Name specifically what the academy provides that elite civilian programs cannot: operational leadership experience, access to classified systems, the authority to implement rather than advise.',opening:'I considered [civilian school]. I am applying here instead, and I want to explain why.',avoid:'Implying civilian schools are inferior. Frame it as a different path that produces something specific you want.'},
+      {title:'The infrastructure I want to build that only a military officer can authorize',type:'Nomination Essay',angle:'Name the specific construction, systems, or infrastructure project that requires military authority and resources — Army Corps projects, military base infrastructure, combat logistics — and connect your technical background to that work.',opening:'The projects I most want to build require a rank I do not yet have.',avoid:'Vague references to serving the country through engineering. Name the specific project.'},
+    ],
+    interview: [
+      {q:'Why West Point or Annapolis or USAFA specifically — not ROTC or civilian engineering school?',why:'Nomination panels want specific honest reasoning — not talking points about patriotism.',framework:'Name the specific thing the academy provides that ROTC and civilian schools do not: the full immersion leadership development, the specific technical track, the operational credibility. Connect each to your Builder calling.',avoid:'Generic answers about wanting the best military education. Distinguish the academy from alternatives specifically.'},
+      {q:'Tell me about your most significant leadership experience.',why:'Academies commission officers. Leadership evidence is weighted as heavily as academic achievement.',framework:'Describe the specific situation, the team, your specific decisions, the resistance you encountered, how you adapted, and what the team produced.',avoid:'Situations where you were the only person doing the work. Show leadership of others.'},
+      {q:'What will you do if you do not receive an appointment?',why:'They want to see that your commitment to service is genuine, not just academy-specific.',framework:'Name your ROTC plan, your specific school, and why ROTC still achieves your core objective. Show that officer service is the goal and the academy is one path.',avoid:'Claiming you will only reapply. Show a genuine parallel plan that reflects the same values.'},
+      {q:'What do you know about the Candidate Fitness Assessment and how have you prepared?',why:'The CFA is a requirement, not an aspiration.',framework:'Name your current scores on each of the six events. Describe your training program. Show that you understand the specific standards and have been preparing with intention.',avoid:'Vague claims about being athletic. Name specific scores and specific preparation.'},
+      {q:'Describe your understanding of the 5-year active duty commitment — every aspect of it.',why:'Many applicants underestimate the commitment. They want people who chose it with full information.',framework:'Name the specific years, the specific obligations, the specific post-service options. Show that you have researched the commitment fully.',avoid:'Minimizing or glossing over the commitment. Show full understanding and genuine choice.'},
+    ],
+    references: [
+      {type:'A STEM teacher who can speak to your engineering aptitude and intellectual rigor',why:'Academy academic evaluation is highly competitive. A teacher who can compare your technical thinking to others and describe it as exceptional directly addresses the core academic question.',emphasize:'Ask them to describe your problem-solving approach, your initiative beyond the curriculum, and how your technical thinking compares to other students they have taught.',email:'I am applying to [service academy]. You have observed my technical work in [class]. Could your recommendation speak to the quality of my technical thinking and how it compares to other students who have gone on to technical programs?'},
+      {type:'A coach or activity supervisor who observed your leadership in a high-pressure context',why:'Academies weight leadership evidence heavily. A reference from someone who has seen you lead under real pressure speaks to a dimension that academic references cannot.',emphasize:'Ask them to describe a specific leadership moment under pressure: the situation, your decision, how the team responded, the outcome.',email:'I am applying to [service academy]. You have seen me lead in [athletic/activity context]. Could your recommendation describe a specific moment when I led under real pressure and what resulted?'},
+      {type:'A congressional staffer, veteran, or civic leader who can speak to your character and service orientation',why:'Congressional nominations require character references that speak to your readiness for military service specifically.',emphasize:'Ask them to describe your character in terms relevant to military service: integrity under pressure, accountability for mistakes, orientation toward service rather than self-advancement.',email:'I am applying to [service academy] and pursuing a congressional nomination. You have observed my character in [civic/community context]. Could your recommendation address what you have seen that specifically makes you believe I am ready for military service and officer leadership?'},
+    ],
+    careerPaths: [
+      {title:'Army/Navy/Air Force Officer → Company Command → Post-Service Executive',timeline:'5-20 years service',salary:'$75,000-$120,000 active duty; $130,000-$300,000+ post-service',path:'Commission → platoon leader → company commander → battalion staff → transition at 8-12 years → executive role at defense contractor, government agency, or private firm. The officer who exits at the company command level has led 100-500 people and managed multi-million dollar budgets. That profile is in extreme demand.'},
+      {title:'Technical Officer → Acquisition Corps → Program Manager → Defense Industry',timeline:'8-15 years service',salary:'$100,000-$250,000+',path:'Commission in technical branch → Army Acquisition Corps → program management of major defense systems → transition to defense contractor. The acquisition officer who has managed a major weapons or systems program is among the most sought-after professionals in defense industry.'},
+      {title:'Officer → Special Operations → Government Service',timeline:'8-20 years',salary:'$95,000-$180,000',path:'Commission → competitive selection for special operations → senior operator → government service in intelligence or State Department. The most operationally demanding path with the most distinctive post-service credentials.'},
+      {title:'Officer → MBA → Private Sector Leadership',timeline:'5-8 years service',salary:'$120,000-$400,000+',path:'Commission → serve minimum commitment → Harvard/Wharton/Kellogg MBA (veteran admissions advantage is significant) → consulting, finance, or technology leadership. The academy graduate who exits and pursues an MBA enters the civilian workforce with leadership credentials that far exceed direct-from-undergraduate peers.'},
+    ],
+    summerPrograms: [
+      {name:'West Point Summer Leader Experience (SLE)',org:'West Point — westpoint.edu',detail:'One-week residential program for rising seniors. Apply in January of junior year. Attendance strongly correlates with appointment. Gives you a genuine look at cadet life before you commit.'},
+      {name:'Naval Academy Summer Seminar (NASS)',org:'US Naval Academy — usna.edu',detail:'Week-long residential program for rising seniors. Multiple June sessions. Highly competitive. Apply in February to all available sessions simultaneously.'},
+      {name:'Air Force Academy Summer Seminar',org:'USAFA — usafa.edu',detail:'One-week June program. Apply in January. Competitive. Essential for students seriously considering USAFA.'},
+      {name:'ROTC Leaders Training Course (LTC)',org:'Army ROTC — goarmy.com/rotc',detail:'4-week summer training for rising seniors pursuing Army ROTC commissioning. Valuable as a parallel path regardless of academy outcome.'},
+      {name:'CFA-Specific Training Program',org:'Self-directed — start 6 months before application',detail:'Download the CFA scoring standards from any academy website. Train to exceed — not just meet — the standards for all six events. Failing the CFA after receiving a nomination is the most preventable failure in the application process.'},
+    ],
+    opportunities: [
+      {name:'Contact all three congressional offices this week',type:'First step — do not delay',detail:'Contact your US Representative and both US Senators. Find their websites, navigate to Service Academy Nominations, and follow each office\'s specific process. The process starts now regardless of your class year.'},
+      {name:'JROTC — Junior Reserve Officers Training Corps',type:'Leadership Development',detail:'If your school has JROTC, participate and seek leadership positions. Nomination panels specifically look for JROTC experience as evidence of genuine military interest.'},
+      {name:'Register at all academy candidate portals',type:'Application — do now',detail:'West Point: candidate.usma.edu. USNA: usna.edu/Admissions. USAFA: academyadmissions.com. USCGA: uscga.edu/admissions. Registration is free and generates your candidate number.'},
+      {name:'Boys State and Girls State',type:'Civic Leadership Program',detail:'Selective civic leadership programs that strengthen nomination files significantly. Apply in 10th or 11th grade. Many nomination panels ask specifically about participation.'},
+      {name:'Physical training — start now',type:'CFA Preparation',detail:'Download CFA standards from any academy website. Begin training to those specific standards now. 6 or more months of targeted preparation prevents the most avoidable failure in the application process.'},
+    ],
+    mentorMatch: [
+      {type:'A service academy graduate who is 5-10 years post-graduation',why:'The recent graduate knows what the academy actually produced — the career options, the post-service advantages, and what they wish they had understood before accepting an appointment.',how:'Contact the academy admissions office and ask for alumni connections. Your Blue and Gold Officer, ALO, or regional representative can connect you with recent alumni willing to speak candidly.'},
+      {type:'Your Blue and Gold Officer or Academy Liaison Officer',why:'These are volunteer alumni assigned to your region specifically to support candidates. They interview candidates, write evaluations, and provide guidance. Building a genuine relationship with your BGO or ALO before you need their evaluation is the most strategic thing you can do.',how:'Contact the academy admissions office and ask who your regional BGO or ALO is. Reach out before your application is complete. The relationship should be genuine, not transactional.'},
+      {type:'A veteran or active duty officer who will tell you the truth about officer life',why:'The most useful mentor will describe what officer service actually looks and feels like — including the difficult parts that admissions materials do not describe.',how:'Ask your school counselor, coach, or community if they know veterans willing to speak with academy candidates. VFW and American Legion posts often have members willing to speak honestly. Ask explicitly for honesty, not encouragement.'},
+    ],
+  },
+  'Shepherd': {
+    theme: 'Serve the people the military depends on to function — and serve the military community that no other institution fully understands',
+    question: 'Which academy track and which service role gives me the deepest access to the military community I want to serve?',
+    deliverable: 'A service academy appointment or ROTC scholarship with a clear service track and an honest accounting of the 5-year active duty commitment',
+    timeline: [
+      {when:'9th-10th grade',what:'Contact all three congressional offices and research tracks at each academy',detail:'Each academy has distinct pathways aligned with the Shepherd calling. Research which track matches your specific interests before committing to a specific academy. Contact congressional offices now — not junior year.'},
+      {when:'Junior year — fall',what:'Register at candidate portals and complete DoDMERB',detail:'Register at all academies you are considering. Complete DoDMERB in fall of junior year — medical issues discovered late cannot be remediated in time. The DoDMERB results affect all five academies simultaneously.'},
+      {when:'Junior year — spring',what:'Build and document Shepherd-specific extracurricular evidence',detail:'Nomination panels evaluate Shepherd applicants on leadership and character evidence specific to their calling. Document clinical hours, facilitation experience, technical projects, publications, or community organizing — whatever is most relevant to your archetype.'},
+      {when:'Junior year — summer',what:'Apply for and attend academy summer programs',detail:'Apply to every academy summer program you are considering. During the visit, seek out cadets in the program tracks most aligned with your calling. Ask them directly what the track produces and whether the depth matches what you are looking for.'},
+      {when:'Senior year — August-October',what:'Submit full applications and nomination requests with archetype evidence emphasized',detail:'Your nomination essays should describe your Shepherd orientation specifically — the specific community you want to serve, the specific work you want to do, and why military service is the path to doing it. Generic leadership essays are weaker than specific calling essays.'},
+      {when:'Senior year — November-January',what:'Complete CFA and nomination interviews',detail:'The CFA standards are the same for all candidates regardless of intended career track. Train specifically for all six events. In nomination interviews, be specific about your intended track and the military application of your calling.'},
+    ],
+    financial: { programs: [
+      {name:'Service academy appointment',cost:'Full scholarship: $0 tuition + $1,100/month cadet pay',note:'The most generous full-ride in American higher education. Every expense paid plus a salary. The cost is the 5-year active duty service commitment upon graduation.'},
+      {name:'ROTC 4-year scholarship',cost:'Full tuition + $420/month stipend',note:'Available at 1,700+ universities. Same commission upon graduation. 4-year active duty commitment. More geographic flexibility than an academy.'},
+      {name:'ROTC 2- or 3-year scholarship',cost:'Partial tuition',note:'Awarded after beginning ROTC in college. Highly competitive. Apply for 4-year and let it convert if needed.'},
+      {name:'5-year service commitment (the real cost)',cost:'Your time, ages 22-27',note:'The financial aid is exceptional. The commitment is genuine. Model what the alternative looks like. Both officer service and civilian careers are legitimate paths. Choose honestly.'},
+    ], bottomLine: 'A Shepherd who completes a service academy or ROTC commission graduates with zero debt, a commission, and access to the specific military career track that most directly expresses their calling. The 5-year service commitment is real — choose it because of what it produces, not despite what it costs.' },
+    profiles: [
+      {name:'Shepherd — Service Academy Path',path:'Service academy appointment → Shepherd-aligned military specialty → post-service career',what:'Earned a service academy appointment through congressional nomination. Commissioned as an officer in the branch and specialty most aligned with the Shepherd calling. Served 5-8 years in progressively responsible roles.',outcome:'Transitioned with zero debt, an active security clearance, officer leadership credentials, and access to post-service career options that build directly on the Shepherd calling developed during service. The combination of military commission and Shepherd specialization is available nowhere else.',counselorNote:'The Shepherd who chooses military service because of genuine calling — not just financial benefit — finds the commitment genuinely productive. The one who applies primarily for the scholarship and discovers that officer service does not align with their calling wastes the most important 5 years of their professional development. Both decisions deserve honest counseling before the application is submitted.'},
+      {name:'Shepherd — ROTC Path',path:'ROTC scholarship → commission → Shepherd-aligned specialty → post-service',what:'Earned a 4-year ROTC scholarship at a university with a strong program in the Shepherd academic interest area. Commissioned upon graduation. Served 4 years in an Shepherd-aligned military specialty.',outcome:'The ROTC path gave this Shepherd the academic flexibility to pursue a strong program in their calling area while also commissioning as an officer. Post-service, the combination of academic excellence and military leadership produced a professional profile that is genuinely distinctive.',counselorNote:'ROTC is not the consolation prize for students who did not receive academy appointments. For many students it is the better choice — the academic program at their preferred university combined with officer commissioning produces outcomes that rival or exceed the academy pathway, depending on the student.'},
+    ],
+    writing: [
+      {title:'Why military service is the right path for a Shepherd',type:'Academy Application Essay',angle:'Make the case that your Shepherd calling is not just compatible with military service but specifically requires it — the access, the authority, the community, and the context that military service alone provides.',opening:'My calling does not stop at the gate. It leads through it.',avoid:'Generic service motivation. Show specifically why military service is the right expression of the Shepherd calling, not just a worthy path.'},
+      {title:'The 5-year commitment is not the cost — it is the work',type:'Nomination Essay',angle:'Reframe the service commitment as the work itself — 5 years of doing the specific things your calling requires in the specific context that only military service provides. Show that you chose it for the work, not despite the obligation.',opening:'Five years serving the community I want to serve is not a cost. It is the calling.',avoid:'Minimizing the commitment. Show that you understand it fully and chose it freely.'},
+      {title:'Why I need to be inside this institution to do the work I want to do',type:'Congressional Nomination Essay',angle:'Describe specifically why the Shepherd work you want to do requires a commission and cannot be done as a contractor, volunteer, civilian employee, or advocate working from outside the institution.',opening:'I considered every path that did not require a 5-year commitment. None of them gave me what I need.',avoid:'Vague references to wanting to serve. Name the specific access and authority that require a commission.'},
+      {title:'What the academy gives me that ROTC cannot',type:'Academy vs ROTC Essay',angle:'Name specifically what the academy provides that ROTC and a civilian university do not: the full immersion, the leadership development intensity, the specific technical or professional track, the operational credibility that comes from living the culture from day one.',opening:'I researched both options seriously. I want to explain what made the difference.',avoid:'Dismissing ROTC as inferior. Frame it as a different path and name specifically what the academy adds.'},
+      {title:'What officer service will teach me that nothing else can',type:'Personal Statement',angle:'Name the specific knowledge, authority, or access that 5 years of officer service will produce — knowledge that will make you a more effective Shepherd for the rest of your career.',opening:'I want to be the kind of [practitioner/leader/advocate/communicator/developer/peacebuilder] who has done the thing, not just studied it.',avoid:'Generic claims about military character-building. Name the specific capabilities officer service develops.'},
+    ],
+    interview: [
+      {q:'Why do you want to serve in the military as a Shepherd?',why:'They want to understand the genuine connection between your calling and military service — not a rehearsed answer about patriotism.',framework:'Describe the specific community, the specific work, or the specific access that military service provides for a Shepherd. Name something you cannot do or reach without a commission.',avoid:'Generic service motivation. Show the specific connection between your archetype and military service.'},
+      {q:'What leadership experience have you had that most directly prepares you for officer service?',why:'Academies commission officers. Leadership evidence is the primary evaluation criterion alongside academic achievement.',framework:'Describe the most demanding leadership situation you have faced. Name the people, the stakes, the decisions, the outcome, and what you learned.',avoid:'Leadership roles without leadership stories. Name a specific decision under pressure.'},
+      {q:'What is your understanding of the 5-year service commitment and what it actually involves?',why:'They want people who chose the commitment with full information.',framework:'Describe the commitment specifically — the years, the potential deployment, the limitations on personal life choices, the post-service options. Show full understanding and genuine choice.',avoid:'Minimizing or treating the commitment as a formality. Show that you take it seriously.'},
+      {q:'What will you do if you do not receive an appointment?',why:'They want genuine service commitment, not academy-specific ambition.',framework:'Name your ROTC plan specifically — the school, the program, the ROTC unit. Show that officer service is the goal and the academy is one path to it.',avoid:'Claiming you will only reapply or that there is no alternative. Show a genuine parallel plan.'},
+      {q:'Why this specific academy — and what do you know about its program in your area of interest?',why:'Specific academy choice requires specific reasoning. Generic answers reveal undifferentiated motivation.',framework:'Name the specific program, track, or faculty at this academy that is most relevant to your calling. Show that you have researched this academy specifically, not just service academies in general.',avoid:'Generic praise for the academy. Name one specific thing that distinguishes it from the others.'},
+    ],
+    references: [
+      {type:'A teacher or mentor who can speak to your academic achievement and intellectual character',why:'Academy academic evaluation is highly competitive. A teacher who can compare your thinking to peers who have gone to competitive programs directly addresses the core academic question.',emphasize:'Ask them to describe your intellectual initiative, your performance on challenging material, and how your thinking compares to other students they have taught who have gone on to competitive academic programs.',email:'I am applying to [service academy]. You have observed my academic work over [time period]. Could your recommendation speak to the quality of my intellectual thinking and how it compares to other students who have gone on to demanding academic programs?'},
+      {type:'A coach, commander, or supervisor who observed your leadership under real pressure',why:'Academies weight leadership evidence heavily. Someone who has seen you lead when the stakes were real speaks to a dimension that classroom references cannot.',emphasize:'Ask them to describe a specific leadership situation under pressure — your decision, how others responded, the outcome.',email:'I am applying to [service academy]. You have seen me lead in [context]. Could your recommendation describe a specific moment when I led under real pressure and what the team produced?'},
+      {type:'A veteran, civic leader, or community figure who can speak to your character and service orientation',why:'Congressional nominations require character references specifically relevant to military service.',emphasize:'Ask them to describe your character in terms relevant to officer service: integrity, accountability, orientation toward service over self-advancement.',email:'I am applying to [service academy] and pursuing a congressional nomination. You have observed my character in [context]. Could your recommendation address what specifically makes you believe I am ready for military service and the responsibilities of officer leadership?'},
+    ],
+    careerPaths: [
+      {title:'Shepherd-aligned Officer Career → Post-Service Leadership',timeline:'5-20 years service',salary:'$75,000-$120,000 active duty; $110,000-$250,000+ post-service',path:'Commission in Shepherd-aligned branch → develop specialty → take on leadership at increasing scale → transition at 5-12 years with security clearance, zero debt, and leadership credentials. The Shepherd officer who uses the service commitment to build genuine expertise and relationships transitions into post-service careers that are unavailable to any other pathway.'},
+      {title:'Academy or ROTC → MBA → Private Sector Leadership',timeline:'5-8 years service',salary:'$120,000-$400,000+',path:'Commission → serve minimum commitment → top MBA program (veteran admissions advantage is significant) → consulting, finance, or sector-specific leadership. The service academy graduate at Harvard Business School or Wharton enters the civilian workforce ahead of direct-from-undergraduate peers with a leadership profile that is genuinely distinctive.'},
+      {title:'Officer → Government Service → Senior Civil Servant or Political Leader',timeline:'8-20 years',salary:'$90,000-$200,000',path:'Commission → develop expertise in your specialty → transition to federal civilian service or elected office. Veterans are disproportionately represented in senior government roles and elected office. The combination of military commission and specific calling expertise produces unusually effective public servants.'},
+      {title:'Officer → Advanced Degree → Academic or Research Career',timeline:'8-15 years',salary:'$80,000-$160,000',path:'Commission → GI Bill or fellowship-funded graduate program → faculty or research career. The military officer who pursues a graduate degree with operational experience behind them brings a distinctive perspective to academic or research work in their specialty area.'},
+    ],
+    summerPrograms: [
+      {name:'West Point Summer Leader Experience (SLE)',org:'West Point — westpoint.edu',detail:'One-week residential program for rising seniors. Apply in January of junior year. Attendance strongly correlates with appointment. Gives you a genuine look at cadet life before you commit.'},
+      {name:'Naval Academy Summer Seminar (NASS)',org:'US Naval Academy — usna.edu',detail:'Week-long program for rising seniors. Multiple June sessions. Highly competitive. Apply in February to all available sessions.'},
+      {name:'Air Force Academy Summer Seminar',org:'USAFA — usafa.edu',detail:'One-week June program. Apply in January. Essential for students seriously considering USAFA.'},
+      {name:'ROTC Leaders Training Course',org:'Army ROTC — goarmy.com/rotc',detail:'4-week summer training for rising seniors pursuing Army ROTC. Valuable regardless of academy outcome.'},
+      {name:'CFA Training Program — start 6 months before application',org:'Self-directed',detail:'Download the CFA scoring standards from any academy website. Train to exceed the standards for all six events. Failing the CFA after receiving a nomination is the most preventable failure in the application process.'},
+    ],
+    opportunities: [
+      {name:'Contact all three congressional offices this week',type:'First step — do not delay',detail:'Contact your US Representative and both US Senators. Navigate to Service Academy Nominations on each website. Know each office\'s specific process and deadline. The nomination process starts now.'},
+      {name:'JROTC — Junior Reserve Officers Training Corps',type:'Leadership Development',detail:'If your school has JROTC, participate and seek leadership positions. Nomination panels specifically look for JROTC experience as evidence of genuine military interest.'},
+      {name:'Register at all academy candidate portals',type:'Application — do now',detail:'West Point: candidate.usma.edu. USNA: usna.edu/Admissions. USAFA: academyadmissions.com. USCGA: uscga.edu/admissions. Registration is free and generates your candidate number.'},
+      {name:'Boys State and Girls State',type:'Civic Leadership',detail:'Selective civic leadership programs that strengthen nomination files. Apply in 10th or 11th grade. Many nomination panels ask specifically about participation.'},
+      {name:'Physical training — start now',type:'CFA Preparation',detail:'Download CFA standards from any academy website. Begin training specifically for all six events now. 6 or more months of targeted preparation prevents the most avoidable failure in the process.'},
+    ],
+    mentorMatch: [
+      {type:'A service academy graduate 5-10 years post-graduation',why:'The recent graduate knows what the academy actually produced — the career options, the post-service advantages, and what they wish they had understood before accepting an appointment.',how:'Contact the academy admissions office and ask for alumni connections. Your Blue and Gold Officer or ALO can connect you with recent alumni willing to speak candidly.'},
+      {type:'Your Blue and Gold Officer or Academy Liaison Officer',why:'These are volunteer alumni assigned to your region specifically to support candidates. They interview candidates, write evaluations, and provide guidance. Building a genuine relationship before you need their evaluation is the most strategic thing you can do.',how:'Contact the academy admissions office and ask who your regional BGO or ALO is. Reach out to introduce yourself before your application is submitted. The relationship should be genuine.'},
+      {type:'A veteran or active duty officer who will tell you the truth',why:'The most useful mentor will describe what officer service actually looks and feels like — including the difficult parts.',how:'Ask your school counselor, coach, or community about veterans willing to speak with candidates. VFW and American Legion posts often have members willing to speak honestly. Ask explicitly for honesty, not encouragement.'},
+    ],
+  },
+  'Architect': {
+    theme: 'Design and build the most technically complex systems in the world — with the security clearance to touch them and the commission to lead them',
+    question: 'Which academy and which technical track gives me access to the systems I cannot touch without a clearance?',
+    deliverable: 'A service academy appointment or ROTC scholarship with a clear service track and an honest accounting of the 5-year active duty commitment',
+    timeline: [
+      {when:'9th-10th grade',what:'Contact all three congressional offices and research tracks at each academy',detail:'Each academy has distinct pathways aligned with the Architect calling. Research which track matches your specific interests before committing to a specific academy. Contact congressional offices now — not junior year.'},
+      {when:'Junior year — fall',what:'Register at candidate portals and complete DoDMERB',detail:'Register at all academies you are considering. Complete DoDMERB in fall of junior year — medical issues discovered late cannot be remediated in time. The DoDMERB results affect all five academies simultaneously.'},
+      {when:'Junior year — spring',what:'Build and document Architect-specific extracurricular evidence',detail:'Nomination panels evaluate Architect applicants on leadership and character evidence specific to their calling. Document clinical hours, facilitation experience, technical projects, publications, or community organizing — whatever is most relevant to your archetype.'},
+      {when:'Junior year — summer',what:'Apply for and attend academy summer programs',detail:'Apply to every academy summer program you are considering. During the visit, seek out cadets in the program tracks most aligned with your calling. Ask them directly what the track produces and whether the depth matches what you are looking for.'},
+      {when:'Senior year — August-October',what:'Submit full applications and nomination requests with archetype evidence emphasized',detail:'Your nomination essays should describe your Architect orientation specifically — the specific community you want to serve, the specific work you want to do, and why military service is the path to doing it. Generic leadership essays are weaker than specific calling essays.'},
+      {when:'Senior year — November-January',what:'Complete CFA and nomination interviews',detail:'The CFA standards are the same for all candidates regardless of intended career track. Train specifically for all six events. In nomination interviews, be specific about your intended track and the military application of your calling.'},
+    ],
+    financial: { programs: [
+      {name:'Service academy appointment',cost:'Full scholarship: $0 tuition + $1,100/month cadet pay',note:'The most generous full-ride in American higher education. Every expense paid plus a salary. The cost is the 5-year active duty service commitment upon graduation.'},
+      {name:'ROTC 4-year scholarship',cost:'Full tuition + $420/month stipend',note:'Available at 1,700+ universities. Same commission upon graduation. 4-year active duty commitment. More geographic flexibility than an academy.'},
+      {name:'ROTC 2- or 3-year scholarship',cost:'Partial tuition',note:'Awarded after beginning ROTC in college. Highly competitive. Apply for 4-year and let it convert if needed.'},
+      {name:'5-year service commitment (the real cost)',cost:'Your time, ages 22-27',note:'The financial aid is exceptional. The commitment is genuine. Model what the alternative looks like. Both officer service and civilian careers are legitimate paths. Choose honestly.'},
+    ], bottomLine: 'A Architect who completes a service academy or ROTC commission graduates with zero debt, a commission, and access to the specific military career track that most directly expresses their calling. The 5-year service commitment is real — choose it because of what it produces, not despite what it costs.' },
+    profiles: [
+      {name:'Architect — Service Academy Path',path:'Service academy appointment → Architect-aligned military specialty → post-service career',what:'Earned a service academy appointment through congressional nomination. Commissioned as an officer in the branch and specialty most aligned with the Architect calling. Served 5-8 years in progressively responsible roles.',outcome:'Transitioned with zero debt, an active security clearance, officer leadership credentials, and access to post-service career options that build directly on the Architect calling developed during service. The combination of military commission and Architect specialization is available nowhere else.',counselorNote:'The Architect who chooses military service because of genuine calling — not just financial benefit — finds the commitment genuinely productive. The one who applies primarily for the scholarship and discovers that officer service does not align with their calling wastes the most important 5 years of their professional development. Both decisions deserve honest counseling before the application is submitted.'},
+      {name:'Architect — ROTC Path',path:'ROTC scholarship → commission → Architect-aligned specialty → post-service',what:'Earned a 4-year ROTC scholarship at a university with a strong program in the Architect academic interest area. Commissioned upon graduation. Served 4 years in an Architect-aligned military specialty.',outcome:'The ROTC path gave this Architect the academic flexibility to pursue a strong program in their calling area while also commissioning as an officer. Post-service, the combination of academic excellence and military leadership produced a professional profile that is genuinely distinctive.',counselorNote:'ROTC is not the consolation prize for students who did not receive academy appointments. For many students it is the better choice — the academic program at their preferred university combined with officer commissioning produces outcomes that rival or exceed the academy pathway, depending on the student.'},
+    ],
+    writing: [
+      {title:'Why military service is the right path for a Architect',type:'Academy Application Essay',angle:'Make the case that your Architect calling is not just compatible with military service but specifically requires it — the access, the authority, the community, and the context that military service alone provides.',opening:'My calling does not stop at the gate. It leads through it.',avoid:'Generic service motivation. Show specifically why military service is the right expression of the Architect calling, not just a worthy path.'},
+      {title:'The 5-year commitment is not the cost — it is the work',type:'Nomination Essay',angle:'Reframe the service commitment as the work itself — 5 years of doing the specific things your calling requires in the specific context that only military service provides. Show that you chose it for the work, not despite the obligation.',opening:'Five years serving the community I want to serve is not a cost. It is the calling.',avoid:'Minimizing the commitment. Show that you understand it fully and chose it freely.'},
+      {title:'Why I need to be inside this institution to do the work I want to do',type:'Congressional Nomination Essay',angle:'Describe specifically why the Architect work you want to do requires a commission and cannot be done as a contractor, volunteer, civilian employee, or advocate working from outside the institution.',opening:'I considered every path that did not require a 5-year commitment. None of them gave me what I need.',avoid:'Vague references to wanting to serve. Name the specific access and authority that require a commission.'},
+      {title:'What the academy gives me that ROTC cannot',type:'Academy vs ROTC Essay',angle:'Name specifically what the academy provides that ROTC and a civilian university do not: the full immersion, the leadership development intensity, the specific technical or professional track, the operational credibility that comes from living the culture from day one.',opening:'I researched both options seriously. I want to explain what made the difference.',avoid:'Dismissing ROTC as inferior. Frame it as a different path and name specifically what the academy adds.'},
+      {title:'What officer service will teach me that nothing else can',type:'Personal Statement',angle:'Name the specific knowledge, authority, or access that 5 years of officer service will produce — knowledge that will make you a more effective Architect for the rest of your career.',opening:'I want to be the kind of [practitioner/leader/advocate/communicator/developer/peacebuilder] who has done the thing, not just studied it.',avoid:'Generic claims about military character-building. Name the specific capabilities officer service develops.'},
+    ],
+    interview: [
+      {q:'Why do you want to serve in the military as a Architect?',why:'They want to understand the genuine connection between your calling and military service — not a rehearsed answer about patriotism.',framework:'Describe the specific community, the specific work, or the specific access that military service provides for a Architect. Name something you cannot do or reach without a commission.',avoid:'Generic service motivation. Show the specific connection between your archetype and military service.'},
+      {q:'What leadership experience have you had that most directly prepares you for officer service?',why:'Academies commission officers. Leadership evidence is the primary evaluation criterion alongside academic achievement.',framework:'Describe the most demanding leadership situation you have faced. Name the people, the stakes, the decisions, the outcome, and what you learned.',avoid:'Leadership roles without leadership stories. Name a specific decision under pressure.'},
+      {q:'What is your understanding of the 5-year service commitment and what it actually involves?',why:'They want people who chose the commitment with full information.',framework:'Describe the commitment specifically — the years, the potential deployment, the limitations on personal life choices, the post-service options. Show full understanding and genuine choice.',avoid:'Minimizing or treating the commitment as a formality. Show that you take it seriously.'},
+      {q:'What will you do if you do not receive an appointment?',why:'They want genuine service commitment, not academy-specific ambition.',framework:'Name your ROTC plan specifically — the school, the program, the ROTC unit. Show that officer service is the goal and the academy is one path to it.',avoid:'Claiming you will only reapply or that there is no alternative. Show a genuine parallel plan.'},
+      {q:'Why this specific academy — and what do you know about its program in your area of interest?',why:'Specific academy choice requires specific reasoning. Generic answers reveal undifferentiated motivation.',framework:'Name the specific program, track, or faculty at this academy that is most relevant to your calling. Show that you have researched this academy specifically, not just service academies in general.',avoid:'Generic praise for the academy. Name one specific thing that distinguishes it from the others.'},
+    ],
+    references: [
+      {type:'A teacher or mentor who can speak to your academic achievement and intellectual character',why:'Academy academic evaluation is highly competitive. A teacher who can compare your thinking to peers who have gone to competitive programs directly addresses the core academic question.',emphasize:'Ask them to describe your intellectual initiative, your performance on challenging material, and how your thinking compares to other students they have taught who have gone on to competitive academic programs.',email:'I am applying to [service academy]. You have observed my academic work over [time period]. Could your recommendation speak to the quality of my intellectual thinking and how it compares to other students who have gone on to demanding academic programs?'},
+      {type:'A coach, commander, or supervisor who observed your leadership under real pressure',why:'Academies weight leadership evidence heavily. Someone who has seen you lead when the stakes were real speaks to a dimension that classroom references cannot.',emphasize:'Ask them to describe a specific leadership situation under pressure — your decision, how others responded, the outcome.',email:'I am applying to [service academy]. You have seen me lead in [context]. Could your recommendation describe a specific moment when I led under real pressure and what the team produced?'},
+      {type:'A veteran, civic leader, or community figure who can speak to your character and service orientation',why:'Congressional nominations require character references specifically relevant to military service.',emphasize:'Ask them to describe your character in terms relevant to officer service: integrity, accountability, orientation toward service over self-advancement.',email:'I am applying to [service academy] and pursuing a congressional nomination. You have observed my character in [context]. Could your recommendation address what specifically makes you believe I am ready for military service and the responsibilities of officer leadership?'},
+    ],
+    careerPaths: [
+      {title:'Architect-aligned Officer Career → Post-Service Leadership',timeline:'5-20 years service',salary:'$75,000-$120,000 active duty; $110,000-$250,000+ post-service',path:'Commission in Architect-aligned branch → develop specialty → take on leadership at increasing scale → transition at 5-12 years with security clearance, zero debt, and leadership credentials. The Architect officer who uses the service commitment to build genuine expertise and relationships transitions into post-service careers that are unavailable to any other pathway.'},
+      {title:'Academy or ROTC → MBA → Private Sector Leadership',timeline:'5-8 years service',salary:'$120,000-$400,000+',path:'Commission → serve minimum commitment → top MBA program (veteran admissions advantage is significant) → consulting, finance, or sector-specific leadership. The service academy graduate at Harvard Business School or Wharton enters the civilian workforce ahead of direct-from-undergraduate peers with a leadership profile that is genuinely distinctive.'},
+      {title:'Officer → Government Service → Senior Civil Servant or Political Leader',timeline:'8-20 years',salary:'$90,000-$200,000',path:'Commission → develop expertise in your specialty → transition to federal civilian service or elected office. Veterans are disproportionately represented in senior government roles and elected office. The combination of military commission and specific calling expertise produces unusually effective public servants.'},
+      {title:'Officer → Advanced Degree → Academic or Research Career',timeline:'8-15 years',salary:'$80,000-$160,000',path:'Commission → GI Bill or fellowship-funded graduate program → faculty or research career. The military officer who pursues a graduate degree with operational experience behind them brings a distinctive perspective to academic or research work in their specialty area.'},
+    ],
+    summerPrograms: [
+      {name:'West Point Summer Leader Experience (SLE)',org:'West Point — westpoint.edu',detail:'One-week residential program for rising seniors. Apply in January of junior year. Attendance strongly correlates with appointment. Gives you a genuine look at cadet life before you commit.'},
+      {name:'Naval Academy Summer Seminar (NASS)',org:'US Naval Academy — usna.edu',detail:'Week-long program for rising seniors. Multiple June sessions. Highly competitive. Apply in February to all available sessions.'},
+      {name:'Air Force Academy Summer Seminar',org:'USAFA — usafa.edu',detail:'One-week June program. Apply in January. Essential for students seriously considering USAFA.'},
+      {name:'ROTC Leaders Training Course',org:'Army ROTC — goarmy.com/rotc',detail:'4-week summer training for rising seniors pursuing Army ROTC. Valuable regardless of academy outcome.'},
+      {name:'CFA Training Program — start 6 months before application',org:'Self-directed',detail:'Download the CFA scoring standards from any academy website. Train to exceed the standards for all six events. Failing the CFA after receiving a nomination is the most preventable failure in the application process.'},
+    ],
+    opportunities: [
+      {name:'Contact all three congressional offices this week',type:'First step — do not delay',detail:'Contact your US Representative and both US Senators. Navigate to Service Academy Nominations on each website. Know each office\'s specific process and deadline. The nomination process starts now.'},
+      {name:'JROTC — Junior Reserve Officers Training Corps',type:'Leadership Development',detail:'If your school has JROTC, participate and seek leadership positions. Nomination panels specifically look for JROTC experience as evidence of genuine military interest.'},
+      {name:'Register at all academy candidate portals',type:'Application — do now',detail:'West Point: candidate.usma.edu. USNA: usna.edu/Admissions. USAFA: academyadmissions.com. USCGA: uscga.edu/admissions. Registration is free and generates your candidate number.'},
+      {name:'Boys State and Girls State',type:'Civic Leadership',detail:'Selective civic leadership programs that strengthen nomination files. Apply in 10th or 11th grade. Many nomination panels ask specifically about participation.'},
+      {name:'Physical training — start now',type:'CFA Preparation',detail:'Download CFA standards from any academy website. Begin training specifically for all six events now. 6 or more months of targeted preparation prevents the most avoidable failure in the process.'},
+    ],
+    mentorMatch: [
+      {type:'A service academy graduate 5-10 years post-graduation',why:'The recent graduate knows what the academy actually produced — the career options, the post-service advantages, and what they wish they had understood before accepting an appointment.',how:'Contact the academy admissions office and ask for alumni connections. Your Blue and Gold Officer or ALO can connect you with recent alumni willing to speak candidly.'},
+      {type:'Your Blue and Gold Officer or Academy Liaison Officer',why:'These are volunteer alumni assigned to your region specifically to support candidates. They interview candidates, write evaluations, and provide guidance. Building a genuine relationship before you need their evaluation is the most strategic thing you can do.',how:'Contact the academy admissions office and ask who your regional BGO or ALO is. Reach out to introduce yourself before your application is submitted. The relationship should be genuine.'},
+      {type:'A veteran or active duty officer who will tell you the truth',why:'The most useful mentor will describe what officer service actually looks and feels like — including the difficult parts.',how:'Ask your school counselor, coach, or community about veterans willing to speak with candidates. VFW and American Legion posts often have members willing to speak honestly. Ask explicitly for honesty, not encouragement.'},
+    ],
+  },
+  'Catalyst': {
+    theme: 'Tell the stories that shape how a nation understands its military — from the inside',
+    question: 'Which academy track or ROTC path gives me the access to tell the stories that matter?',
+    deliverable: 'A service academy appointment or ROTC scholarship with a clear service track and an honest accounting of the 5-year active duty commitment',
+    timeline: [
+      {when:'9th-10th grade',what:'Contact all three congressional offices and research tracks at each academy',detail:'Each academy has distinct pathways aligned with the Catalyst calling. Research which track matches your specific interests before committing to a specific academy. Contact congressional offices now — not junior year.'},
+      {when:'Junior year — fall',what:'Register at candidate portals and complete DoDMERB',detail:'Register at all academies you are considering. Complete DoDMERB in fall of junior year — medical issues discovered late cannot be remediated in time. The DoDMERB results affect all five academies simultaneously.'},
+      {when:'Junior year — spring',what:'Build and document Catalyst-specific extracurricular evidence',detail:'Nomination panels evaluate Catalyst applicants on leadership and character evidence specific to their calling. Document clinical hours, facilitation experience, technical projects, publications, or community organizing — whatever is most relevant to your archetype.'},
+      {when:'Junior year — summer',what:'Apply for and attend academy summer programs',detail:'Apply to every academy summer program you are considering. During the visit, seek out cadets in the program tracks most aligned with your calling. Ask them directly what the track produces and whether the depth matches what you are looking for.'},
+      {when:'Senior year — August-October',what:'Submit full applications and nomination requests with archetype evidence emphasized',detail:'Your nomination essays should describe your Catalyst orientation specifically — the specific community you want to serve, the specific work you want to do, and why military service is the path to doing it. Generic leadership essays are weaker than specific calling essays.'},
+      {when:'Senior year — November-January',what:'Complete CFA and nomination interviews',detail:'The CFA standards are the same for all candidates regardless of intended career track. Train specifically for all six events. In nomination interviews, be specific about your intended track and the military application of your calling.'},
+    ],
+    financial: { programs: [
+      {name:'Service academy appointment',cost:'Full scholarship: $0 tuition + $1,100/month cadet pay',note:'The most generous full-ride in American higher education. Every expense paid plus a salary. The cost is the 5-year active duty service commitment upon graduation.'},
+      {name:'ROTC 4-year scholarship',cost:'Full tuition + $420/month stipend',note:'Available at 1,700+ universities. Same commission upon graduation. 4-year active duty commitment. More geographic flexibility than an academy.'},
+      {name:'ROTC 2- or 3-year scholarship',cost:'Partial tuition',note:'Awarded after beginning ROTC in college. Highly competitive. Apply for 4-year and let it convert if needed.'},
+      {name:'5-year service commitment (the real cost)',cost:'Your time, ages 22-27',note:'The financial aid is exceptional. The commitment is genuine. Model what the alternative looks like. Both officer service and civilian careers are legitimate paths. Choose honestly.'},
+    ], bottomLine: 'A Catalyst who completes a service academy or ROTC commission graduates with zero debt, a commission, and access to the specific military career track that most directly expresses their calling. The 5-year service commitment is real — choose it because of what it produces, not despite what it costs.' },
+    profiles: [
+      {name:'Catalyst — Service Academy Path',path:'Service academy appointment → Catalyst-aligned military specialty → post-service career',what:'Earned a service academy appointment through congressional nomination. Commissioned as an officer in the branch and specialty most aligned with the Catalyst calling. Served 5-8 years in progressively responsible roles.',outcome:'Transitioned with zero debt, an active security clearance, officer leadership credentials, and access to post-service career options that build directly on the Catalyst calling developed during service. The combination of military commission and Catalyst specialization is available nowhere else.',counselorNote:'The Catalyst who chooses military service because of genuine calling — not just financial benefit — finds the commitment genuinely productive. The one who applies primarily for the scholarship and discovers that officer service does not align with their calling wastes the most important 5 years of their professional development. Both decisions deserve honest counseling before the application is submitted.'},
+      {name:'Catalyst — ROTC Path',path:'ROTC scholarship → commission → Catalyst-aligned specialty → post-service',what:'Earned a 4-year ROTC scholarship at a university with a strong program in the Catalyst academic interest area. Commissioned upon graduation. Served 4 years in an Catalyst-aligned military specialty.',outcome:'The ROTC path gave this Catalyst the academic flexibility to pursue a strong program in their calling area while also commissioning as an officer. Post-service, the combination of academic excellence and military leadership produced a professional profile that is genuinely distinctive.',counselorNote:'ROTC is not the consolation prize for students who did not receive academy appointments. For many students it is the better choice — the academic program at their preferred university combined with officer commissioning produces outcomes that rival or exceed the academy pathway, depending on the student.'},
+    ],
+    writing: [
+      {title:'Why military service is the right path for a Catalyst',type:'Academy Application Essay',angle:'Make the case that your Catalyst calling is not just compatible with military service but specifically requires it — the access, the authority, the community, and the context that military service alone provides.',opening:'My calling does not stop at the gate. It leads through it.',avoid:'Generic service motivation. Show specifically why military service is the right expression of the Catalyst calling, not just a worthy path.'},
+      {title:'The 5-year commitment is not the cost — it is the work',type:'Nomination Essay',angle:'Reframe the service commitment as the work itself — 5 years of doing the specific things your calling requires in the specific context that only military service provides. Show that you chose it for the work, not despite the obligation.',opening:'Five years serving the community I want to serve is not a cost. It is the calling.',avoid:'Minimizing the commitment. Show that you understand it fully and chose it freely.'},
+      {title:'Why I need to be inside this institution to do the work I want to do',type:'Congressional Nomination Essay',angle:'Describe specifically why the Catalyst work you want to do requires a commission and cannot be done as a contractor, volunteer, civilian employee, or advocate working from outside the institution.',opening:'I considered every path that did not require a 5-year commitment. None of them gave me what I need.',avoid:'Vague references to wanting to serve. Name the specific access and authority that require a commission.'},
+      {title:'What the academy gives me that ROTC cannot',type:'Academy vs ROTC Essay',angle:'Name specifically what the academy provides that ROTC and a civilian university do not: the full immersion, the leadership development intensity, the specific technical or professional track, the operational credibility that comes from living the culture from day one.',opening:'I researched both options seriously. I want to explain what made the difference.',avoid:'Dismissing ROTC as inferior. Frame it as a different path and name specifically what the academy adds.'},
+      {title:'What officer service will teach me that nothing else can',type:'Personal Statement',angle:'Name the specific knowledge, authority, or access that 5 years of officer service will produce — knowledge that will make you a more effective Catalyst for the rest of your career.',opening:'I want to be the kind of [practitioner/leader/advocate/communicator/developer/peacebuilder] who has done the thing, not just studied it.',avoid:'Generic claims about military character-building. Name the specific capabilities officer service develops.'},
+    ],
+    interview: [
+      {q:'Why do you want to serve in the military as a Catalyst?',why:'They want to understand the genuine connection between your calling and military service — not a rehearsed answer about patriotism.',framework:'Describe the specific community, the specific work, or the specific access that military service provides for a Catalyst. Name something you cannot do or reach without a commission.',avoid:'Generic service motivation. Show the specific connection between your archetype and military service.'},
+      {q:'What leadership experience have you had that most directly prepares you for officer service?',why:'Academies commission officers. Leadership evidence is the primary evaluation criterion alongside academic achievement.',framework:'Describe the most demanding leadership situation you have faced. Name the people, the stakes, the decisions, the outcome, and what you learned.',avoid:'Leadership roles without leadership stories. Name a specific decision under pressure.'},
+      {q:'What is your understanding of the 5-year service commitment and what it actually involves?',why:'They want people who chose the commitment with full information.',framework:'Describe the commitment specifically — the years, the potential deployment, the limitations on personal life choices, the post-service options. Show full understanding and genuine choice.',avoid:'Minimizing or treating the commitment as a formality. Show that you take it seriously.'},
+      {q:'What will you do if you do not receive an appointment?',why:'They want genuine service commitment, not academy-specific ambition.',framework:'Name your ROTC plan specifically — the school, the program, the ROTC unit. Show that officer service is the goal and the academy is one path to it.',avoid:'Claiming you will only reapply or that there is no alternative. Show a genuine parallel plan.'},
+      {q:'Why this specific academy — and what do you know about its program in your area of interest?',why:'Specific academy choice requires specific reasoning. Generic answers reveal undifferentiated motivation.',framework:'Name the specific program, track, or faculty at this academy that is most relevant to your calling. Show that you have researched this academy specifically, not just service academies in general.',avoid:'Generic praise for the academy. Name one specific thing that distinguishes it from the others.'},
+    ],
+    references: [
+      {type:'A teacher or mentor who can speak to your academic achievement and intellectual character',why:'Academy academic evaluation is highly competitive. A teacher who can compare your thinking to peers who have gone to competitive programs directly addresses the core academic question.',emphasize:'Ask them to describe your intellectual initiative, your performance on challenging material, and how your thinking compares to other students they have taught who have gone on to competitive academic programs.',email:'I am applying to [service academy]. You have observed my academic work over [time period]. Could your recommendation speak to the quality of my intellectual thinking and how it compares to other students who have gone on to demanding academic programs?'},
+      {type:'A coach, commander, or supervisor who observed your leadership under real pressure',why:'Academies weight leadership evidence heavily. Someone who has seen you lead when the stakes were real speaks to a dimension that classroom references cannot.',emphasize:'Ask them to describe a specific leadership situation under pressure — your decision, how others responded, the outcome.',email:'I am applying to [service academy]. You have seen me lead in [context]. Could your recommendation describe a specific moment when I led under real pressure and what the team produced?'},
+      {type:'A veteran, civic leader, or community figure who can speak to your character and service orientation',why:'Congressional nominations require character references specifically relevant to military service.',emphasize:'Ask them to describe your character in terms relevant to officer service: integrity, accountability, orientation toward service over self-advancement.',email:'I am applying to [service academy] and pursuing a congressional nomination. You have observed my character in [context]. Could your recommendation address what specifically makes you believe I am ready for military service and the responsibilities of officer leadership?'},
+    ],
+    careerPaths: [
+      {title:'Catalyst-aligned Officer Career → Post-Service Leadership',timeline:'5-20 years service',salary:'$75,000-$120,000 active duty; $110,000-$250,000+ post-service',path:'Commission in Catalyst-aligned branch → develop specialty → take on leadership at increasing scale → transition at 5-12 years with security clearance, zero debt, and leadership credentials. The Catalyst officer who uses the service commitment to build genuine expertise and relationships transitions into post-service careers that are unavailable to any other pathway.'},
+      {title:'Academy or ROTC → MBA → Private Sector Leadership',timeline:'5-8 years service',salary:'$120,000-$400,000+',path:'Commission → serve minimum commitment → top MBA program (veteran admissions advantage is significant) → consulting, finance, or sector-specific leadership. The service academy graduate at Harvard Business School or Wharton enters the civilian workforce ahead of direct-from-undergraduate peers with a leadership profile that is genuinely distinctive.'},
+      {title:'Officer → Government Service → Senior Civil Servant or Political Leader',timeline:'8-20 years',salary:'$90,000-$200,000',path:'Commission → develop expertise in your specialty → transition to federal civilian service or elected office. Veterans are disproportionately represented in senior government roles and elected office. The combination of military commission and specific calling expertise produces unusually effective public servants.'},
+      {title:'Officer → Advanced Degree → Academic or Research Career',timeline:'8-15 years',salary:'$80,000-$160,000',path:'Commission → GI Bill or fellowship-funded graduate program → faculty or research career. The military officer who pursues a graduate degree with operational experience behind them brings a distinctive perspective to academic or research work in their specialty area.'},
+    ],
+    summerPrograms: [
+      {name:'West Point Summer Leader Experience (SLE)',org:'West Point — westpoint.edu',detail:'One-week residential program for rising seniors. Apply in January of junior year. Attendance strongly correlates with appointment. Gives you a genuine look at cadet life before you commit.'},
+      {name:'Naval Academy Summer Seminar (NASS)',org:'US Naval Academy — usna.edu',detail:'Week-long program for rising seniors. Multiple June sessions. Highly competitive. Apply in February to all available sessions.'},
+      {name:'Air Force Academy Summer Seminar',org:'USAFA — usafa.edu',detail:'One-week June program. Apply in January. Essential for students seriously considering USAFA.'},
+      {name:'ROTC Leaders Training Course',org:'Army ROTC — goarmy.com/rotc',detail:'4-week summer training for rising seniors pursuing Army ROTC. Valuable regardless of academy outcome.'},
+      {name:'CFA Training Program — start 6 months before application',org:'Self-directed',detail:'Download the CFA scoring standards from any academy website. Train to exceed the standards for all six events. Failing the CFA after receiving a nomination is the most preventable failure in the application process.'},
+    ],
+    opportunities: [
+      {name:'Contact all three congressional offices this week',type:'First step — do not delay',detail:'Contact your US Representative and both US Senators. Navigate to Service Academy Nominations on each website. Know each office\'s specific process and deadline. The nomination process starts now.'},
+      {name:'JROTC — Junior Reserve Officers Training Corps',type:'Leadership Development',detail:'If your school has JROTC, participate and seek leadership positions. Nomination panels specifically look for JROTC experience as evidence of genuine military interest.'},
+      {name:'Register at all academy candidate portals',type:'Application — do now',detail:'West Point: candidate.usma.edu. USNA: usna.edu/Admissions. USAFA: academyadmissions.com. USCGA: uscga.edu/admissions. Registration is free and generates your candidate number.'},
+      {name:'Boys State and Girls State',type:'Civic Leadership',detail:'Selective civic leadership programs that strengthen nomination files. Apply in 10th or 11th grade. Many nomination panels ask specifically about participation.'},
+      {name:'Physical training — start now',type:'CFA Preparation',detail:'Download CFA standards from any academy website. Begin training specifically for all six events now. 6 or more months of targeted preparation prevents the most avoidable failure in the process.'},
+    ],
+    mentorMatch: [
+      {type:'A service academy graduate 5-10 years post-graduation',why:'The recent graduate knows what the academy actually produced — the career options, the post-service advantages, and what they wish they had understood before accepting an appointment.',how:'Contact the academy admissions office and ask for alumni connections. Your Blue and Gold Officer or ALO can connect you with recent alumni willing to speak candidly.'},
+      {type:'Your Blue and Gold Officer or Academy Liaison Officer',why:'These are volunteer alumni assigned to your region specifically to support candidates. They interview candidates, write evaluations, and provide guidance. Building a genuine relationship before you need their evaluation is the most strategic thing you can do.',how:'Contact the academy admissions office and ask who your regional BGO or ALO is. Reach out to introduce yourself before your application is submitted. The relationship should be genuine.'},
+      {type:'A veteran or active duty officer who will tell you the truth',why:'The most useful mentor will describe what officer service actually looks and feels like — including the difficult parts.',how:'Ask your school counselor, coach, or community about veterans willing to speak with candidates. VFW and American Legion posts often have members willing to speak honestly. Ask explicitly for honesty, not encouragement.'},
+    ],
+  },
+  'Advocate': {
+    theme: 'Build justice from inside the institution that has the most power to define it',
+    question: 'Which academy track leads most directly to JAG Corps, civil affairs, or legislative liaison?',
+    deliverable: 'A service academy appointment or ROTC scholarship with a clear service track and an honest accounting of the 5-year active duty commitment',
+    timeline: [
+      {when:'9th-10th grade',what:'Contact all three congressional offices and research tracks at each academy',detail:'Each academy has distinct pathways aligned with the Advocate calling. Research which track matches your specific interests before committing to a specific academy. Contact congressional offices now — not junior year.'},
+      {when:'Junior year — fall',what:'Register at candidate portals and complete DoDMERB',detail:'Register at all academies you are considering. Complete DoDMERB in fall of junior year — medical issues discovered late cannot be remediated in time. The DoDMERB results affect all five academies simultaneously.'},
+      {when:'Junior year — spring',what:'Build and document Advocate-specific extracurricular evidence',detail:'Nomination panels evaluate Advocate applicants on leadership and character evidence specific to their calling. Document clinical hours, facilitation experience, technical projects, publications, or community organizing — whatever is most relevant to your archetype.'},
+      {when:'Junior year — summer',what:'Apply for and attend academy summer programs',detail:'Apply to every academy summer program you are considering. During the visit, seek out cadets in the program tracks most aligned with your calling. Ask them directly what the track produces and whether the depth matches what you are looking for.'},
+      {when:'Senior year — August-October',what:'Submit full applications and nomination requests with archetype evidence emphasized',detail:'Your nomination essays should describe your Advocate orientation specifically — the specific community you want to serve, the specific work you want to do, and why military service is the path to doing it. Generic leadership essays are weaker than specific calling essays.'},
+      {when:'Senior year — November-January',what:'Complete CFA and nomination interviews',detail:'The CFA standards are the same for all candidates regardless of intended career track. Train specifically for all six events. In nomination interviews, be specific about your intended track and the military application of your calling.'},
+    ],
+    financial: { programs: [
+      {name:'Service academy appointment',cost:'Full scholarship: $0 tuition + $1,100/month cadet pay',note:'The most generous full-ride in American higher education. Every expense paid plus a salary. The cost is the 5-year active duty service commitment upon graduation.'},
+      {name:'ROTC 4-year scholarship',cost:'Full tuition + $420/month stipend',note:'Available at 1,700+ universities. Same commission upon graduation. 4-year active duty commitment. More geographic flexibility than an academy.'},
+      {name:'ROTC 2- or 3-year scholarship',cost:'Partial tuition',note:'Awarded after beginning ROTC in college. Highly competitive. Apply for 4-year and let it convert if needed.'},
+      {name:'5-year service commitment (the real cost)',cost:'Your time, ages 22-27',note:'The financial aid is exceptional. The commitment is genuine. Model what the alternative looks like. Both officer service and civilian careers are legitimate paths. Choose honestly.'},
+    ], bottomLine: 'A Advocate who completes a service academy or ROTC commission graduates with zero debt, a commission, and access to the specific military career track that most directly expresses their calling. The 5-year service commitment is real — choose it because of what it produces, not despite what it costs.' },
+    profiles: [
+      {name:'Advocate — Service Academy Path',path:'Service academy appointment → Advocate-aligned military specialty → post-service career',what:'Earned a service academy appointment through congressional nomination. Commissioned as an officer in the branch and specialty most aligned with the Advocate calling. Served 5-8 years in progressively responsible roles.',outcome:'Transitioned with zero debt, an active security clearance, officer leadership credentials, and access to post-service career options that build directly on the Advocate calling developed during service. The combination of military commission and Advocate specialization is available nowhere else.',counselorNote:'The Advocate who chooses military service because of genuine calling — not just financial benefit — finds the commitment genuinely productive. The one who applies primarily for the scholarship and discovers that officer service does not align with their calling wastes the most important 5 years of their professional development. Both decisions deserve honest counseling before the application is submitted.'},
+      {name:'Advocate — ROTC Path',path:'ROTC scholarship → commission → Advocate-aligned specialty → post-service',what:'Earned a 4-year ROTC scholarship at a university with a strong program in the Advocate academic interest area. Commissioned upon graduation. Served 4 years in an Advocate-aligned military specialty.',outcome:'The ROTC path gave this Advocate the academic flexibility to pursue a strong program in their calling area while also commissioning as an officer. Post-service, the combination of academic excellence and military leadership produced a professional profile that is genuinely distinctive.',counselorNote:'ROTC is not the consolation prize for students who did not receive academy appointments. For many students it is the better choice — the academic program at their preferred university combined with officer commissioning produces outcomes that rival or exceed the academy pathway, depending on the student.'},
+    ],
+    writing: [
+      {title:'Why military service is the right path for a Advocate',type:'Academy Application Essay',angle:'Make the case that your Advocate calling is not just compatible with military service but specifically requires it — the access, the authority, the community, and the context that military service alone provides.',opening:'My calling does not stop at the gate. It leads through it.',avoid:'Generic service motivation. Show specifically why military service is the right expression of the Advocate calling, not just a worthy path.'},
+      {title:'The 5-year commitment is not the cost — it is the work',type:'Nomination Essay',angle:'Reframe the service commitment as the work itself — 5 years of doing the specific things your calling requires in the specific context that only military service provides. Show that you chose it for the work, not despite the obligation.',opening:'Five years serving the community I want to serve is not a cost. It is the calling.',avoid:'Minimizing the commitment. Show that you understand it fully and chose it freely.'},
+      {title:'Why I need to be inside this institution to do the work I want to do',type:'Congressional Nomination Essay',angle:'Describe specifically why the Advocate work you want to do requires a commission and cannot be done as a contractor, volunteer, civilian employee, or advocate working from outside the institution.',opening:'I considered every path that did not require a 5-year commitment. None of them gave me what I need.',avoid:'Vague references to wanting to serve. Name the specific access and authority that require a commission.'},
+      {title:'What the academy gives me that ROTC cannot',type:'Academy vs ROTC Essay',angle:'Name specifically what the academy provides that ROTC and a civilian university do not: the full immersion, the leadership development intensity, the specific technical or professional track, the operational credibility that comes from living the culture from day one.',opening:'I researched both options seriously. I want to explain what made the difference.',avoid:'Dismissing ROTC as inferior. Frame it as a different path and name specifically what the academy adds.'},
+      {title:'What officer service will teach me that nothing else can',type:'Personal Statement',angle:'Name the specific knowledge, authority, or access that 5 years of officer service will produce — knowledge that will make you a more effective Advocate for the rest of your career.',opening:'I want to be the kind of [practitioner/leader/advocate/communicator/developer/peacebuilder] who has done the thing, not just studied it.',avoid:'Generic claims about military character-building. Name the specific capabilities officer service develops.'},
+    ],
+    interview: [
+      {q:'Why do you want to serve in the military as a Advocate?',why:'They want to understand the genuine connection between your calling and military service — not a rehearsed answer about patriotism.',framework:'Describe the specific community, the specific work, or the specific access that military service provides for a Advocate. Name something you cannot do or reach without a commission.',avoid:'Generic service motivation. Show the specific connection between your archetype and military service.'},
+      {q:'What leadership experience have you had that most directly prepares you for officer service?',why:'Academies commission officers. Leadership evidence is the primary evaluation criterion alongside academic achievement.',framework:'Describe the most demanding leadership situation you have faced. Name the people, the stakes, the decisions, the outcome, and what you learned.',avoid:'Leadership roles without leadership stories. Name a specific decision under pressure.'},
+      {q:'What is your understanding of the 5-year service commitment and what it actually involves?',why:'They want people who chose the commitment with full information.',framework:'Describe the commitment specifically — the years, the potential deployment, the limitations on personal life choices, the post-service options. Show full understanding and genuine choice.',avoid:'Minimizing or treating the commitment as a formality. Show that you take it seriously.'},
+      {q:'What will you do if you do not receive an appointment?',why:'They want genuine service commitment, not academy-specific ambition.',framework:'Name your ROTC plan specifically — the school, the program, the ROTC unit. Show that officer service is the goal and the academy is one path to it.',avoid:'Claiming you will only reapply or that there is no alternative. Show a genuine parallel plan.'},
+      {q:'Why this specific academy — and what do you know about its program in your area of interest?',why:'Specific academy choice requires specific reasoning. Generic answers reveal undifferentiated motivation.',framework:'Name the specific program, track, or faculty at this academy that is most relevant to your calling. Show that you have researched this academy specifically, not just service academies in general.',avoid:'Generic praise for the academy. Name one specific thing that distinguishes it from the others.'},
+    ],
+    references: [
+      {type:'A teacher or mentor who can speak to your academic achievement and intellectual character',why:'Academy academic evaluation is highly competitive. A teacher who can compare your thinking to peers who have gone to competitive programs directly addresses the core academic question.',emphasize:'Ask them to describe your intellectual initiative, your performance on challenging material, and how your thinking compares to other students they have taught who have gone on to competitive academic programs.',email:'I am applying to [service academy]. You have observed my academic work over [time period]. Could your recommendation speak to the quality of my intellectual thinking and how it compares to other students who have gone on to demanding academic programs?'},
+      {type:'A coach, commander, or supervisor who observed your leadership under real pressure',why:'Academies weight leadership evidence heavily. Someone who has seen you lead when the stakes were real speaks to a dimension that classroom references cannot.',emphasize:'Ask them to describe a specific leadership situation under pressure — your decision, how others responded, the outcome.',email:'I am applying to [service academy]. You have seen me lead in [context]. Could your recommendation describe a specific moment when I led under real pressure and what the team produced?'},
+      {type:'A veteran, civic leader, or community figure who can speak to your character and service orientation',why:'Congressional nominations require character references specifically relevant to military service.',emphasize:'Ask them to describe your character in terms relevant to officer service: integrity, accountability, orientation toward service over self-advancement.',email:'I am applying to [service academy] and pursuing a congressional nomination. You have observed my character in [context]. Could your recommendation address what specifically makes you believe I am ready for military service and the responsibilities of officer leadership?'},
+    ],
+    careerPaths: [
+      {title:'Advocate-aligned Officer Career → Post-Service Leadership',timeline:'5-20 years service',salary:'$75,000-$120,000 active duty; $110,000-$250,000+ post-service',path:'Commission in Advocate-aligned branch → develop specialty → take on leadership at increasing scale → transition at 5-12 years with security clearance, zero debt, and leadership credentials. The Advocate officer who uses the service commitment to build genuine expertise and relationships transitions into post-service careers that are unavailable to any other pathway.'},
+      {title:'Academy or ROTC → MBA → Private Sector Leadership',timeline:'5-8 years service',salary:'$120,000-$400,000+',path:'Commission → serve minimum commitment → top MBA program (veteran admissions advantage is significant) → consulting, finance, or sector-specific leadership. The service academy graduate at Harvard Business School or Wharton enters the civilian workforce ahead of direct-from-undergraduate peers with a leadership profile that is genuinely distinctive.'},
+      {title:'Officer → Government Service → Senior Civil Servant or Political Leader',timeline:'8-20 years',salary:'$90,000-$200,000',path:'Commission → develop expertise in your specialty → transition to federal civilian service or elected office. Veterans are disproportionately represented in senior government roles and elected office. The combination of military commission and specific calling expertise produces unusually effective public servants.'},
+      {title:'Officer → Advanced Degree → Academic or Research Career',timeline:'8-15 years',salary:'$80,000-$160,000',path:'Commission → GI Bill or fellowship-funded graduate program → faculty or research career. The military officer who pursues a graduate degree with operational experience behind them brings a distinctive perspective to academic or research work in their specialty area.'},
+    ],
+    summerPrograms: [
+      {name:'West Point Summer Leader Experience (SLE)',org:'West Point — westpoint.edu',detail:'One-week residential program for rising seniors. Apply in January of junior year. Attendance strongly correlates with appointment. Gives you a genuine look at cadet life before you commit.'},
+      {name:'Naval Academy Summer Seminar (NASS)',org:'US Naval Academy — usna.edu',detail:'Week-long program for rising seniors. Multiple June sessions. Highly competitive. Apply in February to all available sessions.'},
+      {name:'Air Force Academy Summer Seminar',org:'USAFA — usafa.edu',detail:'One-week June program. Apply in January. Essential for students seriously considering USAFA.'},
+      {name:'ROTC Leaders Training Course',org:'Army ROTC — goarmy.com/rotc',detail:'4-week summer training for rising seniors pursuing Army ROTC. Valuable regardless of academy outcome.'},
+      {name:'CFA Training Program — start 6 months before application',org:'Self-directed',detail:'Download the CFA scoring standards from any academy website. Train to exceed the standards for all six events. Failing the CFA after receiving a nomination is the most preventable failure in the application process.'},
+    ],
+    opportunities: [
+      {name:'Contact all three congressional offices this week',type:'First step — do not delay',detail:'Contact your US Representative and both US Senators. Navigate to Service Academy Nominations on each website. Know each office\'s specific process and deadline. The nomination process starts now.'},
+      {name:'JROTC — Junior Reserve Officers Training Corps',type:'Leadership Development',detail:'If your school has JROTC, participate and seek leadership positions. Nomination panels specifically look for JROTC experience as evidence of genuine military interest.'},
+      {name:'Register at all academy candidate portals',type:'Application — do now',detail:'West Point: candidate.usma.edu. USNA: usna.edu/Admissions. USAFA: academyadmissions.com. USCGA: uscga.edu/admissions. Registration is free and generates your candidate number.'},
+      {name:'Boys State and Girls State',type:'Civic Leadership',detail:'Selective civic leadership programs that strengthen nomination files. Apply in 10th or 11th grade. Many nomination panels ask specifically about participation.'},
+      {name:'Physical training — start now',type:'CFA Preparation',detail:'Download CFA standards from any academy website. Begin training specifically for all six events now. 6 or more months of targeted preparation prevents the most avoidable failure in the process.'},
+    ],
+    mentorMatch: [
+      {type:'A service academy graduate 5-10 years post-graduation',why:'The recent graduate knows what the academy actually produced — the career options, the post-service advantages, and what they wish they had understood before accepting an appointment.',how:'Contact the academy admissions office and ask for alumni connections. Your Blue and Gold Officer or ALO can connect you with recent alumni willing to speak candidly.'},
+      {type:'Your Blue and Gold Officer or Academy Liaison Officer',why:'These are volunteer alumni assigned to your region specifically to support candidates. They interview candidates, write evaluations, and provide guidance. Building a genuine relationship before you need their evaluation is the most strategic thing you can do.',how:'Contact the academy admissions office and ask who your regional BGO or ALO is. Reach out to introduce yourself before your application is submitted. The relationship should be genuine.'},
+      {type:'A veteran or active duty officer who will tell you the truth',why:'The most useful mentor will describe what officer service actually looks and feels like — including the difficult parts.',how:'Ask your school counselor, coach, or community about veterans willing to speak with candidates. VFW and American Legion posts often have members willing to speak honestly. Ask explicitly for honesty, not encouragement.'},
+    ],
+  },
+  'Cultivator': {
+    theme: 'Develop the people who will carry the mission forward — and build the programs that outlast any single leader',
+    question: 'Which academy and developmental leadership track gives me the most opportunities to grow other people?',
+    deliverable: 'A service academy appointment or ROTC scholarship with a clear service track and an honest accounting of the 5-year active duty commitment',
+    timeline: [
+      {when:'9th-10th grade',what:'Contact all three congressional offices and research tracks at each academy',detail:'Each academy has distinct pathways aligned with the Cultivator calling. Research which track matches your specific interests before committing to a specific academy. Contact congressional offices now — not junior year.'},
+      {when:'Junior year — fall',what:'Register at candidate portals and complete DoDMERB',detail:'Register at all academies you are considering. Complete DoDMERB in fall of junior year — medical issues discovered late cannot be remediated in time. The DoDMERB results affect all five academies simultaneously.'},
+      {when:'Junior year — spring',what:'Build and document Cultivator-specific extracurricular evidence',detail:'Nomination panels evaluate Cultivator applicants on leadership and character evidence specific to their calling. Document clinical hours, facilitation experience, technical projects, publications, or community organizing — whatever is most relevant to your archetype.'},
+      {when:'Junior year — summer',what:'Apply for and attend academy summer programs',detail:'Apply to every academy summer program you are considering. During the visit, seek out cadets in the program tracks most aligned with your calling. Ask them directly what the track produces and whether the depth matches what you are looking for.'},
+      {when:'Senior year — August-October',what:'Submit full applications and nomination requests with archetype evidence emphasized',detail:'Your nomination essays should describe your Cultivator orientation specifically — the specific community you want to serve, the specific work you want to do, and why military service is the path to doing it. Generic leadership essays are weaker than specific calling essays.'},
+      {when:'Senior year — November-January',what:'Complete CFA and nomination interviews',detail:'The CFA standards are the same for all candidates regardless of intended career track. Train specifically for all six events. In nomination interviews, be specific about your intended track and the military application of your calling.'},
+    ],
+    financial: { programs: [
+      {name:'Service academy appointment',cost:'Full scholarship: $0 tuition + $1,100/month cadet pay',note:'The most generous full-ride in American higher education. Every expense paid plus a salary. The cost is the 5-year active duty service commitment upon graduation.'},
+      {name:'ROTC 4-year scholarship',cost:'Full tuition + $420/month stipend',note:'Available at 1,700+ universities. Same commission upon graduation. 4-year active duty commitment. More geographic flexibility than an academy.'},
+      {name:'ROTC 2- or 3-year scholarship',cost:'Partial tuition',note:'Awarded after beginning ROTC in college. Highly competitive. Apply for 4-year and let it convert if needed.'},
+      {name:'5-year service commitment (the real cost)',cost:'Your time, ages 22-27',note:'The financial aid is exceptional. The commitment is genuine. Model what the alternative looks like. Both officer service and civilian careers are legitimate paths. Choose honestly.'},
+    ], bottomLine: 'A Cultivator who completes a service academy or ROTC commission graduates with zero debt, a commission, and access to the specific military career track that most directly expresses their calling. The 5-year service commitment is real — choose it because of what it produces, not despite what it costs.' },
+    profiles: [
+      {name:'Cultivator — Service Academy Path',path:'Service academy appointment → Cultivator-aligned military specialty → post-service career',what:'Earned a service academy appointment through congressional nomination. Commissioned as an officer in the branch and specialty most aligned with the Cultivator calling. Served 5-8 years in progressively responsible roles.',outcome:'Transitioned with zero debt, an active security clearance, officer leadership credentials, and access to post-service career options that build directly on the Cultivator calling developed during service. The combination of military commission and Cultivator specialization is available nowhere else.',counselorNote:'The Cultivator who chooses military service because of genuine calling — not just financial benefit — finds the commitment genuinely productive. The one who applies primarily for the scholarship and discovers that officer service does not align with their calling wastes the most important 5 years of their professional development. Both decisions deserve honest counseling before the application is submitted.'},
+      {name:'Cultivator — ROTC Path',path:'ROTC scholarship → commission → Cultivator-aligned specialty → post-service',what:'Earned a 4-year ROTC scholarship at a university with a strong program in the Cultivator academic interest area. Commissioned upon graduation. Served 4 years in an Cultivator-aligned military specialty.',outcome:'The ROTC path gave this Cultivator the academic flexibility to pursue a strong program in their calling area while also commissioning as an officer. Post-service, the combination of academic excellence and military leadership produced a professional profile that is genuinely distinctive.',counselorNote:'ROTC is not the consolation prize for students who did not receive academy appointments. For many students it is the better choice — the academic program at their preferred university combined with officer commissioning produces outcomes that rival or exceed the academy pathway, depending on the student.'},
+    ],
+    writing: [
+      {title:'Why military service is the right path for a Cultivator',type:'Academy Application Essay',angle:'Make the case that your Cultivator calling is not just compatible with military service but specifically requires it — the access, the authority, the community, and the context that military service alone provides.',opening:'My calling does not stop at the gate. It leads through it.',avoid:'Generic service motivation. Show specifically why military service is the right expression of the Cultivator calling, not just a worthy path.'},
+      {title:'The 5-year commitment is not the cost — it is the work',type:'Nomination Essay',angle:'Reframe the service commitment as the work itself — 5 years of doing the specific things your calling requires in the specific context that only military service provides. Show that you chose it for the work, not despite the obligation.',opening:'Five years serving the community I want to serve is not a cost. It is the calling.',avoid:'Minimizing the commitment. Show that you understand it fully and chose it freely.'},
+      {title:'Why I need to be inside this institution to do the work I want to do',type:'Congressional Nomination Essay',angle:'Describe specifically why the Cultivator work you want to do requires a commission and cannot be done as a contractor, volunteer, civilian employee, or advocate working from outside the institution.',opening:'I considered every path that did not require a 5-year commitment. None of them gave me what I need.',avoid:'Vague references to wanting to serve. Name the specific access and authority that require a commission.'},
+      {title:'What the academy gives me that ROTC cannot',type:'Academy vs ROTC Essay',angle:'Name specifically what the academy provides that ROTC and a civilian university do not: the full immersion, the leadership development intensity, the specific technical or professional track, the operational credibility that comes from living the culture from day one.',opening:'I researched both options seriously. I want to explain what made the difference.',avoid:'Dismissing ROTC as inferior. Frame it as a different path and name specifically what the academy adds.'},
+      {title:'What officer service will teach me that nothing else can',type:'Personal Statement',angle:'Name the specific knowledge, authority, or access that 5 years of officer service will produce — knowledge that will make you a more effective Cultivator for the rest of your career.',opening:'I want to be the kind of [practitioner/leader/advocate/communicator/developer/peacebuilder] who has done the thing, not just studied it.',avoid:'Generic claims about military character-building. Name the specific capabilities officer service develops.'},
+    ],
+    interview: [
+      {q:'Why do you want to serve in the military as a Cultivator?',why:'They want to understand the genuine connection between your calling and military service — not a rehearsed answer about patriotism.',framework:'Describe the specific community, the specific work, or the specific access that military service provides for a Cultivator. Name something you cannot do or reach without a commission.',avoid:'Generic service motivation. Show the specific connection between your archetype and military service.'},
+      {q:'What leadership experience have you had that most directly prepares you for officer service?',why:'Academies commission officers. Leadership evidence is the primary evaluation criterion alongside academic achievement.',framework:'Describe the most demanding leadership situation you have faced. Name the people, the stakes, the decisions, the outcome, and what you learned.',avoid:'Leadership roles without leadership stories. Name a specific decision under pressure.'},
+      {q:'What is your understanding of the 5-year service commitment and what it actually involves?',why:'They want people who chose the commitment with full information.',framework:'Describe the commitment specifically — the years, the potential deployment, the limitations on personal life choices, the post-service options. Show full understanding and genuine choice.',avoid:'Minimizing or treating the commitment as a formality. Show that you take it seriously.'},
+      {q:'What will you do if you do not receive an appointment?',why:'They want genuine service commitment, not academy-specific ambition.',framework:'Name your ROTC plan specifically — the school, the program, the ROTC unit. Show that officer service is the goal and the academy is one path to it.',avoid:'Claiming you will only reapply or that there is no alternative. Show a genuine parallel plan.'},
+      {q:'Why this specific academy — and what do you know about its program in your area of interest?',why:'Specific academy choice requires specific reasoning. Generic answers reveal undifferentiated motivation.',framework:'Name the specific program, track, or faculty at this academy that is most relevant to your calling. Show that you have researched this academy specifically, not just service academies in general.',avoid:'Generic praise for the academy. Name one specific thing that distinguishes it from the others.'},
+    ],
+    references: [
+      {type:'A teacher or mentor who can speak to your academic achievement and intellectual character',why:'Academy academic evaluation is highly competitive. A teacher who can compare your thinking to peers who have gone to competitive programs directly addresses the core academic question.',emphasize:'Ask them to describe your intellectual initiative, your performance on challenging material, and how your thinking compares to other students they have taught who have gone on to competitive academic programs.',email:'I am applying to [service academy]. You have observed my academic work over [time period]. Could your recommendation speak to the quality of my intellectual thinking and how it compares to other students who have gone on to demanding academic programs?'},
+      {type:'A coach, commander, or supervisor who observed your leadership under real pressure',why:'Academies weight leadership evidence heavily. Someone who has seen you lead when the stakes were real speaks to a dimension that classroom references cannot.',emphasize:'Ask them to describe a specific leadership situation under pressure — your decision, how others responded, the outcome.',email:'I am applying to [service academy]. You have seen me lead in [context]. Could your recommendation describe a specific moment when I led under real pressure and what the team produced?'},
+      {type:'A veteran, civic leader, or community figure who can speak to your character and service orientation',why:'Congressional nominations require character references specifically relevant to military service.',emphasize:'Ask them to describe your character in terms relevant to officer service: integrity, accountability, orientation toward service over self-advancement.',email:'I am applying to [service academy] and pursuing a congressional nomination. You have observed my character in [context]. Could your recommendation address what specifically makes you believe I am ready for military service and the responsibilities of officer leadership?'},
+    ],
+    careerPaths: [
+      {title:'Cultivator-aligned Officer Career → Post-Service Leadership',timeline:'5-20 years service',salary:'$75,000-$120,000 active duty; $110,000-$250,000+ post-service',path:'Commission in Cultivator-aligned branch → develop specialty → take on leadership at increasing scale → transition at 5-12 years with security clearance, zero debt, and leadership credentials. The Cultivator officer who uses the service commitment to build genuine expertise and relationships transitions into post-service careers that are unavailable to any other pathway.'},
+      {title:'Academy or ROTC → MBA → Private Sector Leadership',timeline:'5-8 years service',salary:'$120,000-$400,000+',path:'Commission → serve minimum commitment → top MBA program (veteran admissions advantage is significant) → consulting, finance, or sector-specific leadership. The service academy graduate at Harvard Business School or Wharton enters the civilian workforce ahead of direct-from-undergraduate peers with a leadership profile that is genuinely distinctive.'},
+      {title:'Officer → Government Service → Senior Civil Servant or Political Leader',timeline:'8-20 years',salary:'$90,000-$200,000',path:'Commission → develop expertise in your specialty → transition to federal civilian service or elected office. Veterans are disproportionately represented in senior government roles and elected office. The combination of military commission and specific calling expertise produces unusually effective public servants.'},
+      {title:'Officer → Advanced Degree → Academic or Research Career',timeline:'8-15 years',salary:'$80,000-$160,000',path:'Commission → GI Bill or fellowship-funded graduate program → faculty or research career. The military officer who pursues a graduate degree with operational experience behind them brings a distinctive perspective to academic or research work in their specialty area.'},
+    ],
+    summerPrograms: [
+      {name:'West Point Summer Leader Experience (SLE)',org:'West Point — westpoint.edu',detail:'One-week residential program for rising seniors. Apply in January of junior year. Attendance strongly correlates with appointment. Gives you a genuine look at cadet life before you commit.'},
+      {name:'Naval Academy Summer Seminar (NASS)',org:'US Naval Academy — usna.edu',detail:'Week-long program for rising seniors. Multiple June sessions. Highly competitive. Apply in February to all available sessions.'},
+      {name:'Air Force Academy Summer Seminar',org:'USAFA — usafa.edu',detail:'One-week June program. Apply in January. Essential for students seriously considering USAFA.'},
+      {name:'ROTC Leaders Training Course',org:'Army ROTC — goarmy.com/rotc',detail:'4-week summer training for rising seniors pursuing Army ROTC. Valuable regardless of academy outcome.'},
+      {name:'CFA Training Program — start 6 months before application',org:'Self-directed',detail:'Download the CFA scoring standards from any academy website. Train to exceed the standards for all six events. Failing the CFA after receiving a nomination is the most preventable failure in the application process.'},
+    ],
+    opportunities: [
+      {name:'Contact all three congressional offices this week',type:'First step — do not delay',detail:'Contact your US Representative and both US Senators. Navigate to Service Academy Nominations on each website. Know each office\'s specific process and deadline. The nomination process starts now.'},
+      {name:'JROTC — Junior Reserve Officers Training Corps',type:'Leadership Development',detail:'If your school has JROTC, participate and seek leadership positions. Nomination panels specifically look for JROTC experience as evidence of genuine military interest.'},
+      {name:'Register at all academy candidate portals',type:'Application — do now',detail:'West Point: candidate.usma.edu. USNA: usna.edu/Admissions. USAFA: academyadmissions.com. USCGA: uscga.edu/admissions. Registration is free and generates your candidate number.'},
+      {name:'Boys State and Girls State',type:'Civic Leadership',detail:'Selective civic leadership programs that strengthen nomination files. Apply in 10th or 11th grade. Many nomination panels ask specifically about participation.'},
+      {name:'Physical training — start now',type:'CFA Preparation',detail:'Download CFA standards from any academy website. Begin training specifically for all six events now. 6 or more months of targeted preparation prevents the most avoidable failure in the process.'},
+    ],
+    mentorMatch: [
+      {type:'A service academy graduate 5-10 years post-graduation',why:'The recent graduate knows what the academy actually produced — the career options, the post-service advantages, and what they wish they had understood before accepting an appointment.',how:'Contact the academy admissions office and ask for alumni connections. Your Blue and Gold Officer or ALO can connect you with recent alumni willing to speak candidly.'},
+      {type:'Your Blue and Gold Officer or Academy Liaison Officer',why:'These are volunteer alumni assigned to your region specifically to support candidates. They interview candidates, write evaluations, and provide guidance. Building a genuine relationship before you need their evaluation is the most strategic thing you can do.',how:'Contact the academy admissions office and ask who your regional BGO or ALO is. Reach out to introduce yourself before your application is submitted. The relationship should be genuine.'},
+      {type:'A veteran or active duty officer who will tell you the truth',why:'The most useful mentor will describe what officer service actually looks and feels like — including the difficult parts.',how:'Ask your school counselor, coach, or community about veterans willing to speak with candidates. VFW and American Legion posts often have members willing to speak honestly. Ask explicitly for honesty, not encouragement.'},
+    ],
+  },
+  'Peacemaker': {
+    theme: 'Build the bridges that make cooperation possible between nations, communities, and the military and the civilians it serves',
+    question: 'Which academy track and language or civil affairs specialty lets me build the most consequential bridges?',
+    deliverable: 'A service academy appointment or ROTC scholarship with a clear service track and an honest accounting of the 5-year active duty commitment',
+    timeline: [
+      {when:'9th-10th grade',what:'Contact all three congressional offices and research tracks at each academy',detail:'Each academy has distinct pathways aligned with the Peacemaker calling. Research which track matches your specific interests before committing to a specific academy. Contact congressional offices now — not junior year.'},
+      {when:'Junior year — fall',what:'Register at candidate portals and complete DoDMERB',detail:'Register at all academies you are considering. Complete DoDMERB in fall of junior year — medical issues discovered late cannot be remediated in time. The DoDMERB results affect all five academies simultaneously.'},
+      {when:'Junior year — spring',what:'Build and document Peacemaker-specific extracurricular evidence',detail:'Nomination panels evaluate Peacemaker applicants on leadership and character evidence specific to their calling. Document clinical hours, facilitation experience, technical projects, publications, or community organizing — whatever is most relevant to your archetype.'},
+      {when:'Junior year — summer',what:'Apply for and attend academy summer programs',detail:'Apply to every academy summer program you are considering. During the visit, seek out cadets in the program tracks most aligned with your calling. Ask them directly what the track produces and whether the depth matches what you are looking for.'},
+      {when:'Senior year — August-October',what:'Submit full applications and nomination requests with archetype evidence emphasized',detail:'Your nomination essays should describe your Peacemaker orientation specifically — the specific community you want to serve, the specific work you want to do, and why military service is the path to doing it. Generic leadership essays are weaker than specific calling essays.'},
+      {when:'Senior year — November-January',what:'Complete CFA and nomination interviews',detail:'The CFA standards are the same for all candidates regardless of intended career track. Train specifically for all six events. In nomination interviews, be specific about your intended track and the military application of your calling.'},
+    ],
+    financial: { programs: [
+      {name:'Service academy appointment',cost:'Full scholarship: $0 tuition + $1,100/month cadet pay',note:'The most generous full-ride in American higher education. Every expense paid plus a salary. The cost is the 5-year active duty service commitment upon graduation.'},
+      {name:'ROTC 4-year scholarship',cost:'Full tuition + $420/month stipend',note:'Available at 1,700+ universities. Same commission upon graduation. 4-year active duty commitment. More geographic flexibility than an academy.'},
+      {name:'ROTC 2- or 3-year scholarship',cost:'Partial tuition',note:'Awarded after beginning ROTC in college. Highly competitive. Apply for 4-year and let it convert if needed.'},
+      {name:'5-year service commitment (the real cost)',cost:'Your time, ages 22-27',note:'The financial aid is exceptional. The commitment is genuine. Model what the alternative looks like. Both officer service and civilian careers are legitimate paths. Choose honestly.'},
+    ], bottomLine: 'A Peacemaker who completes a service academy or ROTC commission graduates with zero debt, a commission, and access to the specific military career track that most directly expresses their calling. The 5-year service commitment is real — choose it because of what it produces, not despite what it costs.' },
+    profiles: [
+      {name:'Peacemaker — Service Academy Path',path:'Service academy appointment → Peacemaker-aligned military specialty → post-service career',what:'Earned a service academy appointment through congressional nomination. Commissioned as an officer in the branch and specialty most aligned with the Peacemaker calling. Served 5-8 years in progressively responsible roles.',outcome:'Transitioned with zero debt, an active security clearance, officer leadership credentials, and access to post-service career options that build directly on the Peacemaker calling developed during service. The combination of military commission and Peacemaker specialization is available nowhere else.',counselorNote:'The Peacemaker who chooses military service because of genuine calling — not just financial benefit — finds the commitment genuinely productive. The one who applies primarily for the scholarship and discovers that officer service does not align with their calling wastes the most important 5 years of their professional development. Both decisions deserve honest counseling before the application is submitted.'},
+      {name:'Peacemaker — ROTC Path',path:'ROTC scholarship → commission → Peacemaker-aligned specialty → post-service',what:'Earned a 4-year ROTC scholarship at a university with a strong program in the Peacemaker academic interest area. Commissioned upon graduation. Served 4 years in an Peacemaker-aligned military specialty.',outcome:'The ROTC path gave this Peacemaker the academic flexibility to pursue a strong program in their calling area while also commissioning as an officer. Post-service, the combination of academic excellence and military leadership produced a professional profile that is genuinely distinctive.',counselorNote:'ROTC is not the consolation prize for students who did not receive academy appointments. For many students it is the better choice — the academic program at their preferred university combined with officer commissioning produces outcomes that rival or exceed the academy pathway, depending on the student.'},
+    ],
+    writing: [
+      {title:'Why military service is the right path for a Peacemaker',type:'Academy Application Essay',angle:'Make the case that your Peacemaker calling is not just compatible with military service but specifically requires it — the access, the authority, the community, and the context that military service alone provides.',opening:'My calling does not stop at the gate. It leads through it.',avoid:'Generic service motivation. Show specifically why military service is the right expression of the Peacemaker calling, not just a worthy path.'},
+      {title:'The 5-year commitment is not the cost — it is the work',type:'Nomination Essay',angle:'Reframe the service commitment as the work itself — 5 years of doing the specific things your calling requires in the specific context that only military service provides. Show that you chose it for the work, not despite the obligation.',opening:'Five years serving the community I want to serve is not a cost. It is the calling.',avoid:'Minimizing the commitment. Show that you understand it fully and chose it freely.'},
+      {title:'Why I need to be inside this institution to do the work I want to do',type:'Congressional Nomination Essay',angle:'Describe specifically why the Peacemaker work you want to do requires a commission and cannot be done as a contractor, volunteer, civilian employee, or advocate working from outside the institution.',opening:'I considered every path that did not require a 5-year commitment. None of them gave me what I need.',avoid:'Vague references to wanting to serve. Name the specific access and authority that require a commission.'},
+      {title:'What the academy gives me that ROTC cannot',type:'Academy vs ROTC Essay',angle:'Name specifically what the academy provides that ROTC and a civilian university do not: the full immersion, the leadership development intensity, the specific technical or professional track, the operational credibility that comes from living the culture from day one.',opening:'I researched both options seriously. I want to explain what made the difference.',avoid:'Dismissing ROTC as inferior. Frame it as a different path and name specifically what the academy adds.'},
+      {title:'What officer service will teach me that nothing else can',type:'Personal Statement',angle:'Name the specific knowledge, authority, or access that 5 years of officer service will produce — knowledge that will make you a more effective Peacemaker for the rest of your career.',opening:'I want to be the kind of [practitioner/leader/advocate/communicator/developer/peacebuilder] who has done the thing, not just studied it.',avoid:'Generic claims about military character-building. Name the specific capabilities officer service develops.'},
+    ],
+    interview: [
+      {q:'Why do you want to serve in the military as a Peacemaker?',why:'They want to understand the genuine connection between your calling and military service — not a rehearsed answer about patriotism.',framework:'Describe the specific community, the specific work, or the specific access that military service provides for a Peacemaker. Name something you cannot do or reach without a commission.',avoid:'Generic service motivation. Show the specific connection between your archetype and military service.'},
+      {q:'What leadership experience have you had that most directly prepares you for officer service?',why:'Academies commission officers. Leadership evidence is the primary evaluation criterion alongside academic achievement.',framework:'Describe the most demanding leadership situation you have faced. Name the people, the stakes, the decisions, the outcome, and what you learned.',avoid:'Leadership roles without leadership stories. Name a specific decision under pressure.'},
+      {q:'What is your understanding of the 5-year service commitment and what it actually involves?',why:'They want people who chose the commitment with full information.',framework:'Describe the commitment specifically — the years, the potential deployment, the limitations on personal life choices, the post-service options. Show full understanding and genuine choice.',avoid:'Minimizing or treating the commitment as a formality. Show that you take it seriously.'},
+      {q:'What will you do if you do not receive an appointment?',why:'They want genuine service commitment, not academy-specific ambition.',framework:'Name your ROTC plan specifically — the school, the program, the ROTC unit. Show that officer service is the goal and the academy is one path to it.',avoid:'Claiming you will only reapply or that there is no alternative. Show a genuine parallel plan.'},
+      {q:'Why this specific academy — and what do you know about its program in your area of interest?',why:'Specific academy choice requires specific reasoning. Generic answers reveal undifferentiated motivation.',framework:'Name the specific program, track, or faculty at this academy that is most relevant to your calling. Show that you have researched this academy specifically, not just service academies in general.',avoid:'Generic praise for the academy. Name one specific thing that distinguishes it from the others.'},
+    ],
+    references: [
+      {type:'A teacher or mentor who can speak to your academic achievement and intellectual character',why:'Academy academic evaluation is highly competitive. A teacher who can compare your thinking to peers who have gone to competitive programs directly addresses the core academic question.',emphasize:'Ask them to describe your intellectual initiative, your performance on challenging material, and how your thinking compares to other students they have taught who have gone on to competitive academic programs.',email:'I am applying to [service academy]. You have observed my academic work over [time period]. Could your recommendation speak to the quality of my intellectual thinking and how it compares to other students who have gone on to demanding academic programs?'},
+      {type:'A coach, commander, or supervisor who observed your leadership under real pressure',why:'Academies weight leadership evidence heavily. Someone who has seen you lead when the stakes were real speaks to a dimension that classroom references cannot.',emphasize:'Ask them to describe a specific leadership situation under pressure — your decision, how others responded, the outcome.',email:'I am applying to [service academy]. You have seen me lead in [context]. Could your recommendation describe a specific moment when I led under real pressure and what the team produced?'},
+      {type:'A veteran, civic leader, or community figure who can speak to your character and service orientation',why:'Congressional nominations require character references specifically relevant to military service.',emphasize:'Ask them to describe your character in terms relevant to officer service: integrity, accountability, orientation toward service over self-advancement.',email:'I am applying to [service academy] and pursuing a congressional nomination. You have observed my character in [context]. Could your recommendation address what specifically makes you believe I am ready for military service and the responsibilities of officer leadership?'},
+    ],
+    careerPaths: [
+      {title:'Peacemaker-aligned Officer Career → Post-Service Leadership',timeline:'5-20 years service',salary:'$75,000-$120,000 active duty; $110,000-$250,000+ post-service',path:'Commission in Peacemaker-aligned branch → develop specialty → take on leadership at increasing scale → transition at 5-12 years with security clearance, zero debt, and leadership credentials. The Peacemaker officer who uses the service commitment to build genuine expertise and relationships transitions into post-service careers that are unavailable to any other pathway.'},
+      {title:'Academy or ROTC → MBA → Private Sector Leadership',timeline:'5-8 years service',salary:'$120,000-$400,000+',path:'Commission → serve minimum commitment → top MBA program (veteran admissions advantage is significant) → consulting, finance, or sector-specific leadership. The service academy graduate at Harvard Business School or Wharton enters the civilian workforce ahead of direct-from-undergraduate peers with a leadership profile that is genuinely distinctive.'},
+      {title:'Officer → Government Service → Senior Civil Servant or Political Leader',timeline:'8-20 years',salary:'$90,000-$200,000',path:'Commission → develop expertise in your specialty → transition to federal civilian service or elected office. Veterans are disproportionately represented in senior government roles and elected office. The combination of military commission and specific calling expertise produces unusually effective public servants.'},
+      {title:'Officer → Advanced Degree → Academic or Research Career',timeline:'8-15 years',salary:'$80,000-$160,000',path:'Commission → GI Bill or fellowship-funded graduate program → faculty or research career. The military officer who pursues a graduate degree with operational experience behind them brings a distinctive perspective to academic or research work in their specialty area.'},
+    ],
+    summerPrograms: [
+      {name:'West Point Summer Leader Experience (SLE)',org:'West Point — westpoint.edu',detail:'One-week residential program for rising seniors. Apply in January of junior year. Attendance strongly correlates with appointment. Gives you a genuine look at cadet life before you commit.'},
+      {name:'Naval Academy Summer Seminar (NASS)',org:'US Naval Academy — usna.edu',detail:'Week-long program for rising seniors. Multiple June sessions. Highly competitive. Apply in February to all available sessions.'},
+      {name:'Air Force Academy Summer Seminar',org:'USAFA — usafa.edu',detail:'One-week June program. Apply in January. Essential for students seriously considering USAFA.'},
+      {name:'ROTC Leaders Training Course',org:'Army ROTC — goarmy.com/rotc',detail:'4-week summer training for rising seniors pursuing Army ROTC. Valuable regardless of academy outcome.'},
+      {name:'CFA Training Program — start 6 months before application',org:'Self-directed',detail:'Download the CFA scoring standards from any academy website. Train to exceed the standards for all six events. Failing the CFA after receiving a nomination is the most preventable failure in the application process.'},
+    ],
+    opportunities: [
+      {name:'Contact all three congressional offices this week',type:'First step — do not delay',detail:'Contact your US Representative and both US Senators. Navigate to Service Academy Nominations on each website. Know each office\'s specific process and deadline. The nomination process starts now.'},
+      {name:'JROTC — Junior Reserve Officers Training Corps',type:'Leadership Development',detail:'If your school has JROTC, participate and seek leadership positions. Nomination panels specifically look for JROTC experience as evidence of genuine military interest.'},
+      {name:'Register at all academy candidate portals',type:'Application — do now',detail:'West Point: candidate.usma.edu. USNA: usna.edu/Admissions. USAFA: academyadmissions.com. USCGA: uscga.edu/admissions. Registration is free and generates your candidate number.'},
+      {name:'Boys State and Girls State',type:'Civic Leadership',detail:'Selective civic leadership programs that strengthen nomination files. Apply in 10th or 11th grade. Many nomination panels ask specifically about participation.'},
+      {name:'Physical training — start now',type:'CFA Preparation',detail:'Download CFA standards from any academy website. Begin training specifically for all six events now. 6 or more months of targeted preparation prevents the most avoidable failure in the process.'},
+    ],
+    mentorMatch: [
+      {type:'A service academy graduate 5-10 years post-graduation',why:'The recent graduate knows what the academy actually produced — the career options, the post-service advantages, and what they wish they had understood before accepting an appointment.',how:'Contact the academy admissions office and ask for alumni connections. Your Blue and Gold Officer or ALO can connect you with recent alumni willing to speak candidly.'},
+      {type:'Your Blue and Gold Officer or Academy Liaison Officer',why:'These are volunteer alumni assigned to your region specifically to support candidates. They interview candidates, write evaluations, and provide guidance. Building a genuine relationship before you need their evaluation is the most strategic thing you can do.',how:'Contact the academy admissions office and ask who your regional BGO or ALO is. Reach out to introduce yourself before your application is submitted. The relationship should be genuine.'},
+      {type:'A veteran or active duty officer who will tell you the truth',why:'The most useful mentor will describe what officer service actually looks and feels like — including the difficult parts.',how:'Ask your school counselor, coach, or community about veterans willing to speak with candidates. VFW and American Legion posts often have members willing to speak honestly. Ask explicitly for honesty, not encouragement.'},
+    ],
+  },
+};
+
+
+function renderMilAcadTimeline(arch, color, el, section) {
+  if (!el || !section) return;
+  var d = MILACAD_DATA[arch] || MILACAD_DATA['Builder'];
+  var html = '<div class="ai-badge">&#128197; Your Service Academy Application Timeline \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+  html += '<div style="background:rgba(155,34,38,0.06);border-radius:8px;padding:12px 16px;margin-bottom:1rem">';
+  html += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#9b2226;margin-bottom:6px">Your guiding question</div>';
+  html += '<p style="font-size:13px;color:var(--navy);font-style:italic;margin:0">' + d.question + '</p></div>';
+  html += '<div style="background:rgba(0,0,0,0.03);border-radius:8px;padding:10px 14px;margin-bottom:1rem">';
+  html += '<p style="font-size:12px;color:var(--text-mid);margin:0"><strong>Year-end deliverable:</strong> ' + d.deliverable + '</p></div>';
+  html += '<div style="position:relative;padding-left:4px">';
+  d.timeline.forEach(function(step, i) {
+    var isLast = i === d.timeline.length - 1;
+    html += '<div style="display:flex;gap:16px;margin-bottom:' + (isLast?'0':'20px') + '">';
+    html += '<div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:12px;height:12px;border-radius:50%;background:'+color+';border:2px solid white;box-shadow:0 0 0 2px '+color+';z-index:1;margin-top:2px;flex-shrink:0"></div>';
+    if (!isLast) html += '<div style="width:2px;flex:1;background:rgba(0,0,0,0.08);margin-top:4px"></div>';
+    html += '</div><div style="flex:1;padding-bottom:4px">';
+    html += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:'+color+';margin-bottom:2px">'+step.when+'</div>';
+    html += '<div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:4px">'+step.what+'</div>';
+    html += '<div style="font-size:12px;color:var(--text-mid);line-height:1.5">'+step.detail+'</div>';
+    html += '</div></div>';
+  });
+  html += '</div>';
+  html += '<div style="background:rgba(155,34,38,0.04);border-radius:8px;padding:12px 16px;margin-top:1rem">';
+  html += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#9b2226;margin-bottom:6px">The nomination process — what most students do not know</div>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:6px"><strong>You need multiple nominations:</strong> You can receive nominations from your US Representative AND both US Senators simultaneously. Apply to all three. Each office conducts its own selection process.</p>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:6px"><strong>Nomination ≠ Appointment:</strong> A congressional nomination makes you eligible for academy consideration. The academy then issues the appointment independently. You can have a nomination and not receive an appointment.</p>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5"><strong>Coast Guard Academy exception:</strong> USCGA does not require a congressional nomination. It is competitive admission only. Apply if you have not secured nominations from any other source.</p></div>';
+  html += '</div>';
+  el.innerHTML = html; section.style.display = '';
+}
+
+function renderMilAcadFinancial(arch, color, el, section) {
+  if (!el || !section) return;
+  var fin = (MILACAD_DATA[arch] || MILACAD_DATA['Builder']).financial;
+  var html = '<div class="ai-badge">&#128178; Financial Reality for Service Academy Path \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">The service academy is the most generous full scholarship in American higher education. Understanding the full financial picture — including the service commitment — is essential before you apply.</p>';
+  html += '<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:1rem"><thead><tr style="background:rgba(0,0,0,0.03)"><th style="text-align:left;padding:8px 12px;font-weight:600;color:var(--navy);border-bottom:1px solid rgba(0,0,0,0.08)">Path</th><th style="text-align:left;padding:8px 12px;font-weight:600;color:var(--navy);border-bottom:1px solid rgba(0,0,0,0.08)">Financial Terms</th><th style="text-align:left;padding:8px 12px;font-weight:600;color:var(--navy);border-bottom:1px solid rgba(0,0,0,0.08)">Notes</th></tr></thead><tbody>';
+  fin.programs.forEach(function(p, i) {
+    html += '<tr style="background:'+(i%2===0?'transparent':'rgba(0,0,0,0.015)')+'"><td style="padding:8px 12px;color:var(--navy);font-weight:500;border-bottom:0.5px solid rgba(0,0,0,0.06)">'+p.name+'</td><td style="padding:8px 12px;color:#2d6a4f;font-weight:500;border-bottom:0.5px solid rgba(0,0,0,0.06)">'+p.cost+'</td><td style="padding:8px 12px;color:var(--text-mid);border-bottom:0.5px solid rgba(0,0,0,0.06)">'+p.note+'</td></tr>';
+  });
+  html += '</tbody></table>';
+  html += '<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:12px 16px;margin-bottom:1rem"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:6px">Bottom line for ' + arch + 's</div>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5">'+fin.bottomLine+'</p></div>';
+  html += '<div style="background:rgba(155,34,38,0.04);border-radius:8px;padding:12px 16px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#9b2226;margin-bottom:6px">The honest service commitment calculation</div>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:6px"><strong>What you receive:</strong> Full tuition, room, board, medical, dental, and $1,100/month cadet pay. Upon commissioning, full officer benefits including housing allowance, career advancement, and pension eligibility.</p>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:6px"><strong>What you commit to:</strong> 5 years of active duty service beginning at graduation. Your career choices, geographic location, and personal schedule are subject to military needs for 5 years.</p>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5"><strong>The right question:</strong> Not "is the scholarship worth the commitment?" but "is 5 years of this specific service genuinely aligned with what I want to do with this period of my life?" If yes, the financial terms are exceptional. If not, they are not sufficient compensation for a misaligned commitment.</p></div>';
+  html += '</div>';
+  el.innerHTML = html; section.style.display = '';
+}
+
+function renderMilAcadProfiles(arch, color, el, section) {
+  if (!el || !section) return;
+  var profiles = (MILACAD_DATA[arch] || MILACAD_DATA['Builder']).profiles;
+  var html = '<div class="ai-badge">&#127942; Service Academy Outcomes \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">What the ' + arch + ' service academy and ROTC pathway actually produces. Both paths shown — choose based on fit, not prestige.</p>';
+  profiles.forEach(function(p) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:16px;margin-bottom:12px">';
+    html += '<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:10px"><div style="width:36px;height:36px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">&#11088;</div>';
+    html += '<div><div style="font-size:13px;font-weight:500;color:var(--navy)">'+p.name+'</div><div style="font-size:11px;color:'+color+';font-weight:500">'+p.path+'</div></div></div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:8px">'+p.what+'</p>';
+    html += '<div style="background:rgba(45,106,79,0.06);border-radius:6px;padding:10px;margin-bottom:8px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#2d6a4f;margin-bottom:3px">Outcome</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.4">'+p.outcome+'</p></div>';
+    html += '<details><summary style="font-size:11px;font-weight:500;color:var(--text-light);cursor:pointer">Counselor perspective &#9660;</summary>';
+    html += '<p style="font-size:11px;color:var(--text-mid);line-height:1.5;margin-top:6px;font-style:italic">'+p.counselorNote+'</p></details></div>';
+  });
+  html += '</div>'; el.innerHTML = html; section.style.display = '';
+}
+
+function renderMilAcadWritingAngles(arch, color, el, section) {
+  if (!el || !section) return;
+  var angles = (MILACAD_DATA[arch] || MILACAD_DATA['Builder']).writing;
+  var html = '<div class="ai-badge">&#9998; Academy Application Writing Angles \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">These angles are written for Congressional nomination essays, academy personal statements, and scholarship applications \u2014 rooted in how the ' + arch + ' archetype communicates and what makes the service commitment genuine rather than strategic.</p>';
+  angles.forEach(function(a, i) {
+    html += '<div style="border-left:3px solid '+color+';padding:12px 16px;margin-bottom:12px;background:rgba(0,0,0,0.01);border-radius:0 8px 8px 0">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px"><div style="font-size:14px;font-weight:500;color:var(--navy)">'+(i+1)+'. '+a.title+'</div>';
+    html += '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:'+color+';background:rgba(0,0,0,0.04);padding:2px 8px;border-radius:20px;white-space:nowrap;margin-left:8px">'+a.type+'</div></div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:8px">'+a.angle+'</p>';
+    html += '<div style="background:rgba(200,169,110,0.08);border-radius:6px;padding:8px 12px;margin-bottom:8px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:3px">Opening line</div>';
+    html += '<div style="font-size:12px;color:var(--navy);font-style:italic">'+a.opening+'</div></div>';
+    html += '<div style="font-size:11px;color:var(--text-light)"><strong>Avoid:</strong> '+a.avoid+'</div></div>';
+  });
+  html += '<p style="font-size:12px;color:var(--text-light);font-style:italic;margin-top:8px">Your counselor can help develop any of these into a full draft and can review nomination essays before submission.</p></div>';
+  el.innerHTML = html; section.style.display = '';
+}
+
+function renderMilAcadInterviewPrep(arch, color, el, section) {
+  if (!el || !section) return;
+  var questions = (MILACAD_DATA[arch] || MILACAD_DATA['Builder']).interview;
+  var html = '<div class="ai-badge">&#127908; Academy & Nomination Interview Preparation \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">You will face two types of interviews: congressional nomination interviews (conducted by each congressional office separately) and academy interviews (conducted by your Blue and Gold Officer or Academy Liaison Officer). These are the questions ' + arch + 's are most likely to face in both contexts.</p>';
+  questions.forEach(function(q, i) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:12px">';
+    html += '<div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:4px">'+(i+1)+'. '+q.q+'</div>';
+    html += '<div style="font-size:11px;color:var(--text-light);margin-bottom:8px;font-style:italic">Why they ask: '+q.why+'</div>';
+    html += '<div style="background:rgba(0,0,0,0.02);border-left:3px solid '+color+';border-radius:0 6px 6px 0;padding:10px 14px;margin-bottom:8px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:'+color+';margin-bottom:4px">How to answer</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5">'+q.framework+'</p></div>';
+    html += '<div style="font-size:11px;color:var(--text-light)"><strong>Avoid:</strong> '+q.avoid+'</div></div>';
+  });
+  html += '<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:12px 16px;margin-top:4px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:6px">The question you should ask them</div>';
+  html += '<div style="font-size:13px;color:var(--navy);font-style:italic;margin-bottom:6px">"What distinguishes the candidates who thrive here from those who struggle — and is there anything in my file you think I should address directly?"</div>';
+  html += '<p style="font-size:12px;color:var(--text-mid)">This demonstrates self-awareness and gives you real information. Nomination panel members and ALOs respect candidates who can engage with hard questions directly.</p></div>';
+  html += '<p style="font-size:12px;color:var(--text-light);font-style:italic;margin-top:12px">Practice these answers with your counselor. The first time you say them out loud should not be in the nomination interview.</p></div>';
+  el.innerHTML = html; section.style.display = '';
+}
+
+function renderMilAcadReferences(arch, color, el, section) {
+  if (!el || !section) return;
+  var refs = (MILACAD_DATA[arch] || MILACAD_DATA['Builder']).references;
+  var html = '<div class="ai-badge">&#128100; Nomination & Academy References Guide \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Academy and congressional nomination applications require multiple references serving different purposes. These are your three recommenders and exactly what to ask each one to address.</p>';
+  refs.forEach(function(r, i) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:12px">';
+    html += '<div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:4px">Recommender '+(i+1)+': '+r.type+'</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:8px">'+r.why+'</p>';
+    html += '<div style="background:rgba(45,106,79,0.06);border-radius:6px;padding:10px;margin-bottom:8px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#2d6a4f;margin-bottom:3px">Ask them to emphasize</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid)">'+r.emphasize+'</p></div>';
+    html += '<details><summary style="font-size:11px;font-weight:500;color:var(--text-light);cursor:pointer">Sample request email &#9660;</summary>';
+    html += '<div style="background:rgba(0,0,0,0.02);border-radius:6px;padding:10px;margin-top:6px;font-size:12px;color:var(--text-mid);line-height:1.6;font-style:italic">'+r.email+'</div></details></div>';
+  });
+  html += '<div style="background:rgba(155,34,38,0.04);border-radius:8px;padding:12px 16px;margin-top:4px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#9b2226;margin-bottom:6px">What academy and nomination readers look for</div>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5">Service academy and congressional nomination readers are evaluating three things simultaneously: academic potential (can this person handle the rigorous academic program?), leadership potential (can this person lead under pressure?), and character (does this person have the integrity and service orientation to be trusted with a commission?). Every reference should address at least one of these explicitly.</p></div>';
+  html += '<p style="font-size:12px;color:var(--text-light);font-style:italic;margin-top:12px">Brief your recommenders specifically. Tell them which dimension of the evaluation you need their letter to address, and why you chose them for that dimension.</p></div>';
+  el.innerHTML = html; section.style.display = '';
+}
+
+function renderMilAcadCareerPaths(arch, color, el, section) {
+  if (!el || !section) return;
+  var paths = (MILACAD_DATA[arch] || MILACAD_DATA['Builder']).careerPaths;
+  var html = '<div class="ai-badge">&#11088; Military Officer Career Trajectories \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Four real career trajectories for ' + arch + 's who commission through a service academy or ROTC. Where the path goes, how long it takes, and what it pays at each stage.</p>';
+  paths.forEach(function(p) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:16px;margin-bottom:12px">';
+    html += '<div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:8px">'+p.title+'</div>';
+    html += '<div style="display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap">';
+    html += '<div style="background:rgba(45,106,79,0.06);border-radius:6px;padding:6px 12px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#2d6a4f;margin-bottom:2px">Timeline</div><div style="font-size:12px;color:var(--navy);font-weight:500">'+p.timeline+'</div></div>';
+    html += '<div style="background:rgba(24,95,165,0.06);border-radius:6px;padding:6px 12px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#185FA5;margin-bottom:2px">Earning Range</div><div style="font-size:12px;color:var(--navy);font-weight:500">'+p.salary+'</div></div></div>';
+    html += '<div style="border-left:3px solid '+color+';padding-left:12px"><p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0">'+p.path+'</p></div></div>';
+  });
+  html += '</div>'; el.innerHTML = html; section.style.display = '';
+}
+
+function renderMilAcadSummerPrograms(arch, color, el, section) {
+  if (!el || !section) return;
+  var programs = (MILACAD_DATA[arch] || MILACAD_DATA['Builder']).summerPrograms;
+  var html = '<div class="ai-badge">&#127919; Academy Summer Programs & CFA Preparation \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">The summer programs that strengthen academy applications and the physical preparation that the Candidate Fitness Assessment requires. Start both earlier than you think you need to.</p>';
+  programs.forEach(function(p) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:10px">';
+    html += '<div style="font-size:13px;font-weight:500;color:var(--navy);margin-bottom:4px">'+p.name+'</div>';
+    html += '<div style="font-size:11px;color:'+color+';font-weight:500;margin-bottom:8px">'+p.org+'</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0">'+p.detail+'</p></div>';
+  });
+  html += '</div>'; el.innerHTML = html; section.style.display = '';
+}
+
+function renderMilAcadMentorMatch(arch, color, el, section) {
+  if (!el || !section) return;
+  var mentors = (MILACAD_DATA[arch] || MILACAD_DATA['Builder']).mentorMatch;
+  var html = '<div class="ai-badge">&#129309; Service Academy Mentor Match \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">The most important mentors for an academy candidate are people who have been inside the process and the institution. These are the three types most valuable for ' + arch + 's and exactly how to find them.</p>';
+  mentors.forEach(function(m, i) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:12px">';
+    html += '<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:8px"><div style="width:32px;height:32px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;color:white;font-weight:600">'+(i+1)+'</div>';
+    html += '<div style="font-size:13px;font-weight:500;color:var(--navy);padding-top:6px">'+m.type+'</div></div>';
+    html += '<div style="background:rgba(200,169,110,0.06);border-radius:6px;padding:10px;margin-bottom:8px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:4px">Why this person</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0">'+m.why+'</p></div>';
+    html += '<div style="background:rgba(24,95,165,0.04);border-radius:6px;padding:10px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#185FA5;margin-bottom:4px">How to find them</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0">'+m.how+'</p></div></div>';
+  });
+  html += '</div>'; el.innerHTML = html; section.style.display = '';
+}
+
+function renderMilAcadOpportunities(arch, color) {
+  var opps = (MILACAD_DATA[arch] || MILACAD_DATA['Builder']).opportunities;
+  var html = '<div class="ai-badge">&#128205; Service Academy Opportunities \u2014 ' + arch + ' Archetype</div>';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin:12px 0 16px">The most important first step for every academy candidate is the same regardless of archetype: contact all three congressional offices this week. Everything else builds from there.</p>';
+  html += '<div style="display:flex;flex-direction:column;gap:10px">';
+  opps.forEach(function(o) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">';
+    html += '<div style="font-size:13px;font-weight:500;color:var(--navy)">'+o.name+'</div>';
+    html += '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;background:rgba(0,0,0,0.04);color:'+color+';padding:2px 8px;border-radius:20px;white-space:nowrap;margin-left:8px">'+o.type+'</div></div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0">'+o.detail+'</p></div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+// ── MAIN MILITARY ACADEMY GENERATOR ──────────────────────────
+async function generateMilAcadReport(archProfile, intake) {
+  var plan = (intake && intake.posthsplan) ||
+             (typeof intakeData !== 'undefined' ? intakeData.posthsplan : '');
+  if (!plan) { var pe = document.getElementById('f-posthsplan'); if (pe) plan = pe.value || ''; }
+  if (plan !== 'military_academy') return;
+
+  var arch = archProfile ? archProfile.split(' ')[0] : 'Builder';
+  var archColors = {Builder:'#185FA5',Shepherd:'#0F6E56',Architect:'#533AB7',Catalyst:'#C05621',Advocate:'#9b2226',Cultivator:'#3B6D11',Peacemaker:'#854F0B'};
+  var color = archColors[arch] || '#9b2226';
+  console.log('[BC] generateMilAcadReport:', arch);
+
+  // ── Military academy KEEPS: course roadmap, majors, clubs, activities, shadow, group dynamics ─
+  // ── HIDES: research paper ideas ───────────────────────────
+  ['prem-research'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var wrap = el; var t = 0;
+    while (wrap && !wrap.classList.contains('results-section') && t < 6) { wrap = wrap.parentElement; t++; }
+    if (wrap && wrap.classList.contains('results-section')) wrap.style.display = 'none';
+    else if (el) el.style.display = 'none';
+  });
+
+  // ── Replace Career Paths with military officer trajectories ─
+  var careersWrap = document.getElementById('wrap-careers');
+  var careersContent = document.getElementById('section-careers');
+  if (careersWrap && careersContent) {
+    var ct = careersWrap.querySelector('.results-section-title');
+    if (ct) { var ic = ct.querySelector('.rs-icon'); ct.innerHTML = (ic ? ic.outerHTML+' ' : '') + 'Military Officer Career Trajectories'; }
+    renderMilAcadCareerPaths(arch, color, careersContent, careersWrap);
+  }
+
+  // ── Replace Essay Angles label for academy context ──────────
+  var essaysWrap = document.getElementById('wrap-essays');
+  if (essaysWrap) {
+    var et = essaysWrap.querySelector('.results-section-title');
+    if (et) { var ic2 = et.querySelector('.rs-icon'); et.innerHTML = (ic2 ? ic2.outerHTML+' ' : '') + 'Academy Application Essay Angles'; }
+  }
+
+  // ── Replace College Interview Prep with Academy/Nomination Interview ─
+  var interviewEl = document.getElementById('prem-interview');
+  if (interviewEl) {
+    var iw = interviewEl; var it = 0;
+    while (iw && !iw.classList.contains('results-section') && it < 6) { iw = iw.parentElement; it++; }
+    if (iw && iw.classList.contains('results-section')) {
+      var iTitleEl = iw.querySelector('.results-section-title');
+      if (iTitleEl) { var ic3 = iTitleEl.querySelector('.rs-icon'); iTitleEl.innerHTML = (ic3 ? ic3.outerHTML+' ' : '') + 'Academy & Nomination Interview Prep'; }
+    }
+  }
+
+  // ── Replace Rec Letter Guide with Nomination/Academy references ─
+  var recEl = document.getElementById('prem-recletter');
+  if (recEl) {
+    var rw = recEl; var rt = 0;
+    while (rw && !rw.classList.contains('results-section') && rt < 6) { rw = rw.parentElement; rt++; }
+    if (rw && rw.classList.contains('results-section')) {
+      var rTitleEl = rw.querySelector('.results-section-title');
+      if (rTitleEl) { var ic4 = rTitleEl.querySelector('.rs-icon'); rTitleEl.innerHTML = (ic4 ? ic4.outerHTML+' ' : '') + 'Nomination & Academy References Guide'; }
+    }
+  }
+
+  // ── Replace Summer Programs with academy-specific programs ──
+  var sumEl = document.getElementById('prem-summer');
+  if (sumEl) {
+    var sw = sumEl; var si = 0;
+    while (sw && !sw.classList.contains('results-section') && si < 6) { sw = sw.parentElement; si++; }
+    if (sw && sw.classList.contains('results-section')) {
+      var st = sw.querySelector('.results-section-title');
+      if (st) { var ic5 = st.querySelector('.rs-icon'); st.innerHTML = (ic5 ? ic5.outerHTML+' ' : '') + 'Academy Summer Programs & CFA Preparation'; }
+      renderMilAcadSummerPrograms(arch, color, sumEl, sw);
+    }
+  }
+
+  // ── Replace Mentor Match with academy-specific mentors ──────
+  var mentorWrap = document.getElementById('wrap-mentor');
+  var mentorContent = document.getElementById('section-mentor');
+  if (mentorWrap && mentorContent) {
+    var mt = mentorWrap.querySelector('.results-section-title');
+    if (mt) { var ic6 = mt.querySelector('.rs-icon'); mt.innerHTML = (ic6 ? ic6.outerHTML+' ' : '') + 'Service Academy Mentor Match'; }
+    renderMilAcadMentorMatch(arch, color, mentorContent, mentorWrap);
+  }
+
+  // ── Replace Opportunities with academy-specific ─────────────
+  var oppEl = document.getElementById('section-opportunities');
+  if (oppEl) { oppEl.innerHTML = renderMilAcadOpportunities(arch, color); }
+
+  // ── Relabel college list to Service Academies & ROTC ────────
+  var univSection = document.getElementById('section-universities');
+  if (univSection) {
+    var uw = univSection; var ui = 0;
+    while (uw && !uw.classList.contains('results-section') && ui < 6) { uw = uw.parentElement; ui++; }
+    if (uw && uw.classList.contains('results-section')) {
+      var uT = uw.querySelector('.results-section-title');
+      if (uT) { var ic7 = uT.querySelector('.rs-icon'); uT.innerHTML = (ic7 ? ic7.outerHTML+' ' : '') + 'Service Academies & ROTC Programs'; }
+    }
+  }
+
+  // ── Relabel Scholarships for military context ────────────────
+  var schSection = document.getElementById('section-scholarships');
+  if (schSection) {
+    var schw = schSection; var schi = 0;
+    while (schw && !schw.classList.contains('results-section') && schi < 6) { schw = schw.parentElement; schi++; }
+    if (schw && schw.classList.contains('results-section')) {
+      var schT = schw.querySelector('.results-section-title');
+      if (schT) { var ic8 = schT.querySelector('.rs-icon'); schT.innerHTML = (ic8 ? ic8.outerHTML+' ' : '') + 'ROTC Scholarships & Military Funding'; }
+    }
+  }
+
+  // ── Relabel Parent Guide ────────────────────────────────────
+  var parentEl = document.getElementById('prem-parent');
+  if (parentEl) {
+    var pw = parentEl; var pi = 0;
+    while (pw && !pw.classList.contains('results-section') && pi < 6) { pw = pw.parentElement; pi++; }
+    if (pw && pw.classList.contains('results-section')) {
+      var pT = pw.querySelector('.results-section-title');
+      if (pT) { var ic9 = pT.querySelector('.rs-icon'); pT.innerHTML = (ic9 ? ic9.outerHTML+' ' : '') + 'Parent\'s Guide to Service Academy Applications'; }
+    }
+  }
+
+  // ── Relabel Counselor Guide for academy context ─────────────
+  var counselorEl = document.getElementById('prem-counselor-guide');
+  if (counselorEl) {
+    var cgw = counselorEl; var cgi = 0;
+    while (cgw && !cgw.classList.contains('results-section') && cgi < 6) { cgw = cgw.parentElement; cgi++; }
+    if (cgw && cgw.classList.contains('results-section')) {
+      var cgT = cgw.querySelector('.results-section-title');
+      if (cgT) { var ic10 = cgT.querySelector('.rs-icon'); cgT.innerHTML = (ic10 ? ic10.outerHTML+' ' : '') + 'Counselor Guide: Service Academy Applications'; }
+    }
+  }
+
+  // ── Render 6 new milacad-specific premium sections ──────────
+  renderMilAcadTimeline(arch, color, document.getElementById('prem-milacad-timeline'), document.getElementById('section-milacad-timeline'));
+  renderMilAcadFinancial(arch, color, document.getElementById('prem-milacad-financial'), document.getElementById('section-milacad-financial'));
+  renderMilAcadProfiles(arch, color, document.getElementById('prem-milacad-profiles'), document.getElementById('section-milacad-profiles'));
+  renderMilAcadWritingAngles(arch, color, document.getElementById('prem-milacad-writing'), document.getElementById('section-milacad-writing'));
+  renderMilAcadInterviewPrep(arch, color, document.getElementById('prem-milacad-interview'), document.getElementById('section-milacad-interview'));
+  renderMilAcadReferences(arch, color, document.getElementById('prem-milacad-references'), document.getElementById('section-milacad-references'));
+
+  console.log('[BC] MilAcad report fully rendered for', arch);
 }
 
 
