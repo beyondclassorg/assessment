@@ -1480,11 +1480,11 @@ async function renderResults(r) {
         <div class="ai-section" id="prem-work-profiles"></div>
       </div>
       <div class="results-section" id="section-work-writing" style="display:none">
-        <div class="results-section-title"><span class="rs-icon">&#9998;</span> Application Writing Angles</div>
+        <div class="results-section-title"><span class="rs-icon">&#9998;</span> Writing for College & Program Applications After</div>
         <div class="ai-section" id="prem-work-writing"></div>
       </div>
       <div class="results-section" id="section-work-interview" style="display:none">
-        <div class="results-section-title"><span class="rs-icon">&#127908;</span> Interview Preparation</div>
+        <div class="results-section-title"><span class="rs-icon">&#127908;</span> Interview Prep: Applying to Schools & Programs After</div>
         <div class="ai-section" id="prem-work-interview"></div>
       </div>
       <div class="results-section" id="section-work-references" style="display:none">
@@ -11087,7 +11087,17 @@ async function generateWorkReport(archProfile, intake) {
       if (pT) { var ic2 = pT.querySelector('.rs-icon'); pT.innerHTML = (ic2 ? ic2.outerHTML+' ' : '') + 'Parent\'s Guide to the Work Year'; }
     }
   }
-  relabelSection('prem-counselor-guide', 'Counselor Guide: Structuring the Work Year');
+  // ── Replace Counselor Guide with work-year-specific content ──
+  var cgEl = document.getElementById('prem-counselor-guide');
+  if (cgEl) {
+    var cgw = cgEl; var cgi = 0;
+    while (cgw && !cgw.classList.contains('results-section') && cgi < 6) { cgw = cgw.parentElement; cgi++; }
+    if (cgw && cgw.classList.contains('results-section')) {
+      var cgT = cgw.querySelector('.results-section-title');
+      if (cgT) { var icCG = cgT.querySelector('.rs-icon'); cgT.innerHTML = (icCG ? icCG.outerHTML+' ' : '') + 'Counselor Guide: The Work Year'; }
+      renderWorkCounselorGuide(arch, color, cgEl, cgw);
+    }
+  }
 
   // ── Render 7 new work-specific sections ─────────────────────
   renderWorkFramework(arch, color, document.getElementById('prem-work-framework'), document.getElementById('section-work-framework'));
@@ -11677,6 +11687,93 @@ function renderWorkMentorFull(arch, color, el, section) {
 }
 
 console.log('Work workforce, interview, network, and mentor data loaded');
+
+
+
+function renderWorkCounselorGuide(arch, color, el, section) {
+  if (!el || !section) return;
+  var html = '<div class="ai-badge">&#128203; Counselor Session Guide: The Work Year</div><div class="ai-content">';
+  
+  html += '<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:12px 16px;margin-bottom:1rem">';
+  html += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:6px">What the counselor role is this year</div>';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.5;margin:0">The work year does not run on autopilot. The students who use it well have external accountability — someone who will ask the hard questions at month three and month six and hold them to the answers. That person is you.</p></div>';
+
+  html += '<div style="margin-bottom:20px">';
+  html += '<div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px">Before the year starts: the setup conversation</div>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:10px">The most important counselor conversation happens before month one — not during it. In this conversation, establish three things in writing and give the student a copy:</p>';
+  var setup = [
+    {item:'The guiding question', detail:'What specific question is this year designed to answer? Not "find a direction" but a specific, answerable question. "Do I find healthcare work energizing or depleting?" "Is building software something I want to do all day, or just occasionally?" "Which community do I most want to serve, and what does serving them actually require?" Write it down. The student keeps it. You keep it.'},
+    {item:'The month-three checkpoint', detail:'What will the student bring to the month-three check-in? Agree on it now: three things they learned about the work, three things they learned about themselves, and whether the original question has changed. The checkpoint is only valuable if both parties know what it will cover before it happens.'},
+    {item:'The month-six decision', detail:'What decision will be made by month six? Not "figure out a direction" but a specific decision with specific options: apply to community college, pursue a trade apprenticeship, enlist, launch something, apply to a four-year program, or commit to a second intentional year with a new question. The decision does not need to be final, but it needs to be made.'},
+  ];
+  setup.forEach(function(s, i) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:8px;padding:12px;margin-bottom:8px">';
+    html += '<div style="font-size:12px;font-weight:600;color:'+color+';margin-bottom:4px">'+(i+1)+'. '+s.item+'</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0">'+s.detail+'</p></div>';
+  });
+  html += '</div>';
+
+  html += '<div style="margin-bottom:20px">';
+  html += '<div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px">Month-three check-in: what to ask</div>';
+  var m3 = [
+    'What is the most important thing you have learned about this type of work that you did not know when you started?',
+    'What have you learned about how you work — what conditions bring out the best in you and what conditions drain you?',
+    'Have you conducted any informational interviews? What did you learn from them?',
+    'Has the original question changed? If so, how?',
+    'Are you on track to make a decision by month six, or do we need to adjust the plan?',
+  ];
+  html += '<ul style="margin:0;padding-left:20px">';
+  m3.forEach(function(q) {
+    html += '<li style="font-size:12px;color:var(--text-mid);line-height:1.7;margin-bottom:2px">'+q+'</li>';
+  });
+  html += '</ul>';
+  html += '<div style="background:rgba(155,34,38,0.04);border-radius:6px;padding:10px;margin-top:10px">';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0"><strong>Red flag at month three:</strong> If the student cannot answer questions 1 and 2 with specificity, the year is drifting. Do not wait until month six to address this. Adjust the structure now — a more specific job, a first informational interview this week, a concrete building or service commitment within 30 days.</p></div>';
+  html += '</div>';
+
+  html += '<div style="margin-bottom:20px">';
+  html += '<div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px">Month-six check-in: the decision conversation</div>';
+  var m6 = [
+    'Can you answer your original question now? What is your answer?',
+    'Which of the next-step paths feels right based on what you have learned — and why?',
+    'What would you need to know to feel confident making that decision?',
+    'What is one specific action you will take in the next two weeks to begin the next chapter?',
+  ];
+  html += '<ul style="margin:0;padding-left:20px">';
+  m6.forEach(function(q) {
+    html += '<li style="font-size:12px;color:var(--text-mid);line-height:1.7;margin-bottom:2px">'+q+'</li>';
+  });
+  html += '</ul>';
+  html += '<div style="background:rgba(45,106,79,0.06);border-radius:6px;padding:10px;margin-top:10px">';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0"><strong>The month-six goal:</strong> Leave this meeting with a decision and a first step. Not a direction under consideration — a decision made and an action beginning. The work year ends with momentum, not with more exploration.</p></div>';
+  html += '</div>';
+
+  html += '<div style="margin-bottom:20px">';
+  html += '<div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px">Pathway translation: what the work year decision leads to</div>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:10px">The work year decision is not an endpoint — it is a handoff. When the student makes their decision at month six or month twelve, your role shifts to helping them navigate the next pathway. Here is what each decision requires from you:</p>';
+  var pathways = [
+    {decision:'College or university application', counselor:'Treat this like a standard college application with one important difference: the work year experience is the centerpiece, not the context. Help the student frame the work year as the source of their specific academic direction. Every essay should answer: what did the work year teach me that I need a degree to deepen? Application timeline: if deciding at month six, standard November deadline is achievable with focused effort.'},
+    {decision:'Community college or certification program', counselor:'Research the specific program that matches what the work year revealed — CNA, paralegal, CS, agriculture, early childhood education. Help the student identify the articulation agreements, transfer pathways, and employer sponsorship programs that make community college the strategic choice, not the fallback.'},
+    {decision:'Trade apprenticeship', counselor:'Shift into the trade apprenticeship framework: ASVAB prep if applicable, union hall visits, aptitude test preparation, and MOS research. The work year evidence — what the student built, fixed, or operated — is the application material. Help them name and document it.'},
+    {decision:'Military enlistment', counselor:'Shift into the enlistment framework: ASVAB preparation, MOS research before any recruiter meeting, DEP planning, and the contract review checklist. The work year may have already produced the clarity about which MOS to target.'},
+    {decision:'Launch a business or social enterprise', counselor:'Connect the student with SBDC resources, Y Combinator Startup School, and local entrepreneurship communities. Help them articulate what they want to build — and whether the work year produced the specific problem they are solving.'},
+    {decision:'A second intentional year', counselor:'A second year is legitimate only if it is structured around a new, specific question — not a repetition of the first year exploration. Establish a new guiding question, new accountability structure, and a clear definition of what a productive second year looks like before it begins.'},
+  ];
+  pathways.forEach(function(p) {
+    html += '<div style="border-left:3px solid '+color+';padding:10px 12px;margin-bottom:8px;background:rgba(0,0,0,0.01);border-radius:0 6px 6px 0">';
+    html += '<div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:3px">If the decision is: '+p.decision+'</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0">'+p.counselor+'</p></div>';
+  });
+  html += '</div>';
+
+  html += '<div style="background:rgba(24,95,165,0.04);border-radius:8px;padding:12px 14px">';
+  html += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#185FA5;margin-bottom:6px">What makes this year succeed or fail</div>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:6px"><strong>The year succeeds when:</strong> The student has a specific question at the start, conducts informational interviews during the year, checks in at month three and month six with specific things to report, and makes a decision at the end that they can explain with reference to what they actually learned.</p>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0"><strong>The year fails when:</strong> The student treats employment as the goal rather than the vehicle, skips the informational interviews, avoids the accountability check-ins, and arrives at month twelve in the same position they were in at month one — more experienced but no clearer. Your role is to prevent this by holding the structure from the beginning.</p></div>';
+
+  html += '</div>';
+  el.innerHTML = html; section.style.display = '';
+}
 
 
 window.calculateResults        = calculateResults;
