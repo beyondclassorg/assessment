@@ -2730,6 +2730,7 @@ function renderCopyrightFooter() {
   });
   document.addEventListener('dragstart', function(e) { e.preventDefault(); });
   document.addEventListener('selectstart', function(e) {
+    if (!e.target || !e.target.tagName) return true;
     var tag = e.target.tagName.toLowerCase();
     if (tag === 'input' || tag === 'textarea' || tag === 'select') return true;
     e.preventDefault();
@@ -5910,7 +5911,7 @@ function applyPathAwareFreeReport(intake) {
   var premiumItems = {
     undecided: [
       '&#128161; What kind of undecided you are — and what that means for your next step',
-      '&#128507; What all 8 paths look like specifically for a ' + arch + ' archetype',
+      '&#128507; What all 8 paths look like through the lens of your calling archetype',
       '&#128270; Three decision clarity questions designed for your counselor session',
       '&#128172; Five conversations to have before you commit to any path',
       '&#128197; A 90-day exploration plan that generates direction without requiring a decision first',
