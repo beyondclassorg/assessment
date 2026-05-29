@@ -1505,6 +1505,24 @@ async function renderResults(r) {
         <div class="results-section-title"><span class="rs-icon">&#128101;</span> Network Building Guide</div>
         <div class="ai-section" id="prem-work-network"></div>
       </div>
+
+      <!-- UNDECIDED SECTIONS -->
+      <div class="results-section" id="section-undecided-validation" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#128161;</span> Not Knowing Is Data</div>
+        <div class="ai-section" id="prem-undecided-validation"></div>
+      </div>
+      <div class="results-section" id="section-undecided-paths" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#128507;</span> Path Explorer: All Options for Your Archetype</div>
+        <div class="ai-section" id="prem-undecided-paths"></div>
+      </div>
+      <div class="results-section" id="section-undecided-clarity" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#128270;</span> Decision Clarity Questions</div>
+        <div class="ai-section" id="prem-undecided-clarity"></div>
+      </div>
+      <div class="results-section" id="section-undecided-90day" style="display:none">
+        <div class="results-section-title"><span class="rs-icon">&#128197;</span> What to Do in the Next 90 Days</div>
+        <div class="ai-section" id="prem-undecided-90day"></div>
+      </div>
     </div><!-- end premium-report-section -->
 
 <!-- PREMIUM OVERLAY — hidden for counselor code users -->
@@ -1589,6 +1607,7 @@ async function renderResults(r) {
   generateMilAcadReport(archProfile, r.intake || intakeData || {});
   generateMilEnlistReport(archProfile, r.intake || intakeData || {});
   generateWorkReport(archProfile, r.intake || intakeData || {});
+  generateUndecidedReport(archProfile, r.intake || intakeData || {});
   // Standalone counselor check (runs even if premium report fails)
   checkCounselorCodeOnResults();
   // Init sticky CTA
@@ -5859,6 +5878,13 @@ function applyPathAwareFreeReport(intake) {
   var pathLabel = pathLabels[plan] || 'Your Path';
 
   var premiumItems = {
+    undecided: [
+      '&#128161; What kind of undecided you are — and what that means for your next step',
+      '&#128507; What all 8 paths look like specifically for a ' + arch + ' archetype',
+      '&#128270; Three decision clarity questions designed for your counselor session',
+      '&#128172; Five conversations to have before you commit to any path',
+      '&#128197; A 90-day exploration plan that generates direction without requiring a decision first',
+    ],
     gap_year: [
       '&#128197; Application timeline with exact deadlines for gap year programs',
       '&#128178; Financial reality breakdown — real compensation numbers for every program option',
@@ -11773,6 +11799,568 @@ function renderWorkCounselorGuide(arch, color, el, section) {
 
   html += '</div>';
   el.innerHTML = html; section.style.display = '';
+}
+
+
+var UNDECIDED_DATA = {
+  'Builder': {
+    typeFraming: {
+      type1: 'You may not know that building something real — a product, a business, a technical system — is a legitimate path that does not require a four-year degree first. Builders default to college because nobody showed them the apprenticeship, the bootcamp, or the entrepreneurship year.',
+      type2: 'You may know you want to build things but feel paralyzed by which path to build through. College or self-taught? Product or trade? The fear is that choosing wrong locks you in. It does not — almost every technical path is reversible.',
+      type3: 'You may not yet know what you most want to build. You have the instinct but not the target. The 90-day plan below is designed for this: build something small, notice what pulls you deeper, follow that.',
+    },
+    paths: [
+      {path:'Four-year college or university',what:'Strong fit if you want engineering credentials, CS degrees, or the research environment to develop deep technical foundations. Best Builder college paths: CS, engineering, architecture, business with entrepreneurship emphasis. The degree opens specific doors (large tech companies, government contracts, graduate school) that are harder to access without it.',fit:'High fit if you want to work at scale on complex systems inside large organizations. Lower fit if you want to build your own thing quickly — the four-year detour costs time and money that early-stage building does not.'},
+      {path:'Community college + transfer',what:'Two years of foundational coursework, then transfer to a four-year program. For Builders: CS fundamentals, engineering prerequisites, business courses. Lower cost, same credential at the end. Many Builder skills develop faster in project-based CC environments than in large lecture halls.',fit:'High fit if you want the four-year credential but need to reduce cost or buy time to figure out your specific direction. The transfer pathway is fully legitimate and produces the same degree.'},
+      {path:'Trade apprenticeship',what:'Paid, hands-on training in a skilled trade — electrical systems, construction technology, HVAC, network infrastructure. Builders who want to work with physical systems at real scale. Income from day one, journeyman credential in 2-5 years, union protection, and a skill that cannot be offshored.',fit:'High fit if physical construction and systems engage you more than software. Lower fit if you want to work with software or digital systems primarily.'},
+      {path:'Entrepreneurship year',what:'Build something real for a year before any credential. Identify a specific problem, build the smallest possible solution, find paying customers. Y Combinator Startup School, SBDC resources, and local startup communities are the infrastructure. The year produces a portfolio, real learning, and a decision about whether to continue building or pursue formal education.',fit:'High fit if you have a specific problem you want to solve and the discipline to work without external structure. Requires genuine self-direction.'},
+      {path:'Military enlistment',what:'Technical MOS options — Signal Corps, combat engineer, Navy Seabee, cyber operations — give Builders access to infrastructure and systems at real operational scale. The GI Bill funds a degree after service. Clearance access is a permanent professional credential.',fit:'High fit if service calling is genuine and you want to build in consequential environments. The commitment is real — 4-6 years minimum.'},
+      {path:'Military academy',what:'Service academy appointment produces both commission and technical credential. West Point engineering, USAFA systems engineering, and USNA nuclear options. For Builders who want to lead technical teams at scale inside the most complex operational environments in the world.',fit:'High fit if service calling is strong and academic credentials are competitive. The admission process is distinct — congressional nomination required.'},
+      {path:'Gap year',what:'Structured exploration year — building projects, technical programs, skills development — before committing to a path. Builder gap years work best when they include a specific building target: a product, a contribution to an open-source project, or a technical apprenticeship.',fit:'High fit if you need more time to identify what you most want to build before committing to a training path. Lower fit if you are avoiding a decision rather than gathering information for one.'},
+      {path:'Work year',what:'Employment at a small company or startup, building a side project simultaneously, conducting informational interviews with practitioners in roles you are curious about. The work year produces clarity about what kind of building work you want to do — and often produces portfolio evidence as a byproduct.',fit:'High fit right now if you are genuinely uncertain. The work year is the lowest-commitment, highest-information path available for an undecided Builder.'},
+    ],
+    clarityQuestions: [
+      {q:'When you imagine yourself five years from now doing work that energizes you, what are you actually doing — and what is the environment?',listen:'Listen for specific activities (coding, building, designing, fixing) and environments (small company, outdoors, my own company, large organization). The specificity of the answer tells you how much self-knowledge already exists.'},
+      {q:'Have you ever built, fixed, or created something that you were genuinely proud of — even something small? Describe it.',listen:'If they can describe it specifically and with energy, the Builder calling is confirmed and the undecided is about path, not identity. If they struggle, spend more time on identity before moving to path.'},
+      {q:'What is stopping you from making a decision right now — is it that you do not know your options, that you are afraid of choosing wrong, or that you genuinely do not know what you want to build?',listen:'The answer tells you which of the three types of undecided you are working with. Each answer leads to a different next step.'},
+    ],
+    conversations: [
+      {person:'A founder who started a company at 18-22',ask:'What do you wish you had known before you started? What would you do differently in the first year?',listen:'Whether the entrepreneurship path sounds energizing or exhausting. The details of early-stage building are the test.'},
+      {person:'A software engineer or developer at a small company (under 50 people)',ask:'What does a typical day actually look like? What is the difference between working at a small company vs a large one?',listen:'Whether the day-to-day reality of technical work at different scales sounds appealing. Small vs large company is the most important early career decision for Builders.'},
+      {person:'A tradesperson in a technical trade (electrician, Seabee, network infrastructure)',ask:'What is the work actually like? What do you build and what does a finished project feel like?',listen:'Whether physical system building produces the same energy as digital system building. Many Builders discover their real calling in trades conversations.'},
+      {person:'A person 5 years out of college who majored in CS or engineering',ask:'Was the degree necessary for what you are doing now? What did college give you that you could not have gotten another way?',listen:'Honest assessment of credential value vs. experience value for the specific career direction.'},
+      {person:'Someone who dropped out of or skipped college and built a career anyway',ask:'What doors were closed because you did not have the degree? What doors were open that surprised you?',listen:'Realistic picture of the non-traditional path — both the advantages and the real costs.'},
+    ],
+    actions90: [
+      'Pick one thing to build and start this week — the smallest possible version. A website, a script, a physical object, a tool. Build it to completion. Notice whether you want to build another one.',
+      'Apply for the most interesting entry-level technical or entrepreneurial job you can find. Work there for 90 days. Notice what you learn about yourself.',
+      'Conduct at least three of the five conversations above. Schedule the first one this week.',
+      'Attend two different types of events — one startup or tech meetup, one trade event or skills competition. Notice which community feels more like your people.',
+      'Write down at the end of 90 days: what did I build? What did I learn about how I work? Which path sounds most aligned with what I discovered?',
+    ],
+  },
+  'Shepherd': {
+    typeFraming: {
+      type1: 'You may not know that direct service careers — nursing, social work, counseling, community health — have multiple entry points. The four-year degree is one. The community college certificate, the CNA, the AmeriCorps placement, and the direct employment path all lead to the same work.',
+      type2: 'You know you want to help people but feel uncertain about which population, which setting, which credential. The fear is picking the wrong specialty. Almost every helping credential is transferable, and most practitioners change populations at least once.',
+      type3: 'You may not yet know which kind of helping work you are built for. The exploration plan below is specific: spend time in proximity to the populations that interest you before you pay for any training.',
+    },
+    paths: [
+      {path:'Four-year college or university',what:'Required for nursing (BSN), social work (BSW), and most clinical mental health credentials. For Shepherds who want to practice clinically, the four-year degree is the credential the work requires. Choose your program by clinical placement quality, not prestige.',fit:'High fit if you have identified the specific clinical credential you want. Lower fit if you are still figuring out which helping work you are built for — you may pay for the wrong degree.'},
+      {path:'Community college + transfer or certificate',what:'CNA, medical assistant, dental assistant, early childhood education, and social work associate degrees are all available at community college for a fraction of four-year cost. Many lead directly to employment or to transfer into four-year BSN or BSW programs. The fastest path to being in the room with the people you want to serve.',fit:'High fit for Shepherds who want to begin direct service quickly without accumulating four-year debt before they know their specialty.'},
+      {path:'Trade apprenticeship',what:'Less obvious for Shepherds, but EMT certification and dental technician training function as apprenticeship-style pathways. Direct service from day one, progressive credentialing, and employment throughout.',fit:'Moderate fit depending on the specific helping work you want to do. Not the primary Shepherd path but worth knowing it exists.'},
+      {path:'Entrepreneurship year',what:'Social enterprise or nonprofit founding — building the organization that serves the community you want to serve. Shepherd entrepreneurs often find that the most needed helping services do not yet exist in their community.',fit:'High fit for Shepherds who want to build the system rather than work within it. Requires conviction about a specific unmet community need.'},
+      {path:'Military enlistment',what:'Healthcare MOS options — Army 68W combat medic, Navy Corpsman — put Shepherds in direct patient care from day one. Clinical experience that nursing schools and PA programs actively recruit. GI Bill funds the credential after service.',fit:'High fit if service calling is genuine. The clinical experience is irreplaceable.'},
+      {path:'Military academy',what:'Medical corps pipeline, nursing corps, and behavioral health officer tracks. For Shepherds who want to serve military communities and earn a clinical credential through officer service.',fit:'High fit if academic credentials are competitive and service calling is genuine.'},
+      {path:'Gap year',what:'AmeriCorps health corps, Peace Corps, Doctors Without Borders volunteer programs, and clinical volunteer placements put Shepherds in direct service with populations they have not yet worked with. The gap year for a Shepherd is primarily about population discovery — figuring out which community you are most built to serve.',fit:'High fit if you know you want to help but have not yet identified your specific population and setting.'},
+      {path:'Work year',what:'CNA employment, hospital patient services, youth work, crisis line volunteering, and hospice volunteering while conducting informational interviews with practitioners in different helping fields. The most direct path to discovering which kind of helping work you can sustain.',fit:'High fit right now if genuinely undecided. Direct service experience before any credential decision is the most rational first step for Shepherds.'},
+    ],
+    clarityQuestions: [
+      {q:'When someone around you is struggling — physically, emotionally, or practically — what is your instinct? Do you want to help directly, or do you want to fix the system that caused the struggle?',listen:'Direct help = clinical or direct service career. Fix the system = social enterprise, advocacy, or policy path. Both are Shepherd expressions but they lead to very different credentials.'},
+      {q:'Have you ever spent extended time with someone who was genuinely struggling — and stayed present for it? What did that experience feel like afterward?',listen:'If the answer is energized or purposeful, the Shepherd calling is confirmed. If the answer is drained or overwhelmed, this is important information about sustainability and specialty fit.'},
+      {q:'What is stopping you from making a decision right now — is it that you do not know all the paths that exist, that you are afraid of committing to the wrong specialty, or that you genuinely do not yet know which population you are most built to serve?',listen:'Same diagnostic as above. Each answer leads to a different next step.'},
+    ],
+    conversations: [
+      {person:'A nurse or physician assistant who started as a CNA or EMT',ask:'What did the early direct care experience teach you that nursing school could not? Would you do the same sequence again?',listen:'Whether the direct service first, credential second sequence makes sense for the specific helping career you are considering.'},
+      {person:'A social worker or therapist currently practicing',ask:'What does a typical week actually look like — the full picture, including the hard parts? What keeps you in this work?',listen:'Whether the emotional demands described match what you can sustain. The honest account of the hard parts is more valuable than the inspiring account of the rewarding ones.'},
+      {person:'Someone who burned out of a helping profession and left',ask:'What led to burnout? What did you wish you had known or done differently? What would make the work sustainable?',listen:'This conversation is uncomfortable and essential. The burnout story is the most useful information a Shepherd can gather before committing to a helping path.'},
+      {person:'An AmeriCorps or Peace Corps alumnus in a helping field',ask:'What did the service year give you that a year of college could not? How did it change what you decided to do next?',listen:'Whether a structured service year before credential makes sense as a first step.'},
+      {person:'A person you personally know who is struggling and might be willing to speak with you',ask:'Not questions — presence. Offer to listen. Notice what the experience of sustained presence with difficulty actually feels like.',listen:'Whether being present with someone in genuine difficulty energizes or drains you. This is the most direct possible test of the Shepherd calling.'},
+    ],
+    actions90: [
+      'Volunteer at a direct service organization this week — one shift, with real contact with people who are struggling. Notice whether the experience energizes or drains you.',
+      'Conduct at least three of the five conversations above. Start with the burnout conversation — it is the most uncomfortable and the most useful.',
+      'Spend 90 days working or volunteering in proximity to the population you think you most want to serve. Notice whether the reality confirms or complicates the calling.',
+      'Talk to a practitioner who has changed their specialty and ask specifically why. The pivot story is the most useful information a Shepherd can gather.',
+      'Write down at the end of 90 days: which population did I feel most drawn to? Which type of helping work gave me energy vs. drained me? Which credential does the work I want to do actually require?',
+    ],
+  },
+  'Architect': {
+    typeFraming: {
+      type1: 'You may not know that technical expertise paths — Navy nuclear, engineering apprenticeship, technical certification — exist that do not require four years of undergraduate education first. Architects assume college because systems thinking feels academic. It is not.',
+      type2: 'You know you want to work with complex systems but feel uncertain about which domain — software, physical systems, biological systems, organizational systems. The fear is overspecializing too early. Technical knowledge transfers across domains more readily than most guidance suggests.',
+      type3: 'You may not yet know which kind of complexity most engages you. The 90-day plan: find the most complex system you have access to and spend real time trying to understand it completely. What you cannot stop thinking about is the signal.',
+    },
+    paths: [
+      {path:'Four-year college or university',what:'Engineering, CS, physics, and mathematics degrees open the deepest technical paths. For Architects who want to work on the most complex systems — nuclear, aerospace, cryptography, biological systems — the four-year credential is often required.',fit:'High fit if you have identified the specific technical domain and it requires formal credentials. Lower fit if you are still identifying which kind of complexity most engages you.'},
+      {path:'Community college + transfer',what:'Two years of rigorous technical foundations — calculus, physics, chemistry, programming — then transfer to an engineering or CS program. Lower cost, same technical outcome. The mathematical foundations of engineering are identical whether taught at a CC or a four-year institution.',fit:'High fit if you want the engineering credential but need to reduce cost or confirm your technical direction before committing to a four-year program.'},
+      {path:'Trade apprenticeship',what:'For Architects whose systems interest is physical: electrician (IBEW), HVAC technician, industrial mechanic, network infrastructure. The most complex physical systems in the built environment are maintained by tradespeople who think like Architects.',fit:'High fit if physical and electrical systems engage you more than computational or biological ones.'},
+      {path:'Entrepreneurship year',what:'Building a technical product — a software tool, a hardware device, an automated system — before any credential. The Architect who builds something technically complex demonstrates capability more directly than any transcript.',fit:'High fit if you have a specific technical problem you want to solve. Requires strong self-direction and a tolerance for working without external validation.'},
+      {path:'Military enlistment',what:'Navy nuclear, Army Signal, Army Cyber (17C), and Air Force cyber operations put Architects inside the most technically demanding systems in the world. Clearance access and technical depth that civilian training cannot replicate.',fit:'High fit if service calling is genuine and you want to work on classified technical systems.'},
+      {path:'Military academy',what:'USAFA engineering, West Point systems engineering, USNA nuclear officer track. For Architects who want to commission as technical officers and lead engineering operations at scale.',fit:'High fit if academic credentials are competitive and service calling is genuine.'},
+      {path:'Gap year',what:'Research internship, technical fellowship, open-source contribution project, or a year of intentional self-study in a specific technical domain. The Architect gap year should produce a portfolio artifact — a working system, a research contribution, a documented technical investigation.',fit:'High fit if you need more time to identify which technical domain most engages you before paying for a credential.'},
+      {path:'Work year',what:'Technical support, IT helpdesk, engineering assistant, or manufacturing QA roles that put Architects in proximity to complex systems. The goal is to find the specific technical domain that you cannot stop thinking about.',fit:'High fit right now if genuinely undecided. The Architect who spends a year working on technical systems before choosing a credential makes a much better-informed decision than one who chooses a major from a catalog.'},
+    ],
+    clarityQuestions: [
+      {q:'When you encounter a complex system — a piece of machinery, a software application, a biological process, an organization — what is your instinct? Do you want to understand how it works, or do you want to fix what is broken?',listen:'Understanding = research, design, or engineering track. Fixing = operations, maintenance, or applied engineering track. Both are Architect expressions.'},
+      {q:'What is the most complex system you have ever tried to understand completely? What drew you to it?',listen:'The domain they name — mechanical, digital, biological, organizational — often points directly to the technical specialty that will most engage them.'},
+      {q:'What is stopping you from making a decision right now — is it that you do not know what technical paths exist, that you are afraid of specializing too early, or that you genuinely do not yet know which kind of complexity most engages you?',listen:'Diagnosis of the undecided type and the appropriate next step.'},
+    ],
+    conversations: [
+      {person:'A senior engineer or technical lead who operates at significant complexity',ask:'What technical problem are you currently working on? How did you develop the expertise to work on problems at that level?',listen:'Whether the depth of technical engagement described sounds like the kind of work you want to spend your career doing.'},
+      {person:'A Navy nuclear veteran or similarly technically credentialed enlisted veteran',ask:'What did the technical training actually produce? What does your day look like now and how did the military technical experience get you there?',listen:'Whether the military technical credential path sounds like a viable and appealing route to the kind of complexity you want to engage.'},
+      {person:'A tradesperson in a highly technical trade (industrial electrician, HVAC systems, precision manufacturing)',ask:'What is the hardest technical problem you solved this year? How did you develop the knowledge to solve it?',listen:'Whether physical and electrical system complexity produces the same engagement as computational complexity.'},
+      {person:'An engineer or scientist who works in a research context',ask:'What does a typical day look like? What is the relationship between the work you do and real-world systems?',listen:'Whether pure research or applied engineering sounds like a better fit for the kind of impact you want.'},
+      {person:'Someone who chose a non-degree technical path (bootcamp, self-taught, certification)',ask:'What did the non-degree path cost you in terms of doors closed? What did it give you that the degree path would not have?',listen:'Honest assessment of the credential vs. skill question for the specific technical domain you are considering.'},
+    ],
+    actions90: [
+      'Find the most complex system you have access to right now and spend 90 days trying to understand it completely. Document what you do not understand. Notice whether the not-understanding frustrates or engages you.',
+      'Read the technical documentation for something you use every day. Notice whether this produces curiosity or boredom.',
+      'Conduct at least three of the five conversations above. The Navy nuclear or trades conversation is the one most Architects have never had.',
+      'Apply for a technical support or IT helpdesk role and work it for 90 days. Notice which technical problems you find genuinely interesting vs. tedious.',
+      'Write down at the end of 90 days: which technical domain did I find most engaging? What specific problem do I most want to be able to solve? What knowledge do I need to solve it — and what is the fastest legitimate path to that knowledge?',
+    ],
+  },
+  'Catalyst': {
+    typeFraming: {
+      type1: 'You may not know that communications, media, and creative careers have paths that do not require journalism degrees or film school. Publishing consistently online, building an audience, and developing a client base are paths that do not wait for credentials.',
+      type2: 'You know you want to communicate and create but feel uncertain about format, platform, or audience. The fear is investing in the wrong medium. Format is reversible — most Catalysts change platforms multiple times before finding the one that fits.',
+      type3: 'You may not yet know what you most want to say or who you most want to reach. The 90-day plan: publish something every week for twelve weeks and see what topics pull you back repeatedly.',
+    },
+    paths: [
+      {path:'Four-year college or university',what:'Journalism, communications, film, English, and marketing degrees open institutional media careers and give Catalysts the professional network, the supervised internships, and the credential some employers require. Best fit for Catalysts who want to work inside large media organizations.',fit:'High fit if your target career is inside a large media organization that requires credentials. Lower fit if you are building an independent media career — audiences do not check degrees.'},
+      {path:'Community college + transfer',what:'Communications, media arts, and digital media programs at CC level. Portfolio-building in an affordable environment before transfer to a four-year communications program.',fit:'High fit if you want the four-year credential but need to reduce cost or build your portfolio before committing.'},
+      {path:'Trade apprenticeship',what:'Less obvious for Catalysts, but broadcast technician, audio engineering, and graphic arts apprenticeship programs exist. Technical media production skills are increasingly valuable and apprenticeship-eligible.',fit:'Moderate fit for technically-oriented Catalysts who want to master the craft before the content.'},
+      {path:'Entrepreneurship year',what:'Building an independent media platform — newsletter, podcast, YouTube channel, documentary project — from scratch. Audience is the credential. A newsletter with 500 paying subscribers says more about a Catalyst than most degrees.',fit:'High fit if you have a specific voice, a specific audience, and the discipline to publish consistently without external validation.'},
+      {path:'Military enlistment',what:'Public Affairs Specialist (Army 46Q), Navy Mass Communication Specialist, Air Force Public Affairs. Operational access to stories that civilian journalists cannot reach. Real audiences from day one.',fit:'High fit if service calling is genuine and you want access to stories that require a uniform.'},
+      {path:'Military academy',what:'Public affairs officer track, strategic communications, and MISO (psychological operations) officer tracks for Catalysts who want to communicate at scale inside military institutions.',fit:'High fit if academic credentials are competitive and the intersection of communication and national service is genuine.'},
+      {path:'Gap year',what:'A year of consistent publishing — one piece per week in a chosen format — combined with informational interviews with practitioners in different media careers. The gap year Catalyst builds the portfolio that makes every subsequent application stronger.',fit:'High fit if you know you want to communicate but have not yet identified your specific format, audience, or beat.'},
+      {path:'Work year',what:'Communications assistant, marketing coordinator, or social media associate roles at organizations whose work interests you — while publishing independently on the side. The combination produces both professional credentials and an independent portfolio.',fit:'High fit right now if genuinely undecided. The Catalyst work year produces the portfolio evidence that clarifies which communication path is the right fit.'},
+    ],
+    clarityQuestions: [
+      {q:'What is the story you most want to tell — or the idea you most want to communicate — that the world is not hearing clearly enough right now?',listen:'If they can answer this specifically and with energy, the Catalyst calling is confirmed and the undecided is about format and platform. If they struggle, spend more time on what they most care about before moving to communication format.'},
+      {q:'Have you ever created something — written, produced, designed, recorded — that reached people outside your immediate circle and got a response? What was that like?',listen:'If they light up describing the response, the Catalyst calling is confirmed. The reach and the resonance are what drive Catalysts.'},
+      {q:'What is stopping you from making a decision right now — is it that you do not know what communication career paths exist, that you are afraid of committing to one format or platform, or that you genuinely do not yet know what you most want to say?',listen:'Diagnosis of the undecided type.'},
+    ],
+    conversations: [
+      {person:'A journalist, documentary filmmaker, or long-form writer currently working',ask:'What does a week of your work actually look like? What is the hardest thing about this career that people outside it do not see?',listen:'Whether the reality of the communication career — including the financial instability, the constant pitching, the rejection — sounds sustainable.'},
+      {person:'A successful independent creator (newsletter, podcast, YouTube) who earns income from their work',ask:'What did the first year of building your audience actually look like? What would you tell someone starting today?',listen:'Whether the independent creator path — its freedom and its isolation — sounds more appealing than the institutional journalism or marketing path.'},
+      {person:'A communications or marketing professional at an organization whose mission interests you',ask:'What does your work contribute to the organization mission? What does a good week look like?',listen:'Whether organizational communications feels like an expression of the Catalyst calling or a compromise of it.'},
+      {person:'Someone who studied communications or journalism in college',ask:'Was the degree necessary for your current work? What did it give you that you could not have gotten by building a portfolio directly?',listen:'Honest assessment of whether the credential or the portfolio is the relevant evidence in the specific communication career you are considering.'},
+      {person:'A person whose communication work you genuinely admire — a writer, creator, journalist, filmmaker',ask:'How did you develop your voice? What did the early work look like before you found it?',listen:'The development arc. Most Catalysts who have found their voice describe a period of consistent creation before it emerged. The timeline is useful.'},
+    ],
+    actions90: [
+      'Publish one piece of content this week — written, audio, or video — on any platform. Publish another next week. Do this every week for 90 days.',
+      'Conduct at least three of the five conversations above. The independent creator conversation is the one most Catalysts have not had.',
+      'Apply for one communications-adjacent job and work it for 90 days. Notice whether organizational communications feels like an expression of the calling or a compromise of it.',
+      'Track what topics you keep returning to in your publishing. At 90 days, identify the one subject you cannot stop writing or talking about.',
+      'Write down at the end of 90 days: what is the story I most want to tell? Who is the audience I most want to reach? Which format produced the most energy? Which path gets me to that audience fastest?',
+    ],
+  },
+  'Advocate': {
+    typeFraming: {
+      type1: 'You may not know that advocacy and justice careers have multiple entry points — community organizing, legal aid volunteerism, policy research, direct service — that do not require a law degree or four-year degree first.',
+      type2: 'You know you want to work on justice or policy but feel uncertain about which issue, which institution, which lever. The fear is choosing the wrong cause. Advocacy skills transfer across issues, and most practitioners shift their focus at least once.',
+      type3: 'You may not yet know which injustice most demands your attention. The 90-day plan: spend time inside three different institutions that exercise power in your community and see which gaps you cannot stop noticing.',
+    },
+    paths: [
+      {path:'Four-year college or university',what:'Pre-law, political science, public policy, and social justice studies programs. For Advocates who want to practice law or enter federal policy, the four-year degree is a prerequisite. Choose based on access to clinical legal programs, government internships, and advocacy organizations.',fit:'High fit if you have a specific legal or policy credential as your target. Lower fit if you are still identifying which system you most want to change.'},
+      {path:'Community college + transfer',what:'Paralegal certificate or transfer pathway into political science or social work. CC paralegal programs provide legal work experience and community college cost before transfer to a four-year pre-law track.',fit:'High fit if you want to work in legal settings quickly or confirm law school interest before committing to a four-year program.'},
+      {path:'Trade apprenticeship',what:'Less direct for Advocates, but community organizing apprenticeships and union organizer training programs function similarly. The labor movement has formal training pathways for Advocates who want to build worker power.',fit:'Moderate fit for Advocates whose calling is specifically in labor or community organizing.'},
+      {path:'Entrepreneurship year',what:'Building an advocacy organization, legal access tool, or policy platform from scratch. Advocate entrepreneurs who build something during their entrepreneurship year arrive at law school or policy programs with evidence of real-world advocacy that direct-from-undergraduate applicants cannot match.',fit:'High fit for Advocates who have identified a specific gap in access to justice or policy influence that they want to address directly.'},
+      {path:'Military enlistment',what:'Army Legal Specialist (27D), Military Police (31B), Coast Guard Maritime Law Enforcement. Legal and law enforcement contexts inside military institutions. Pathway to JAG Corps for Advocates who want to practice military law.',fit:'High fit if service calling is genuine and you want to engage with legal and justice systems inside military institutions.'},
+      {path:'Military academy',what:'Pre-law officer track, Judge Advocate General Corps pipeline, civil affairs officer. For Advocates who want to commission and eventually practice military law.',fit:'High fit if academic credentials are competitive and the intersection of law and military service is genuine.'},
+      {path:'Gap year',what:'Volunteer at a legal aid organization, attend public proceedings in your issue area, intern at a policy organization or legislative office. The Advocate gap year is about getting inside the institutions you want to change before you pay to study them.',fit:'High fit if you know you want to work on justice or policy but have not yet identified your specific issue area or mechanism.'},
+      {path:'Work year',what:'Legal assistant, community organizer, government constituent services, or nonprofit advocacy roles while conducting informational interviews with attorneys, policy analysts, and organizers. The most direct path to identifying which advocacy mechanism you are built for.',fit:'High fit right now if genuinely undecided. The Advocate who works inside an institution before paying to study it makes a better-informed decision.'},
+    ],
+    clarityQuestions: [
+      {q:'What specific injustice or policy gap makes you most angry when you encounter it — not in the abstract, but in a specific instance you have actually seen or experienced?',listen:'The specificity of the injustice named often points directly to the issue area and the mechanism. Anger at a specific system is more useful diagnostic information than general concern about justice.'},
+      {q:'When you imagine addressing an injustice, are you most drawn to being in the courtroom, in the community, in the legislature, or in the streets? What feels like the right arena?',listen:'Courtroom = law. Community = organizing. Legislature = policy. Streets = direct action. Each points to a different credential and career path.'},
+      {q:'What is stopping you from making a decision right now — is it that you do not know what advocacy and justice paths exist, that you are afraid of choosing the wrong issue or institution, or that you genuinely do not yet know which injustice demands your attention most?',listen:'Diagnosis of the undecided type.'},
+    ],
+    conversations: [
+      {person:'An attorney in public interest law (legal aid, public defender, civil rights)',ask:'What does your work actually look like? What is the relationship between the law as written and justice as practiced?',listen:'Whether the gap between law and justice energizes or demoralizes them. The Advocate who is energized by that gap is suited for public interest law.'},
+      {person:'A community organizer who does not have a law degree',ask:'What does organizing work produce that advocacy inside institutions does not? What are the limits of organizing?',listen:'Whether the outside-the-institution advocacy path sounds more or less aligned with the specific injustice you want to address.'},
+      {person:'A government or policy professional (legislative staffer, policy analyst, city official)',ask:'How do policy decisions actually get made? What is the relationship between what you work on and what actually changes?',listen:'Whether the inside-the-institution policy path sounds like an effective mechanism for the specific change you want to see.'},
+      {person:'Someone who was directly affected by an injustice you care about',ask:'Not questions — listen. Ask if they would be willing to describe their experience. Notice what their account does to your sense of urgency.',listen:'Whether proximity to the people affected by the injustice clarifies or complicates your sense of what needs to change.'},
+      {person:'A law school graduate who went to law school after working for several years first',ask:'What did the work experience give your law school application and your law school experience? Would you do the same sequence again?',listen:'Whether the experience-before-credential sequence sounds like the right approach for you.'},
+    ],
+    actions90: [
+      'Attend three public proceedings this month — a city council meeting, a court session (most are open to the public), and a community board meeting. Notice what you observe about how decisions actually get made.',
+      'Volunteer at a legal aid organization or advocacy nonprofit for 90 days. Notice which type of advocacy work — direct client service, systemic change, community organizing — produces the most energy.',
+      'Conduct at least three of the five conversations above. The conversation with someone directly affected by the injustice you care about is the one most Advocates avoid and the one that most clarifies direction.',
+      'Identify the specific injustice that makes you most angry — not in general but in a specific instance you have encountered. Name the mechanism you would use to address it.',
+      'Write down at the end of 90 days: which injustice demands my attention most? Which advocacy mechanism — law, organizing, policy, direct service — feels most aligned? Which credential does that mechanism require?',
+    ],
+  },
+  'Cultivator': {
+    typeFraming: {
+      type1: 'You may not know that development and growth careers — teaching, farming, community organizing, social enterprise — have paths that begin with doing the work, not credentialing for it. AmeriCorps, apprenticeship, and direct employment are legitimate first chapters.',
+      type2: 'You know you want to grow something but feel uncertain about what — people, land, organizations, programs. The fear is choosing the wrong thing to cultivate. Cultivators almost always find that their deepest calling reveals itself through sustained practice, not through advance planning.',
+      type3: 'You may not yet know what you most want to grow. The 90-day plan: commit to one sustained relationship or project for 90 days and measure what you learned by being patient with it.',
+    },
+    paths: [
+      {path:'Four-year college or university',what:'Education, agriculture, environmental science, and social work degrees. For Cultivators who want to teach in public schools or lead large agricultural programs, the four-year credential is required. Choose based on quality of student teaching placements and agricultural program depth.',fit:'High fit if you have identified the specific institutional role that requires the degree. Lower fit if you are still figuring out what you most want to grow.'},
+      {path:'Community college + transfer',what:'Education associate degrees, agricultural technology programs, and early childhood education certificates. Community college Cultivator paths often lead directly to employment or to four-year transfer.',fit:'High fit if you want to begin doing the developmental work immediately while building toward a four-year credential.'},
+      {path:'Trade apprenticeship',what:'For Cultivators whose calling is in land and physical systems: farming, land management, sustainable agriculture. USDA beginning farmer programs, agricultural apprenticeships, and land trust programs are all structured pathways.',fit:'High fit for Cultivators whose calling is specifically in agricultural or environmental systems.'},
+      {path:'Entrepreneurship year',what:'Social enterprise or community program founding. Cultivator entrepreneurs build the tutoring program, the urban garden, the after-school organization that the community needs and that does not yet exist. The enterprise is the work year and the credential simultaneously.',fit:'High fit for Cultivators who have identified a specific gap in their community and want to build the program rather than work within one.'},
+      {path:'Military enlistment',what:'Education services specialist, training officer track, and Drill Sergeant pathway put Cultivators in intensive people-development roles from day one. The military trains more people in more demanding contexts than most educational institutions.',fit:'High fit if service calling is genuine and developing people under pressure is specifically appealing.'},
+      {path:'Military academy',what:'Education services officer track, leadership development pathway, and chaplain corps pipeline for Cultivators who want to develop people inside military institutions.',fit:'High fit if academic credentials are competitive and the intersection of development and national service is genuine.'},
+      {path:'Gap year',what:'Teaching fellowship, agricultural internship, AmeriCorps education corps, or Teach For America for Cultivators who want to begin developing people or land before committing to a specific credential.',fit:'High fit if you know you want to grow something but have not yet identified which population, which land, or which program you most want to cultivate.'},
+      {path:'Work year',what:'Teaching assistant, farm worker, youth program staff, or tutoring role — committing to one sustained relationship or place for a full year. The Cultivator work year is about discovering which kind of growth work you can sustain before paying to credential for it.',fit:'High fit right now if genuinely undecided. One full cycle of real cultivation work teaches you more about your calling than any career assessment.'},
+    ],
+    clarityQuestions: [
+      {q:'What is something you have grown, developed, or nurtured — a plant, a skill, a relationship, a project — that you are genuinely proud of? What made it grow?',listen:'The thing they name — plant, person, organization, land — often points directly to the specific Cultivator calling. What made it grow is the most important part: patience, specific attention, systems knowledge, relationships.'},
+      {q:'What do you want to look back at in ten years and say you grew? Name the most specific version of that you can.',listen:'Cultivators who can answer this specifically often know their calling better than they think — they are undecided about path, not about calling.'},
+      {q:'What is stopping you from making a decision right now — is it that you do not know what development and growth careers look like, that you are afraid of committing to one thing to cultivate, or that you genuinely do not yet know what you most want to grow?',listen:'Diagnosis of the undecided type.'},
+    ],
+    conversations: [
+      {person:'A teacher with 5+ years of experience in a public school',ask:'What does the full reality of teaching look like — including the hard parts that nobody talks about at career days? What keeps you in it?',listen:'Whether the full reality of teaching — the bureaucracy, the emotional demands, the salary — sounds sustainable alongside the parts that are rewarding.'},
+      {person:'A farmer or agricultural practitioner (small farm, urban agriculture, CSA)',ask:'What does a week in your busiest season actually look like? What do you wish you had understood about this work before you started?',listen:'Whether the physical demands, the financial uncertainty, and the seasonal structure of agricultural work sound like something you want to build your life around.'},
+      {person:'Someone you have personally mentored or tutored over an extended period',ask:'Not a question — a reflection. Describe the arc of their development. Notice what it felt like to watch them grow.',listen:'Whether the specific experience of watching someone develop over time produces the feeling you want your work to produce regularly.'},
+      {person:'A social enterprise or nonprofit founder who built something from scratch',ask:'What was the hardest part of the first year? What would you do differently?',listen:'Whether the social enterprise path — its freedom and its financial fragility — sounds more aligned than working within an existing institution.'},
+      {person:'A person who has been doing the same work in the same place for many years',ask:'What has sustained you here? What does staying a long time produce that moving around does not?',listen:'Whether the Cultivator instinct toward long-term, sustained commitment is confirmed by hearing from someone who has actually lived it.'},
+    ],
+    actions90: [
+      'Commit to one sustained relationship or project for 90 days — tutor the same student weekly, work the same garden plot, show up to the same community organization every week. Do not switch. Notice what patience produces.',
+      'Conduct at least three of the five conversations above. The conversation with someone who has done the same work in the same place for many years is the most important one for Cultivators.',
+      'Work or volunteer in proximity to the thing you think you most want to grow — people, land, or organizations. Notice whether the day-to-day reality of the work confirms or complicates the calling.',
+      'Document what grows during the 90 days. One paragraph per week. At the end, read back from the beginning and identify what you were actually growing.',
+      'Write down at the end of 90 days: what did I grow? What did staying produce that switching would not have? Which specific thing — population, land, program — do I most want to make my career of cultivating?',
+    ],
+  },
+  'Peacemaker': {
+    typeFraming: {
+      type1: 'You may not know that bridge-building careers — interpretation, mediation, international development, cross-cultural healthcare — have entry points that do not require international relations degrees. Language skills, community relationships, and facilitation training open doors at any age.',
+      type2: 'You know you want to build bridges but feel uncertain about which communities, which divide, which mechanism. The fear is choosing the wrong bridge to build. Cross-cultural skills transfer — the Peacemaker who learns to bridge one divide becomes more capable across all of them.',
+      type3: 'You may not yet know which gap most needs your presence. The 90-day plan: intentionally enter two communities that do not usually intersect and practice being genuinely present on both sides.',
+    },
+    paths: [
+      {path:'Four-year college or university',what:'International relations, peace studies, linguistics, and cross-cultural communication degrees. For Peacemakers who want to enter diplomacy, international NGO work, or formal conflict resolution, the four-year credential is typically required.',fit:'High fit if you have identified a specific international or policy-facing career. Lower fit if you are still discovering which communities and which divides you are most positioned to bridge.'},
+      {path:'Community college + transfer',what:'Language courses, cross-cultural communication, and international studies associate degrees at community college before transfer. Lower cost while developing language skills and exploring specific regions and communities.',fit:'High fit if you want the four-year credential but need to develop language proficiency and explore cultural contexts before committing to a specific international or cross-cultural focus.'},
+      {path:'Trade apprenticeship',what:'Less direct for Peacemakers, but community interpreter training and medical interpretation certification programs function as apprenticeship-style pathways — supervised practice from day one, progressive credentialing, and employment throughout.',fit:'High fit for Peacemakers whose primary bridge is language-based and who want to enter professional interpretation work quickly.'},
+      {path:'Entrepreneurship year',what:'Language services business, dialogue program, or cross-cultural navigation enterprise. Peacemaker entrepreneurs who build something that closes a genuine cross-cultural gap arrive at any next step with a credential that no degree produces.',fit:'High fit for Peacemakers who have identified a specific cross-cultural gap and have the language and community relationships to address it.'},
+      {path:'Military enlistment',what:'Civil Affairs Specialist (38B), Interpreter/Translator (09L), and Defense Language Institute track. Military Peacemakers work at the intersection of force and diplomacy in the most consequential cross-cultural contexts in the world.',fit:'High fit if service calling is genuine and you want to work in operational cross-cultural environments.'},
+      {path:'Military academy',what:'Foreign Area Officer track, Civil Affairs officer, and language officer pathway. For Peacemakers who want to commission and specialize in cross-cultural operational environments.',fit:'High fit if academic credentials are competitive and the intersection of diplomacy and military service is genuine.'},
+      {path:'Gap year',what:'Language immersion program abroad, refugee resettlement volunteer work, dialogue facilitation training, or cross-cultural community engagement. The Peacemaker gap year is about building the bridges you want to make your life\'s work — before you pay to study how to build them.',fit:'High fit if you know you want to bridge communities but have not yet identified which specific divide, language, or region calls most strongly to you.'},
+      {path:'Work year',what:'Community interpreter, refugee resettlement case aide, cross-cultural health worker, or dialogue facilitator role while developing language proficiency and conducting informational interviews with practitioners in different bridge-building careers.',fit:'High fit right now if genuinely undecided. The Peacemaker who works across real cultural divides before credentialing for it makes a much better-informed decision about which bridge to dedicate their career to.'},
+    ],
+    clarityQuestions: [
+      {q:'What is the divide you most want to close — between which two communities, across which language, culture, or conflict? Name it as specifically as you can.',listen:'The more specifically they can name the divide, the clearer the calling. Vague references to "bringing people together" need to be sharpened. Push for specificity about which people and which divide.'},
+      {q:'Have you ever been in a room where two groups could not understand each other — and you were able to bridge the gap? What did that feel like?',listen:'If they describe it with energy and ownership, the Peacemaker calling is confirmed. The bridge-building instinct shows up early in Peacemakers.'},
+      {q:'What is stopping you from making a decision right now — is it that you do not know what bridge-building career paths exist, that you are afraid of committing to one community or one divide, or that you genuinely do not yet know which gap most needs your presence?',listen:'Diagnosis of the undecided type.'},
+    ],
+    conversations: [
+      {person:'A professional interpreter (medical, legal, or community)',ask:'What does the work actually require — beyond language? What is the hardest part of holding both sides simultaneously?',listen:'Whether the specific demands of professional interpretation — the emotional neutrality, the precision, the invisible position — sound like something you want to do every day.'},
+      {person:'A conflict resolution practitioner or mediator',ask:'What does a failed mediation look like? What did you learn from the times the bridge did not hold?',listen:'Whether the failure and the persistence required to keep bridge-building after failure sounds like work you can sustain.'},
+      {person:'A refugee resettlement worker or immigrant services professional',ask:'What does the work look like on a difficult day? What does it produce on a good one?',listen:'Whether the cross-cultural community service work sounds like the specific bridge you most want to build.'},
+      {person:'Someone from a community different from your own who is willing to describe their experience',ask:'Not questions — listening. Ask if they would be willing to describe what it is like to navigate systems that were not designed for them.',listen:'Whether the proximity to that experience clarifies the specific bridge you want to build.'},
+      {person:'A diplomat, foreign service officer, or international NGO professional',ask:'What does the work look like at the operational level — not the theory? What is the relationship between the bridge you build and the change it produces?',listen:'Whether the international path — its formal credential requirements, its geographic instability, its institutional structure — sounds more or less aligned than community-level bridge-building.'},
+    ],
+    actions90: [
+      'Intentionally enter a community different from your own and show up consistently for 90 days. Not as an observer — as a participant who is genuinely learning. Notice what bridge-building actually requires.',
+      'Find one situation where two groups are not communicating and offer to help. Notice what happens when you try to hold both sides simultaneously.',
+      'Conduct at least three of the five conversations above. The conversation with someone from a different community who is willing to describe their experience is the one most Peacemakers have not had at sufficient depth.',
+      'If you speak a second language, use it in a professional or community context for 90 days. If you do not, begin serious study of the language most relevant to the bridge you want to build.',
+      'Write down at the end of 90 days: which divide did I feel most drawn to close? Which bridge held and which did not? What specific community, language, or cultural gap most needs my presence? Which path gets me there?',
+    ],
+  },
+};
+
+
+// ── UNDECIDED PATH RENDERERS ──────────────────────────────────
+
+function renderUndecidedValidation(arch, color, el, section) {
+  if (!el || !section) return;
+  var t = (UNDECIDED_DATA[arch] || UNDECIDED_DATA['Builder']).typeFraming;
+  var html = '<div class="ai-badge">&#128161; Not Knowing Is Data \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+
+  html += '<p style="font-size:14px;color:var(--navy);line-height:1.6;font-weight:500;margin-bottom:1rem">"Honestly not sure yet" is one of the most honest answers on this assessment \u2014 and one of the most useful. It tells your counselor exactly what the next conversation needs to be about.</p>';
+
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">When a student selects undecided, it almost never means they have no preferences. It almost always means one of three specific things \u2014 and each one leads to a different next step.</p>';
+
+  var types = [
+    {label:'You do not know your options', desc:t.type1, step:'The path explorer below shows you what each option actually looks like for someone wired the way you are. Read it before your next counselor session.'},
+    {label:'You know what you want but are afraid to commit', desc:t.type2, step:'The decision clarity questions below help you distinguish between a genuine lack of information and anxiety about committing. Both are real. They require different responses.'},
+    {label:'You genuinely need more information about yourself', desc:t.type3, step:'The 90-day action plan below is built for this. It produces information without requiring a decision first.'},
+  ];
+
+  types.forEach(function(t, i) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:10px">';
+    html += '<div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:8px">';
+    html += '<div style="width:26px;height:26px;border-radius:50%;background:'+color+';color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0">'+(i+1)+'</div>';
+    html += '<div style="font-size:13px;font-weight:600;color:var(--navy);padding-top:4px">'+t.label+'</div></div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:8px">'+t.desc+'</p>';
+    html += '<div style="background:rgba(24,95,165,0.04);border-radius:6px;padding:8px 12px"><p style="font-size:12px;color:#185FA5;margin:0"><strong>Next step:</strong> '+t.step+'</p></div></div>';
+  });
+
+  html += '<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:12px 14px;margin-top:1rem">';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0"><strong>What this report does for you:</strong> It treats your archetype \u2014 the way you are wired \u2014 as the constant, and shows you what each possible path looks like through that lens. You are not choosing between paths in the abstract. You are choosing which version of your ' + arch + ' calling you want to live. That reframe changes the question.</p></div>';
+
+  html += '</div>';
+  el.innerHTML = html; section.style.display = '';
+}
+
+function renderUndecidedPathExplorer(arch, color, el, section) {
+  if (!el || !section) return;
+  var paths = (UNDECIDED_DATA[arch] || UNDECIDED_DATA['Builder']).paths;
+  var html = '<div class="ai-badge">&#128507; Path Explorer \u2014 All Options for ' + arch + ' Archetypes</div><div class="ai-content">';
+
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Each path below is described honestly \u2014 what it actually involves, and how well it fits the ' + arch + ' calling. No path is recommended over another. The fit rating is based on your archetype, not on prestige or convention.</p>';
+
+  paths.forEach(function(p) {
+    var fitHigh = p.fit.indexOf('High fit') === 0;
+    var fitColor = fitHigh ? '#2d6a4f' : '#825B0A';
+    var fitBg = fitHigh ? 'rgba(45,106,79,0.06)' : 'rgba(200,169,110,0.06)';
+
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:10px">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">';
+    html += '<div style="font-size:13px;font-weight:600;color:var(--navy)">'+p.path+'</div>';
+    html += '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:'+fitColor+';background:'+fitBg+';padding:2px 8px;border-radius:20px;white-space:nowrap;margin-left:8px">'+p.fit.split(' \u2014')[0]+'</div></div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:6px">'+p.what+'</p>';
+    if (p.fit.indexOf('\u2014') !== -1) {
+      html += '<p style="font-size:11px;color:var(--text-light);font-style:italic;margin:0">'+p.fit.split('\u2014')[1].trim()+'</p>';
+    }
+    html += '</div>';
+  });
+
+  html += '<div style="background:rgba(0,0,0,0.02);border-radius:8px;padding:12px 14px;margin-top:4px">';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0">The work year and gap year are listed last because for genuinely undecided students they are often the most rational first step \u2014 not because they are the right destination, but because they produce the most information about which destination is right. Talk with your counselor about whether buying time to explore makes more sense than committing to a credential you are not yet certain about.</p></div>';
+
+  html += '</div>';
+  el.innerHTML = html; section.style.display = '';
+}
+
+function renderUndecidedClarity(arch, color, el, section) {
+  if (!el || !section) return;
+  var questions = (UNDECIDED_DATA[arch] || UNDECIDED_DATA['Builder']).clarityQuestions;
+  var html = '<div class="ai-badge">&#128270; Decision Clarity Questions \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">These three questions help you figure out what kind of undecided you are \u2014 and therefore what your next step should be. They are designed for a counselor session, not for answering alone. Bring them to your next meeting.</p>';
+
+  questions.forEach(function(q, i) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:12px">';
+    html += '<div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:10px">Question '+(i+1)+': <em>'+q.q+'</em></div>';
+    html += '<div style="background:rgba(200,169,110,0.06);border-radius:6px;padding:10px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:4px">What to listen for</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0">'+q.listen+'</p></div></div>';
+  });
+
+  html += '<div style="background:rgba(24,95,165,0.04);border-radius:8px;padding:12px 14px;margin-top:4px">';
+  html += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#185FA5;margin-bottom:6px">The most important question of all</div>';
+  html += '<p style="font-size:13px;color:var(--navy);font-style:italic;margin-bottom:8px">"What would you do if you knew you could not fail \u2014 and what would you do if all paths led to the same income and the same status?"</p>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0">The first question removes fear. The second removes prestige. What is left when both are removed is usually closer to the actual calling than any answer produced under normal conditions.</p></div>';
+
+  html += '</div>';
+  el.innerHTML = html; section.style.display = '';
+}
+
+function renderUndecidedConversations(arch, color, el, section) {
+  if (!el || !section) return;
+  var convos = (UNDECIDED_DATA[arch] || UNDECIDED_DATA['Builder']).conversations;
+  var html = '<div class="ai-badge">&#128172; Five Conversations Before You Decide \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Most 17-year-olds make path decisions based on what they have been told, not on what they have directly experienced. These five conversations change that. Each one gives you real information that no amount of online research produces.</p>';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">Your counselor can help you find these people. You are responsible for having the conversations.</p>';
+
+  convos.forEach(function(c, i) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:12px">';
+    html += '<div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:8px">';
+    html += '<div style="width:28px;height:28px;border-radius:50%;background:'+color+';color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0">'+(i+1)+'</div>';
+    html += '<div style="font-size:13px;font-weight:500;color:var(--navy);padding-top:4px">'+c.person+'</div></div>';
+
+    html += '<div style="margin-left:38px">';
+    html += '<div style="background:rgba(24,95,165,0.04);border-radius:6px;padding:8px 12px;margin-bottom:8px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#185FA5;margin-bottom:3px">What to ask</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0;font-style:italic">"'+c.ask+'"</p></div>';
+
+    html += '<div style="background:rgba(200,169,110,0.06);border-radius:6px;padding:8px 12px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:3px">What to listen for</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0">'+c.listen+'</p></div></div></div>';
+  });
+
+  html += '<div style="background:rgba(45,106,79,0.06);border-radius:8px;padding:12px 14px;margin-top:4px">';
+  html += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#2d6a4f;margin-bottom:6px">How to find these people</div>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:6px">Ask your counselor first \u2014 they often know exactly who to connect you with. Ask your parents, your extended family, and your community. Ask at your place of worship, your team, or your neighborhood. The people who will have the most honest conversations with you are often closer than you think.</p>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0">For practitioners you do not know personally, LinkedIn outreach with a specific question works well. "I am a high school senior trying to understand what your career actually looks like. Would you be willing to speak with me for 20 minutes?" Most people say yes to that question.</p></div>';
+
+  html += '</div>';
+  el.innerHTML = html; section.style.display = '';
+}
+
+function renderUndecided90Day(arch, color, el, section) {
+  if (!el || !section) return;
+  var actions = (UNDECIDED_DATA[arch] || UNDECIDED_DATA['Builder']).actions90;
+  var html = '<div class="ai-badge">&#128197; What to Do in the Next 90 Days \u2014 ' + arch + ' Archetype</div><div class="ai-content">';
+
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem">These actions do not require a decision. They produce the information needed to make one. The 90-day plan is not about choosing a path \u2014 it is about generating enough real-world data that the choice becomes obvious.</p>';
+
+  html += '<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:1rem">';
+  actions.forEach(function(a, i) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:8px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start">';
+    html += '<div style="width:24px;height:24px;border-radius:50%;background:'+color+';color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;margin-top:1px">'+(i+1)+'</div>';
+    html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.5;margin:0">'+a+'</p></div>';
+  });
+  html += '</div>';
+
+  html += '<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:12px 14px">';
+  html += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:6px">At the end of 90 days</div>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:6px">Write down your answers to these questions: What did I learn about myself? Which path sounds most aligned with who I discovered I am? What specific next step is now obvious that was not obvious before?</p>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0">Bring your answers to your counselor. The 90-day review is when your undecided status becomes a specific next step.</p></div>';
+
+  html += '</div>';
+  el.innerHTML = html; section.style.display = '';
+}
+
+function renderUndecidedCounselorGuide(arch, color, el, section) {
+  if (!el || !section) return;
+  var html = '<div class="ai-badge">&#128203; Counselor Guide: The Undecided Student</div><div class="ai-content">';
+
+  html += '<div style="background:rgba(200,169,110,0.08);border-radius:8px;padding:12px 16px;margin-bottom:1rem">';
+  html += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#825B0A;margin-bottom:6px">Your role with this student is different</div>';
+  html += '<p style="font-size:13px;color:var(--text-mid);line-height:1.5;margin:0">For undecided students, you are not a college admissions guide. You are a decision architect. The sessions are not about building a college list \u2014 they are about diagnosing which kind of undecided this student is and designing the exploration process that produces genuine clarity.</p></div>';
+
+  html += '<div style="margin-bottom:20px">';
+  html += '<div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px">Session 1: Diagnose which kind of undecided</div>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:10px">Before any path discussion, identify which of these three types of undecided you are working with:</p>';
+  var types = [
+    {type:'Does not know options exist', signal:'Says "I guess I will go to college" without considering alternatives. Has never heard of gap year programs, trade apprenticeships, or community college transfer pathways.', response:'Spend the session showing the path explorer from this report. Ask: "Which of these sounds most interesting to you?" Do not recommend \u2014 observe which options produce energy.'},
+    {type:'Knows what they want but is afraid to commit', signal:'Describes a clear preference when pressed but immediately qualifies it with "but what if it does not work out" or "my parents think I should..."', response:'Name the pattern: "It sounds like you know what you want. What is making it hard to say so?" Permission structures and reversibility framing are the tools here, not more information.'},
+    {type:'Genuinely needs more self-knowledge', signal:'Cannot describe a preference even when pressed. Has not yet connected their calling to what different paths actually feel like.', response:'Use the decision clarity questions from this report. Design the 90-day exploration plan together. The assessment they completed is the starting point \u2014 connect their archetype to what each path actually produces for someone wired that way.'},
+  ];
+  types.forEach(function(t, i) {
+    html += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:8px;padding:12px;margin-bottom:8px">';
+    html += '<div style="font-size:12px;font-weight:600;color:'+color+';margin-bottom:4px">Type '+(i+1)+': '+t.type+'</div>';
+    html += '<div style="font-size:11px;color:var(--text-light);margin-bottom:6px"><strong>Signal:</strong> '+t.signal+'</div>';
+    html += '<div style="background:rgba(24,95,165,0.04);border-radius:6px;padding:8px 10px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#185FA5;margin-bottom:3px">Counselor response</div>';
+    html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0">'+t.response+'</p></div></div>';
+  });
+  html += '</div>';
+
+  html += '<div style="margin-bottom:20px">';
+  html += '<div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px">Session 2: Design the exploration protocol</div>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:10px">With the type diagnosed, design a specific exploration plan:</p>';
+  var protocol = [
+    'Review the path explorer together and identify which two or three paths produce the most energy. Do not filter by what seems realistic \u2014 filter by what seems genuinely interesting.',
+    'Assign the five conversations. Do not let the student leave without committing to schedule the first one before the next session.',
+    'Design the 90-day action plan from this report. Write down what the student will do, when they will do it, and what they will bring to the 90-day review.',
+    'Establish the 90-day review date before they leave the room. Put it on both calendars.',
+  ];
+  html += '<ol style="margin:0;padding-left:20px">';
+  protocol.forEach(function(p) {
+    html += '<li style="font-size:12px;color:var(--text-mid);line-height:1.7;margin-bottom:4px">'+p+'</li>';
+  });
+  html += '</ol></div>';
+
+  html += '<div style="margin-bottom:20px">';
+  html += '<div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px">Session 3 (90-day review): Convert exploration to decision</div>';
+  var review_qs = [
+    'What did you do during the 90 days \u2014 specifically?',
+    'What did you learn about yourself that you did not know before?',
+    'Which path sounds most aligned with who you discovered you are?',
+    'What specific next step is now obvious that was not obvious before?',
+    'If you had to make a decision today, what would it be?',
+  ];
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:8px">Ask these questions in order. Do not accept "I am still not sure" as a final answer without pushing once:</p>';
+  html += '<ul style="margin:0;padding-left:20px;margin-bottom:10px">';
+  review_qs.forEach(function(q) {
+    html += '<li style="font-size:12px;color:var(--text-mid);line-height:1.7;font-style:italic">'+q+'</li>';
+  });
+  html += '</ul>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5">End the session with a decision and a first step. Not a direction under consideration \u2014 a decision made. The exploration phase ends at 90 days. The commitment phase begins.</p></div>';
+
+  html += '<div style="background:rgba(155,34,38,0.04);border-radius:8px;padding:12px 14px">';
+  html += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#9b2226;margin-bottom:6px">What to avoid</div>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:6px"><strong>Do not build a college list for an undecided student in the first session.</strong> It sends the signal that college is the default and closes off the exploration before it begins.</p>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin-bottom:6px"><strong>Do not let the student remain undecided indefinitely.</strong> Unlimited exploration is drift, not discovery. The 90-day plan is the accountability structure. Hold it.</p>';
+  html += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0"><strong>Do not recommend the most prestigious option.</strong> The undecided student who is steered toward a selective four-year college without exploring alternatives may arrive at the right credential through the wrong process \u2014 without the self-knowledge that makes the education actually productive.</p></div>';
+
+  html += '</div>';
+  el.innerHTML = html; section.style.display = '';
+}
+
+// ── MAIN UNDECIDED GENERATOR ──────────────────────────────────
+async function generateUndecidedReport(archProfile, intake) {
+  var plan = (intake && intake.posthsplan) ||
+             (typeof intakeData !== 'undefined' ? intakeData.posthsplan : '');
+  if (!plan) { var pe = document.getElementById('f-posthsplan'); if (pe) plan = pe.value || ''; }
+  if (plan !== 'undecided') return;
+
+  var arch = archProfile ? archProfile.split(' ')[0] : 'Builder';
+  var archColors = {Builder:'#185FA5',Shepherd:'#0F6E56',Architect:'#533AB7',Catalyst:'#C05621',Advocate:'#9b2226',Cultivator:'#3B6D11',Peacemaker:'#854F0B'};
+  var color = archColors[arch] || '#185FA5';
+  console.log('[BC] generateUndecidedReport:', arch);
+
+  function hideSection(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var wrap = el; var t = 0;
+    while (wrap && !wrap.classList.contains('results-section') && t < 6) { wrap = wrap.parentElement; t++; }
+    if (wrap && wrap.classList.contains('results-section')) wrap.style.display = 'none';
+    else if (el) el.style.display = 'none';
+  }
+  function relabelSection(id, newTitle) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var wrap = el; var t = 0;
+    while (wrap && !wrap.classList.contains('results-section') && t < 6) { wrap = wrap.parentElement; t++; }
+    if (!wrap || !wrap.classList.contains('results-section')) wrap = el;
+    var titleEl = wrap.querySelector('.results-section-title');
+    if (titleEl) { var icon = titleEl.querySelector('.rs-icon'); titleEl.innerHTML = (icon ? icon.outerHTML+' ' : '') + newTitle; }
+  }
+
+  // ── Free report: relabel sections for exploration framing ───
+  relabelSection('section-majors', 'Fields That Might Interest You');
+  relabelSection('section-clubs', 'Communities to Try That Might Reveal Your Direction');
+  relabelSection('section-universities', 'Options to Keep Open While You Explore');
+
+  // ── Premium: hide college-specific sections ─────────────────
+  ['wrap-essays','section-essays','prem-interview','prem-recletter','prem-research'].forEach(hideSection);
+
+  // ── Relabel kept sections for exploration context ───────────
+  relabelSection('wrap-careers', 'Career Directions Worth Exploring');
+  relabelSection('wrap-activities', 'Experiences That Build Direction');
+  relabelSection('prem-summer', 'Programs to Try Before You Decide');
+  relabelSection('prem-parent', 'Parent\'s Guide: Supporting an Undecided Student');
+
+  // ── Replace Mentor Match with undecided-specific ─────────────
+  var mentorWrap = document.getElementById('wrap-mentor');
+  var mentorContent = document.getElementById('section-mentor');
+  if (mentorWrap && mentorContent) {
+    relabelSection('wrap-mentor', 'Conversations to Have Before You Decide');
+    renderUndecidedConversations(arch, color, mentorContent, mentorWrap);
+  }
+
+  // ── Replace Counselor Guide ───────────────────────────────────
+  var cgEl = document.getElementById('prem-counselor-guide');
+  if (cgEl) {
+    var cgw = cgEl; var cgi = 0;
+    while (cgw && !cgw.classList.contains('results-section') && cgi < 6) { cgw = cgw.parentElement; cgi++; }
+    if (cgw && cgw.classList.contains('results-section')) {
+      var cgT = cgw.querySelector('.results-section-title');
+      if (cgT) { var icCG = cgT.querySelector('.rs-icon'); cgT.innerHTML = (icCG ? icCG.outerHTML+' ' : '') + 'Counselor Guide: The Undecided Student'; }
+      renderUndecidedCounselorGuide(arch, color, cgEl, cgw);
+    }
+  }
+
+  // ── Replace Opportunities with exploration-specific ──────────
+  var oppEl = document.getElementById('section-opportunities');
+  if (oppEl) {
+    var oppHtml = '<div class="ai-badge">&#128205; Exploration Opportunities \u2014 ' + arch + ' Archetype</div>';
+    oppHtml += '<p style="font-size:13px;color:var(--text-mid);line-height:1.6;margin:12px 0 16px">These are the first steps that produce real information without requiring a decision first. Start with the one that feels most accessible and most interesting.</p>';
+    oppHtml += '<div style="display:flex;flex-direction:column;gap:10px">';
+    var opps = [
+      {name:'Career fairs and college visits', type:'Exploration', detail:'Attend career fairs and open houses at community colleges, trade schools, and four-year programs. Go without an agenda \u2014 the goal is to notice what produces energy. The environment that feels right is data.'},
+      {name:'Job shadow or informational interview', type:'First conversation', detail:'Identify one person doing work that interests you and ask to shadow them for a day or speak with them for 30 minutes. The reality of the work is more informative than any description of it.'},
+      {name:'Volunteer or try something new for 30 days', type:'Discovery', detail:'Commit to one new activity \u2014 a volunteer role, a part-time job, a building project, a service placement \u2014 for 30 days. Notice what the experience reveals about how you work and what work gives you energy.'},
+      {name:'Complete the five conversations from this report', type:'Essential', detail:'Your counselor can help you find the five practitioners described in this report. Schedule the first conversation before your next session. The conversations produce more clarity per hour than almost any other activity available to you right now.'},
+      {name:'Review the path explorer with your counselor', type:'Session goal', detail:'Bring the path explorer from this report to your next counselor session and read through it together. Identify which one or two paths produce genuine curiosity. That curiosity is the direction.'},
+    ];
+    opps.forEach(function(o) {
+      oppHtml += '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px">';
+      oppHtml += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">';
+      oppHtml += '<div style="font-size:13px;font-weight:500;color:var(--navy)">'+o.name+'</div>';
+      oppHtml += '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;background:rgba(0,0,0,0.04);color:'+color+';padding:2px 8px;border-radius:20px;white-space:nowrap;margin-left:8px">'+o.type+'</div></div>';
+      oppHtml += '<p style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:0">'+o.detail+'</p></div>';
+    });
+    oppHtml += '</div>';
+    oppEl.innerHTML = oppHtml;
+  }
+
+  // ── Render 5 new undecided-specific premium sections ─────────
+  renderUndecidedValidation(arch, color, document.getElementById('prem-undecided-validation'), document.getElementById('section-undecided-validation'));
+  renderUndecidedPathExplorer(arch, color, document.getElementById('prem-undecided-paths'), document.getElementById('section-undecided-paths'));
+  renderUndecidedClarity(arch, color, document.getElementById('prem-undecided-clarity'), document.getElementById('section-undecided-clarity'));
+  renderUndecided90Day(arch, color, document.getElementById('prem-undecided-90day'), document.getElementById('section-undecided-90day'));
+
+  console.log('[BC] Undecided report fully rendered for', arch);
 }
 
 
