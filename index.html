@@ -26,7 +26,9 @@
 // ── STEP 2 BUTTON STATE MANAGEMENT ───────────────────────────
   function updateStep2Button(activate) {
     if (activate) window._bcPaidClicked = true;
-    var shouldActivate = !!(window._bcPremiumData || window._bcPaidClicked);
+    var payWindowAge = window._bcPayOpenedAt ? (Date.now() - window._bcPayOpenedAt) : 0;
+    var shouldActivate = !!(window._bcPremiumData || window._bcPremiumUnlocked ||
+                           (window._bcPayWindowOpened && payWindowAge > 45000));
     var btn = document.getElementById('step2-btn');
     if (btn) {
       if (shouldActivate) {
@@ -278,7 +280,7 @@ const ESSAY_ENHANCEMENTS = {Builder:[{ao:"Wharton/Penn essays: show you understa
       // Code entry divider
       '<div style="border-top:1px solid rgba(0,0,0,0.07);padding-top:14px">',
       '<p style="font-size:12px;color:#7A6F60;margin-bottom:8px">Have a school or student access code? Enter it below.</p>',
-      '<input type="text" placeholder="Enter access code (e.g. BC-STU-2026-X4)..." style="width:100%;padding:10px 14px;border:1px solid rgba(0,0,0,0.12);border-radius:8px;font-size:13px;box-sizing:border-box;outline:none;margin-bottom:6px;font-family:inherit" oninput="window.checkCounselorCode&&checkCounselorCode(this.value)">',
+      '<input type="text" placeholder="Enter access code (e.g. BC-STU-2026-R7)..." style="width:100%;padding:10px 14px;border:1px solid rgba(0,0,0,0.12);border-radius:8px;font-size:13px;box-sizing:border-box;outline:none;margin-bottom:6px;font-family:inherit" oninput="window.checkCounselorCode&&checkCounselorCode(this.value)">',
       '<div id="modal-code-status" style="font-size:12px;min-height:16px;color:#7A6F60"></div>',
       '</div>',
 
@@ -1207,7 +1209,7 @@ async function renderResults(r) {
         <!-- Step 1: Pay -->
         <div style="margin-bottom:16px;">
           <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:12px;">Step 1 &mdash; Purchase access</div>
-          <a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" onclick="window._bcPaidClicked=true;setTimeout(function(){if(window.updateStep2Button)updateStep2Button();},500);" style="display:block;background:linear-gradient(135deg,#C8A96E,#D4B87A);color:#0F1F3D;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;text-align:center;padding:15px 40px;border-radius:8px;text-decoration:none;letter-spacing:.02em;margin-bottom:10px">Purchase Access &mdash; $79 &rarr;</a>
+          <a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" onclick="window._bcPayWindowOpened=true;window._bcPayOpenedAt=Date.now();setTimeout(function(){if(window.updateStep2Button)updateStep2Button();},500);" style="display:block;background:linear-gradient(135deg,#C8A96E,#D4B87A);color:#0F1F3D;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;text-align:center;padding:15px 40px;border-radius:8px;text-decoration:none;letter-spacing:.02em;margin-bottom:10px">Purchase Access &mdash; $79 &rarr;</a>
           <p style="font-size:12px;color:var(--text-light);">One-time payment &middot; Instant access &middot; No subscription</p>
         </div>
         <!-- Step 2: Reveal (turns gold after Step 1 clicked) -->
@@ -3614,7 +3616,7 @@ function renderCopyrightFooter() {
     if (!schoolCodeVal && window._bcValidCodeEntered) schoolCodeVal = window._bcValidCodeEntered;
     // Last resort: try the DOM element (may still be in the page on some paths)
     if (!schoolCodeVal) { var liveCodeEl = document.getElementById('f-schoolcode'); if (liveCodeEl && liveCodeEl.value) schoolCodeVal = liveCodeEl.value; }
-    var _sc = schoolCodeVal.trim().toUpperCase(); var hasSchoolCode = _sc === 'BC-PRAC-2026-X4' || _sc === 'BC-STU-2026-X4';
+    var _sc = schoolCodeVal.trim().toUpperCase(); var hasSchoolCode = _sc === 'BC-PRAC-2026-X4' || _sc === 'BC-STU-2026-R7';
     console.log('[BC] School code check in runPremiumReport:', _sc, '| hasSchoolCode:', hasSchoolCode);
     if (hasSchoolCode) {
       revealPremiumContent();
@@ -3793,7 +3795,7 @@ function renderCopyrightFooter() {
   // Real-time counselor code validation
   function checkCounselorCode(val) {
     var code = (val || '').trim().toUpperCase();
-    var validCodes = ['BC-PRAC-2026-X4', 'BC-STU-2026-X4'];
+    var validCodes = ['BC-PRAC-2026-X4', 'BC-STU-2026-R7'];
     var isValid = validCodes.indexOf(code) > -1;
     var isCounselor = code === 'BC-PRAC-2026-X4';
     if (isValid) window._bcValidCodeEntered = code;
@@ -3860,7 +3862,7 @@ function renderCopyrightFooter() {
     if (!val) { var el = document.getElementById('f-schoolcode'); if (el && el.value) val = el.value; }
     var _cv = val.trim().toUpperCase();
     console.log('[BC] checkCounselorCodeOnResults - code value:', _cv);
-    if (_cv === 'BC-PRAC-2026-X4' || _cv === 'BC-STU-2026-X4') {
+    if (_cv === 'BC-PRAC-2026-X4' || _cv === 'BC-STU-2026-R7') {
       console.log('[BC] Code confirmed on results page - revealing premium');
       revealPremiumContent();
     }
@@ -4026,6 +4028,34 @@ function renderCopyrightFooter() {
 
   // ── STEP 2 PAYMENT GUARD ──────────────────────────────────
   function handleStep2Click() {
+    // ── PAYMENT GATE — must have paid or have a valid code ──
+    // Payment validation: require actual payment signal, not just button click
+    var hasCode = !!(window._bcPremiumUnlocked);
+    var hasPollingConfirm = !!(window._bcPremiumData);
+    // Time-gated: pay window was opened AND at least 45 seconds ago (minimum to complete payment)
+    var payWindowAge = window._bcPayOpenedAt ? (Date.now() - window._bcPayOpenedAt) : 0;
+    var hasTimedPayAttempt = !!(window._bcPayWindowOpened && payWindowAge > 45000);
+    var hasPaid = hasCode || hasPollingConfirm || hasTimedPayAttempt;
+    if (!hasPaid) {
+      // Show a clear message — do not reveal anything
+      var btn = document.getElementById('step2-btn');
+      var origText = btn ? btn.textContent : '';
+      if (btn) {
+        btn.textContent = '⚠ Please complete payment first — then return here';
+        btn.style.background = 'rgba(200,169,110,0.12)';
+        btn.style.color = '#825B0A';
+        btn.style.border = '1.5px solid rgba(200,169,110,0.4)';
+        setTimeout(function() {
+          if (btn) {
+            btn.textContent = '⏳ Complete Step 1 above to unlock';
+            btn.style.color = 'rgba(15,15,36,0.4)';
+            btn.style.background = 'rgba(200,169,110,0.07)';
+            btn.style.border = '1.5px solid rgba(200,169,110,0.2)';
+          }
+        }, 3000);
+      }
+      return; // Block — do not reveal anything
+    }
     // Close any open modal/banner
     var modal = document.getElementById('premium-modal');
     if (modal) modal.style.display = 'none';
