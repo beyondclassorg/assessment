@@ -1212,10 +1212,13 @@ async function renderResults(r) {
           <a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" onclick="window._bcPayWindowOpened=true;window._bcPayOpenedAt=Date.now();setTimeout(function(){if(window.updateStep2Button)updateStep2Button();},500);" style="display:block;background:linear-gradient(135deg,#C8A96E,#D4B87A);color:#0F1F3D;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;text-align:center;padding:15px 40px;border-radius:8px;text-decoration:none;letter-spacing:.02em;margin-bottom:10px">Purchase Access &mdash; $79 &rarr;</a>
           <p style="font-size:12px;color:var(--text-light);">One-time payment &middot; Instant access &middot; No subscription</p>
         </div>
-        <!-- Step 2: Reveal (turns gold after Step 1 clicked) -->
+        <!-- Step 2: Enter code and reveal -->
         <div style="border-top:1px solid rgba(200,169,110,0.15);padding-top:20px;">
-          <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:12px;">Step 2 &mdash; Reveal your report</div>
-          <button id="inline-reveal-btn" onclick="if(window._bcPaidClicked||window._bcPremiumData){if(window.handleStep2Click)handleStep2Click();}" style="width:100%;padding:15px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;border:1.5px solid rgba(200,169,110,0.25);background:rgba(200,169,110,0.06);color:var(--text-light);cursor:not-allowed;transition:all .3s ease;">&#9203; Complete Step 1 first to activate this button</button>
+          <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:8px;">Step 2 &mdash; Enter your code &amp; reveal your report</div>
+          <p style="font-size:12px;color:var(--text-light);margin-bottom:12px;">After paying, check your email for your access code, then enter it below.</p>
+          <input type="text" id="inline-code-input" placeholder="Enter access code (e.g. BC-STU-2026-R7)..." oninput="window.checkCounselorCode&&checkCounselorCode(this.value)" style="width:100%;padding:11px 14px;border:1.5px solid rgba(200,169,110,0.3);border-radius:8px;font-size:14px;box-sizing:border-box;outline:none;margin-bottom:10px;font-family:'DM Sans',sans-serif;background:rgba(200,169,110,0.04);color:var(--navy);">
+          <div id="inline-code-status" style="font-size:12px;min-height:16px;color:var(--text-light);margin-bottom:10px;"></div>
+          <button id="inline-reveal-btn" onclick="if(window._bcPremiumUnlocked||window._bcPremiumData){if(window.handleStep2Click)handleStep2Click();}else{var s=document.getElementById('inline-code-status');if(s)s.textContent='Please enter your access code from your email first.';s.style.color='#9b2226';}" style="width:100%;padding:15px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;border:1.5px solid rgba(200,169,110,0.25);background:rgba(200,169,110,0.06);color:var(--text-light);cursor:not-allowed;transition:all .3s ease;">&#10022; Reveal My Report &rarr;</button>
         </div>
       </div>
     </div>
