@@ -280,7 +280,7 @@ const ESSAY_ENHANCEMENTS = {Builder:[{ao:"Wharton/Penn essays: show you understa
       // Code entry divider
       '<div style="border-top:1px solid rgba(0,0,0,0.07);padding-top:14px">',
       '<p style="font-size:12px;color:#7A6F60;margin-bottom:8px">Have a school or student access code? Enter it below.</p>',
-      '<input type="text" placeholder="Enter access code (e.g. BC-STU-2026-R7)..." style="width:100%;padding:10px 14px;border:1px solid rgba(0,0,0,0.12);border-radius:8px;font-size:13px;box-sizing:border-box;outline:none;margin-bottom:6px;font-family:inherit" oninput="window.checkCounselorCode&&checkCounselorCode(this.value)">',
+      '<input type="text" placeholder="Enter your access code from your email..." style="width:100%;padding:10px 14px;border:1px solid rgba(0,0,0,0.12);border-radius:8px;font-size:13px;box-sizing:border-box;outline:none;margin-bottom:6px;font-family:inherit" oninput="window.checkCounselorCode&&checkCounselorCode(this.value)">',
       '<div id="modal-code-status" style="font-size:12px;min-height:16px;color:#7A6F60"></div>',
       '</div>',
 
@@ -1216,7 +1216,7 @@ async function renderResults(r) {
         <div style="border-top:1px solid rgba(200,169,110,0.15);padding-top:20px;">
           <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:8px;">Step 2 &mdash; Enter your code &amp; reveal your report</div>
           <p style="font-size:12px;color:var(--text-light);margin-bottom:12px;">After paying, check your email for your access code, then enter it below.</p>
-          <input type="text" id="inline-code-input" placeholder="Enter access code (e.g. BC-STU-2026-R7)..." oninput="window.checkCounselorCode&&checkCounselorCode(this.value)" style="width:100%;padding:11px 14px;border:1.5px solid rgba(200,169,110,0.3);border-radius:8px;font-size:14px;box-sizing:border-box;outline:none;margin-bottom:10px;font-family:'DM Sans',sans-serif;background:rgba(200,169,110,0.04);color:var(--navy);">
+          <input type="text" id="inline-code-input" placeholder="Enter your access code from your email..." oninput="window.checkCounselorCode&&checkCounselorCode(this.value)" style="width:100%;padding:11px 14px;border:1.5px solid rgba(200,169,110,0.3);border-radius:8px;font-size:14px;box-sizing:border-box;outline:none;margin-bottom:10px;font-family:'DM Sans',sans-serif;background:rgba(200,169,110,0.04);color:var(--navy);">
           <div id="inline-code-status" style="font-size:12px;min-height:16px;color:var(--text-light);margin-bottom:10px;"></div>
           <button id="inline-reveal-btn" onclick="if(window._bcPremiumUnlocked||window._bcPremiumData){if(window.handleStep2Click)handleStep2Click();}else{var s=document.getElementById('inline-code-status');if(s)s.textContent='Please enter your access code from your email first.';s.style.color='#9b2226';}" style="width:100%;padding:15px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;border:1.5px solid rgba(200,169,110,0.25);background:rgba(200,169,110,0.06);color:var(--text-light);cursor:not-allowed;transition:all .3s ease;">&#10022; Reveal My Report &rarr;</button>
         </div>
