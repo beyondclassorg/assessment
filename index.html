@@ -20,6 +20,21 @@
 .bc-nav-cta { font-size:13px;font-weight:600;background:#C8A96E;color:#0F1F3D;padding:8px 16px;text-decoration:none; }
 @media(max-width:600px){.bc-nav-links{display:none;}}
 .chip-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}.chip{background:var(--cream,#faf8f4);border:1.5px solid rgba(0,0,0,0.12);border-radius:20px;padding:8px 16px;font-size:13px;font-family:"DM Sans",sans-serif;color:var(--text-mid,#5f5e5a);cursor:pointer;transition:all 0.15s;user-select:none;display:inline-block;line-height:1.4}.chip:hover{border-color:var(--gold,#C8A96E);color:var(--navy,#0F1F3D)}.chip.selected{border-color:var(--gold,#C8A96E);background:rgba(200,169,110,0.12);color:var(--navy,#0F1F3D);font-weight:600}
+
+  #inline-code-input {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    pointer-events: all !important;
+    cursor: text !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    position: relative !important;
+    z-index: 100 !important;
+  }
+  #inline-code-input:focus {
+    outline: 2px solid rgba(200,169,110,0.6) !important;
+    background: rgba(255,255,255,0.12) !important;
+  }
 </style>
 
 <script>
@@ -1214,7 +1229,7 @@ async function renderResults(r) {
         <div style="border-top:1px solid rgba(200,169,110,0.15);padding-top:20px;">
           <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:8px;">Step 2 &mdash; Enter your code &amp; reveal your report</div>
           <p style="font-size:12px;color:var(--text-light);margin-bottom:12px;">After paying, check your email for your access code, then enter it below.</p>
-          <input type="text" id="inline-code-input" placeholder="Enter your access code from your email..." oninput="window.checkCounselorCode&&checkCounselorCode(this.value)" style="width:100%;padding:11px 14px;border:1.5px solid rgba(200,169,110,0.3);border-radius:8px;font-size:14px;box-sizing:border-box;outline:none;margin-bottom:10px;font-family:'DM Sans',sans-serif;background:rgba(200,169,110,0.04);color:var(--navy);">
+          <input type="text" id="inline-code-input" autocomplete="new-password" autocorrect="off" autocapitalize="characters" spellcheck="false" data-lpignore="true" data-form-type="other" placeholder="Enter your access code from your email..." oninput="window.checkCounselorCode&&checkCounselorCode(this.value)" style="width:100%;padding:11px 14px;border:1.5px solid rgba(200,169,110,0.3);border-radius:8px;font-size:14px;box-sizing:border-box;outline:none;margin-bottom:10px;font-family:'DM Sans',sans-serif;background:rgba(255,255,255,0.08);color:var(--cream,#F5F0E8);position:relative;z-index:10;-webkit-appearance:none;appearance:none;pointer-events:all;cursor:text;">
           <div id="inline-code-status" style="font-size:12px;min-height:16px;color:var(--text-light);margin-bottom:10px;"></div>
           <button id="inline-reveal-btn" onclick="if(window._bcPremiumUnlocked||window._bcPremiumData){if(window.handleStep2Click)handleStep2Click();}else{var s=document.getElementById('inline-code-status');if(s)s.textContent='Please enter your access code from your email first.';s.style.color='#9b2226';}" style="width:100%;padding:15px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;border:1.5px solid rgba(200,169,110,0.25);background:rgba(200,169,110,0.06);color:var(--text-light);cursor:not-allowed;transition:all .3s ease;">&#10022; Reveal My Report &rarr;</button>
         </div>
