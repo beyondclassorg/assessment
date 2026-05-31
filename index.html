@@ -26,9 +26,7 @@
 // ── STEP 2 BUTTON STATE MANAGEMENT ───────────────────────────
   function updateStep2Button(activate) {
     if (activate) window._bcPaidClicked = true;
-    var payWindowAge = window._bcPayOpenedAt ? (Date.now() - window._bcPayOpenedAt) : 0;
-    var shouldActivate = !!(window._bcPremiumData || window._bcPremiumUnlocked ||
-                           (window._bcPayWindowOpened && payWindowAge > 45000));
+    var shouldActivate = !!(window._bcPremiumData || window._bcPremiumUnlocked);
     var btn = document.getElementById('step2-btn');
     if (btn) {
       if (shouldActivate) {
@@ -1209,7 +1207,7 @@ async function renderResults(r) {
         <!-- Step 1: Pay -->
         <div style="margin-bottom:16px;">
           <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:12px;">Step 1 &mdash; Purchase access</div>
-          <a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" onclick="window._bcPayWindowOpened=true;window._bcPayOpenedAt=Date.now();setTimeout(function(){if(window.updateStep2Button)updateStep2Button();},500);" style="display:block;background:linear-gradient(135deg,#C8A96E,#D4B87A);color:#0F1F3D;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;text-align:center;padding:15px 40px;border-radius:8px;text-decoration:none;letter-spacing:.02em;margin-bottom:10px">Purchase Access &mdash; $79 &rarr;</a>
+          <a href="https://www.beyondclass.org/_paylink/AZ1djhnF" target="_blank" onclick="window._bcPayWindowOpened=true;window._bcPayOpenedAt=Date.now();" style="display:block;background:linear-gradient(135deg,#C8A96E,#D4B87A);color:#0F1F3D;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;text-align:center;padding:15px 40px;border-radius:8px;text-decoration:none;letter-spacing:.02em;margin-bottom:10px">Purchase Access &mdash; $79 &rarr;</a>
           <p style="font-size:12px;color:var(--text-light);">One-time payment &middot; Instant access &middot; No subscription</p>
         </div>
         <!-- Step 2: Enter code and reveal -->
@@ -4033,13 +4031,10 @@ function renderCopyrightFooter() {
   // ── STEP 2 PAYMENT GUARD ──────────────────────────────────
   function handleStep2Click() {
     // ── PAYMENT GATE — must have paid or have a valid code ──
-    // Payment validation: require actual payment signal, not just button click
+    // Payment validation: ONLY valid code or confirmed payment data
     var hasCode = !!(window._bcPremiumUnlocked);
     var hasPollingConfirm = !!(window._bcPremiumData);
-    // Time-gated: pay window was opened AND at least 45 seconds ago (minimum to complete payment)
-    var payWindowAge = window._bcPayOpenedAt ? (Date.now() - window._bcPayOpenedAt) : 0;
-    var hasTimedPayAttempt = !!(window._bcPayWindowOpened && payWindowAge > 45000);
-    var hasPaid = hasCode || hasPollingConfirm || hasTimedPayAttempt;
+    var hasPaid = hasCode || hasPollingConfirm;
     if (!hasPaid) {
       // Show a clear message — do not reveal anything
       var btn = document.getElementById('step2-btn');
