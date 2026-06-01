@@ -545,14 +545,7 @@ function renderSection(idx) {
   const section = SECTIONS[idx];
   const total = SECTIONS.length;
   const pct = Math.round((idx / total) * 100);
-  // Adjust section number display for alt-path students who skipped college_fit
-  var _altPaths = ['gap_year','community_college','trade','entrepreneurship',
-                   'military_academy','military_enlist','work','undecided'];
-  var _plan = (typeof intakeData !== 'undefined' && intakeData.posthsplan) || '';
-  var _skippedOne = _altPaths.indexOf(_plan) > -1;
-  var _displayIdx = (_skippedOne && idx >= 2) ? idx - 1 : idx;
-  var _displayTotal = _skippedOne ? total - 1 : total;
-  document.getElementById('progress-text').textContent = `Section ${_displayIdx+1} of ${_displayTotal}`;
+  document.getElementById('progress-text').textContent = `Section ${idx+1} of ${total}`;
   document.getElementById('progress-bar').style.width = pct + '%';
   const area = document.getElementById('question-area');
   let html = `<div class="question-section-header"><div class="section-number">Section ${idx+1} of ${total}</div><h2 class="section-title">${section.title}</h2><p class="section-desc">${section.desc}</p></div>`;
@@ -661,11 +654,12 @@ function saveIntake() {
 }
 
 function renderCollegeFitForm() {
+  var _altCheck = (typeof intakeData!=='undefined' && ['gap_year','community_college','trade','entrepreneurship','military_academy','military_enlist','work','undecided'].indexOf(intakeData.posthsplan)>-1);
   return `
   <div class="question-block" style="max-width:700px">
     <div class="q-dimension-tag dim-college">college preferences</div>
     <div class="q-text" style="font-size:15px">Tell us what matters to you in a college</div>
-    <p style="font-size:13px;color:var(--text-light);margin-bottom:20px;line-height:1.6">Your answers shape your matched college list. Be honest — there are no wrong answers and more answers means better matches.</p>
+    ${_altCheck ? '<div style="background:rgba(200,169,110,0.1);border:1.5px solid rgba(200,169,110,0.4);border-radius:10px;padding:14px 18px;margin-bottom:16px;display:flex;gap:12px"><span style=\"font-size:18px\">&#128161;</span><div><div style=\"font-size:13px;font-weight:600;color:#0F1F3D;margin-bottom:4px\">You selected an alternative path &mdash; this section is optional</div><div style=\"font-size:12px;color:#5A5A5A;line-height:1.5\">These questions are for students applying to four-year colleges. Since you chose a different path, click <strong>Continue</strong> to skip ahead. Or fill it in to include college options in your report too.</div></div></div>' : '<p style=\"font-size:13px;color:var(--text-light);margin-bottom:20px;line-height:1.6\">Your answers shape your matched college list. Be honest &mdash; there are no wrong answers and more answers means better matches.</p>'}
 
     <div class="form-grid">
 
@@ -892,17 +886,7 @@ function updateCompletionNote() {
   note.style.color = done === total ? 'var(--green)' : 'var(--text-light)';
 }
 
-function prevSection() {
-  var altPaths = ['gap_year','community_college','trade','entrepreneurship',
-                  'military_academy','military_enlist','work','undecided'];
-  var plan = intakeData.posthsplan || '';
-  // If on section 2 (identity) and alt path — skip back to section 0 (intake)
-  if (currentSection === 2 && altPaths.indexOf(plan) > -1) {
-    renderSection(0);
-    return;
-  }
-  renderSection(currentSection - 1);
-}
+function prevSection() { renderSection(currentSection - 1); }
 function nextSection() {
   try {
     saveCollegeFit(); // save chip selections too
@@ -923,15 +907,6 @@ function nextSection() {
       var banner = document.getElementById('ms-mode-banner');
       if (banner) banner.classList.add('visible');
       showScreen('screen-ms-intro');
-      return;
-    }
-    // ── Skip college preferences section for non-college paths ──
-    var altPaths = ['gap_year','community_college','trade','entrepreneurship',
-                    'military_academy','military_enlist','work','undecided'];
-    var plan = intakeData.posthsplan || '';
-    if (altPaths.indexOf(plan) > -1) {
-      // Skip section 1 (college_fit) — go straight to section 2 (identity)
-      renderSection(2);
       return;
     }
   }
@@ -4854,20 +4829,6 @@ async function generatePeerArchetypes(archProfile, pArch, intake) {
       + '<span style="font-size:15px;font-weight:700;color:var(--navy)">The ' + d.arch + '</span>'
       + '</div>'
       + '<p style="font-size:13px;color:var(--text-mid);line-height:1.65;margin:0">' + d.reason + '</p>'
-      + '</div>';
-  };
-
-  // Helper to render a peer relationship row
-  var peerRow = function(key, label, color, icon) {
-    var d = peerData[arch] ? peerData[arch][key] : null;
-    if (!d) return '';
-    return '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:10px">'
-      + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
-      + '<span style="color:' + color + ';font-size:16px">' + icon + '</span>'
-      + '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:' + color + '">' + label + '</div>'
-      + '<div style="font-size:13px;font-weight:600;color:var(--navy);margin-left:4px">' + d.arch + '</div>'
-      + '</div>'
-      + '<p style="font-size:12px;color:var(--text-mid);line-height:1.65;margin:0">' + d.reason + '</p>'
       + '</div>';
   };
 
