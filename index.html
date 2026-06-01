@@ -1236,7 +1236,7 @@ async function renderResults(r) {
           <p style="font-size:12px;color:var(--text-light);margin-bottom:12px;">After paying, check your email for your access code, then enter it below.</p>
           <input type="text" id="inline-code-input" autocomplete="new-password" autocorrect="off" autocapitalize="characters" spellcheck="false" data-lpignore="true" data-form-type="other" placeholder="Enter your access code from your email..." oninput="window.checkCounselorCode&&checkCounselorCode(this.value)" style="width:100%;padding:11px 14px;border:1.5px solid rgba(200,169,110,0.3);border-radius:8px;font-size:14px;box-sizing:border-box;outline:none;margin-bottom:10px;font-family:'DM Sans',sans-serif;background:rgba(255,255,255,0.08);color:var(--cream,#F5F0E8);position:relative;z-index:10;-webkit-appearance:none;appearance:none;pointer-events:all;cursor:text;">
           <div id="inline-code-status" style="font-size:12px;min-height:16px;color:var(--text-light);margin-bottom:10px;"></div>
-          <button id="inline-reveal-btn" onclick="if(window._bcPremiumUnlocked||window._bcPremiumData){if(window.handleStep2Click)handleStep2Click();}else{var s=document.getElementById('inline-code-status');if(s)s.textContent='Please enter your access code from your email first.';s.style.color='#9b2226';}" style="width:100%;padding:15px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;border:1.5px solid rgba(200,169,110,0.25);background:rgba(200,169,110,0.06);color:var(--text-light);cursor:not-allowed;transition:all .3s ease;">&#10022; Reveal My Report &rarr;</button>
+          <button id="inline-reveal-btn" onclick="if(window._bcPremiumUnlocked||window._bcPremiumData){revealPremiumContent();setTimeout(function(){var prs=document.getElementById('premium-report-section');if(prs){prs.style.display='';prs.scrollIntoView({behavior:'smooth',block:'start'});}},300);}else{var s=document.getElementById('inline-code-status');if(s){s.textContent='Enter your access code from your email above.';s.style.color='#9b2226';}}" style="width:100%;padding:15px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;border:1.5px solid rgba(200,169,110,0.25);background:rgba(200,169,110,0.06);color:var(--text-light);cursor:not-allowed;transition:all .3s ease;">&#10022; Reveal My Report &rarr;</button>
         </div>
       </div>
     </div>
@@ -3863,13 +3863,55 @@ function renderCopyrightFooter() {
 
     // Handle inline teaser code input (results page teaser block)
     var inlineStatus = document.getElementById('inline-code-status');
+    var inlineBtn = document.getElementById('inline-reveal-btn');
+    var inlineInput = document.getElementById('inline-code-input');
     if (inlineStatus) {
-      if (!code) { inlineStatus.style.display = 'none'; }
-      else if (isValid) {
-        inlineStatus.style.display = 'block';
-        setTimeout(function() { revealPremiumContent(); }, 800);
-      } else {
+      if (!code) {
         inlineStatus.style.display = 'none';
+        // Reset button if code cleared
+        if (inlineBtn) {
+          inlineBtn.style.background = 'rgba(200,169,110,0.06)';
+          inlineBtn.style.color = 'rgba(200,169,110,0.4)';
+          inlineBtn.style.border = '1.5px solid rgba(200,169,110,0.25)';
+          inlineBtn.style.cursor = 'not-allowed';
+        }
+      } else if (isValid) {
+        // Instant green feedback
+        window._bcPremiumUnlocked = true;
+        inlineStatus.style.display = 'block';
+        inlineStatus.style.color = '#2d6a4f';
+        inlineStatus.style.fontWeight = '600';
+        inlineStatus.textContent = '\u2713 Code accepted \u2014 click Reveal My Report below';
+        // Turn input border green
+        if (inlineInput) {
+          inlineInput.style.border = '1.5px solid #2d6a4f';
+          inlineInput.style.background = 'rgba(45,106,79,0.08)';
+        }
+        // Turn button gold instantly
+        if (inlineBtn) {
+          inlineBtn.style.background = 'linear-gradient(135deg,#C8A96E,#D4B87A)';
+          inlineBtn.style.color = '#0F1F3D';
+          inlineBtn.style.border = '1.5px solid #C8A96E';
+          inlineBtn.style.cursor = 'pointer';
+          inlineBtn.style.fontWeight = '700';
+          inlineBtn.textContent = '\u2726 Reveal My Report \u2192';
+        }
+      } else {
+        // Invalid code — red feedback
+        inlineStatus.style.display = 'block';
+        inlineStatus.style.color = '#9b2226';
+        inlineStatus.style.fontWeight = '500';
+        inlineStatus.textContent = 'Code not recognized. Check your email and try again.';
+        if (inlineInput) {
+          inlineInput.style.border = '1.5px solid rgba(155,34,38,0.5)';
+          inlineInput.style.background = 'rgba(155,34,38,0.04)';
+        }
+        if (inlineBtn) {
+          inlineBtn.style.background = 'rgba(200,169,110,0.06)';
+          inlineBtn.style.color = 'rgba(200,169,110,0.4)';
+          inlineBtn.style.border = '1.5px solid rgba(200,169,110,0.25)';
+          inlineBtn.style.cursor = 'not-allowed';
+        }
       }
     }
 
