@@ -1623,14 +1623,87 @@ async function renderResults(r) {
   runPremiumReport(r, pArch, sArch, studentName);
   // Generate path supplement for non-traditional path students
   generatePathSupplement(archProfile, r.intake || intakeData || {});
-  generateGapYearReport(archProfile, r.intake || intakeData || {});
-  generateCCReport(archProfile, r.intake || intakeData || {});
-  generateTradeReport(archProfile, r.intake || intakeData || {});
-  generateEntreReport(archProfile, r.intake || intakeData || {});
-  generateMilAcadReport(archProfile, r.intake || intakeData || {});
-  generateMilEnlistReport(archProfile, r.intake || intakeData || {});
-  generateWorkReport(archProfile, r.intake || intakeData || {});
-  generateUndecidedReport(archProfile, r.intake || intakeData || {});
+  generateGapYearReport(archProfile, r.intake || intakeData || {}).then(function() {
+    setTimeout(function() {
+      if (typeof generatePeerArchetypes === 'function' && window._archProfile) {
+        generatePeerArchetypes(window._archProfile, window._pArch, window._intake).catch(function(){});
+      }
+      if (typeof generateSummerPrograms === 'function' && window._archProfile) {
+        generateSummerPrograms(window._archProfile, window._pArch, window._intake).catch(function(){});
+      }
+    }, 500);
+  }).catch(function(){});
+  generateCCReport(archProfile, r.intake || intakeData || {}).then(function() {
+    // Re-run peer and summer after CC report completes (CC may affect timing)
+    setTimeout(function() {
+      if (typeof generatePeerArchetypes === 'function' && window._archProfile) {
+        generatePeerArchetypes(window._archProfile, window._pArch, window._intake).catch(function(){});
+      }
+      if (typeof generateSummerPrograms === 'function' && window._archProfile) {
+        generateSummerPrograms(window._archProfile, window._pArch, window._intake).catch(function(){});
+      }
+    }, 500);
+  }).catch(function(){});
+  generateTradeReport(archProfile, r.intake || intakeData || {}).then(function() {
+    setTimeout(function() {
+      if (typeof generatePeerArchetypes === 'function' && window._archProfile) {
+        generatePeerArchetypes(window._archProfile, window._pArch, window._intake).catch(function(){});
+      }
+      if (typeof generateSummerPrograms === 'function' && window._archProfile) {
+        generateSummerPrograms(window._archProfile, window._pArch, window._intake).catch(function(){});
+      }
+    }, 500);
+  }).catch(function(){});
+  generateEntreReport(archProfile, r.intake || intakeData || {}).then(function() {
+    setTimeout(function() {
+      if (typeof generatePeerArchetypes === 'function' && window._archProfile) {
+        generatePeerArchetypes(window._archProfile, window._pArch, window._intake).catch(function(){});
+      }
+      if (typeof generateSummerPrograms === 'function' && window._archProfile) {
+        generateSummerPrograms(window._archProfile, window._pArch, window._intake).catch(function(){});
+      }
+    }, 500);
+  }).catch(function(){});
+  generateMilAcadReport(archProfile, r.intake || intakeData || {}).then(function() {
+    setTimeout(function() {
+      if (typeof generatePeerArchetypes === 'function' && window._archProfile) {
+        generatePeerArchetypes(window._archProfile, window._pArch, window._intake).catch(function(){});
+      }
+      if (typeof generateSummerPrograms === 'function' && window._archProfile) {
+        generateSummerPrograms(window._archProfile, window._pArch, window._intake).catch(function(){});
+      }
+    }, 500);
+  }).catch(function(){});
+  generateMilEnlistReport(archProfile, r.intake || intakeData || {}).then(function() {
+    setTimeout(function() {
+      if (typeof generatePeerArchetypes === 'function' && window._archProfile) {
+        generatePeerArchetypes(window._archProfile, window._pArch, window._intake).catch(function(){});
+      }
+      if (typeof generateSummerPrograms === 'function' && window._archProfile) {
+        generateSummerPrograms(window._archProfile, window._pArch, window._intake).catch(function(){});
+      }
+    }, 500);
+  }).catch(function(){});
+  generateWorkReport(archProfile, r.intake || intakeData || {}).then(function() {
+    setTimeout(function() {
+      if (typeof generatePeerArchetypes === 'function' && window._archProfile) {
+        generatePeerArchetypes(window._archProfile, window._pArch, window._intake).catch(function(){});
+      }
+      if (typeof generateSummerPrograms === 'function' && window._archProfile) {
+        generateSummerPrograms(window._archProfile, window._pArch, window._intake).catch(function(){});
+      }
+    }, 500);
+  }).catch(function(){});
+  generateUndecidedReport(archProfile, r.intake || intakeData || {}).then(function() {
+    setTimeout(function() {
+      if (typeof generatePeerArchetypes === 'function' && window._archProfile) {
+        generatePeerArchetypes(window._archProfile, window._pArch, window._intake).catch(function(){});
+      }
+      if (typeof generateSummerPrograms === 'function' && window._archProfile) {
+        generateSummerPrograms(window._archProfile, window._pArch, window._intake).catch(function(){});
+      }
+    }, 500);
+  }).catch(function(){});
   // Standalone counselor check (runs even if premium report fails)
   checkCounselorCodeOnResults();
   // Init sticky CTA
