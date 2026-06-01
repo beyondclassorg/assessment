@@ -67,9 +67,14 @@
       ib.textContent = "✦ I've Paid — Reveal My Report →";
     }
   }
+  function scrollToPaywall() {
+    var el = document.getElementById('early-premium-cta');
+    if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
   function startStep2Polling() {
     var interval = setInterval(function() {
-      if (window._bcPremiumData || window._bcPaidClicked) {
+      if (window._bcPremiumData) {
         updateStep2Button();
         clearInterval(interval);
       }
@@ -6002,7 +6007,7 @@ function applyPathAwareFreeReport(intake) {
               + '<span>' + item.split(' ').slice(1).join(' ') + '</span></div>';
           }).join('')
         + '</div>'
-        + '<button onclick="showPremiumModal()" style="background:linear-gradient(135deg,#C8A96E,#D4B87A);color:var(--navy);font-family:var(--sans);font-size:14px;font-weight:700;padding:12px 28px;border-radius:8px;border:none;cursor:pointer;width:100%">'
+        + '<button onclick="scrollToPaywall()" style="background:linear-gradient(135deg,#C8A96E,#D4B87A);color:var(--navy);font-family:var(--sans);font-size:14px;font-weight:700;padding:12px 28px;border-radius:8px;border:none;cursor:pointer;width:100%">'
         + 'Unlock Your ' + pathLabel + ' Report &#8594;</button>'
         + '</div>';
       comboWrapper.insertAdjacentElement('afterend', teaserDiv);
@@ -12429,7 +12434,7 @@ window.calculateResults        = calculateResults;
           <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:2px">✦ Premium Report</div>
           <div style="font-size:14px;color:white;font-weight:500">Essay angles, projects, shadow workbook + more — matched to your answers.</div>
         </div>
-        <button onclick="showPremiumModal()" style="flex-shrink:0;background:linear-gradient(135deg,#C8A96E,#D4B87A);color:var(--navy);font-family:var(--sans);font-size:14px;font-weight:700;padding:12px 24px;border-radius:8px;border:none;cursor:pointer;white-space:nowrap">
+        <button onclick="scrollToPaywall()" style="flex-shrink:0;background:linear-gradient(135deg,#C8A96E,#D4B87A);color:var(--navy);font-family:var(--sans);font-size:14px;font-weight:700;padding:12px 24px;border-radius:8px;border:none;cursor:pointer;white-space:nowrap">
           Unlock My Report — $79 →
         </button>
       </div>
