@@ -4857,6 +4857,20 @@ async function generatePeerArchetypes(archProfile, pArch, intake) {
       + '</div>';
   };
 
+  // Helper to render a peer relationship row
+  var peerRow = function(key, label, color, icon) {
+    var d = peerData[arch] ? peerData[arch][key] : null;
+    if (!d) return '';
+    return '<div style="border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:10px">'
+      + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
+      + '<span style="color:' + color + ';font-size:16px">' + icon + '</span>'
+      + '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:' + color + '">' + label + '</div>'
+      + '<div style="font-size:13px;font-weight:600;color:var(--navy);margin-left:4px">' + d.arch + '</div>'
+      + '</div>'
+      + '<p style="font-size:12px;color:var(--text-mid);line-height:1.65;margin:0">' + d.reason + '</p>'
+      + '</div>';
+  };
+
   el.innerHTML = '<div class="ai-badge">✦ How the ' + arch + ' works with every other archetype</div>'
     + '<div class="ai-content">'
     + '<p style="font-size:13px;color:var(--text-mid);line-height:1.7;margin-bottom:16px">Understanding how your archetype works with others is one of the most practical tools in this report. Use it to build better teams, choose better collaborators, and understand why some relationships feel effortless and others feel like friction.</p>'
