@@ -545,7 +545,14 @@ function renderSection(idx) {
   const section = SECTIONS[idx];
   const total = SECTIONS.length;
   const pct = Math.round((idx / total) * 100);
-  document.getElementById('progress-text').textContent = `Section ${idx+1} of ${total}`;
+  // Adjust section number display for alt-path students who skipped college_fit
+  var _altPaths = ['gap_year','community_college','trade','entrepreneurship',
+                   'military_academy','military_enlist','work','undecided'];
+  var _plan = (typeof intakeData !== 'undefined' && intakeData.posthsplan) || '';
+  var _skippedOne = _altPaths.indexOf(_plan) > -1;
+  var _displayIdx = (_skippedOne && idx >= 2) ? idx - 1 : idx;
+  var _displayTotal = _skippedOne ? total - 1 : total;
+  document.getElementById('progress-text').textContent = `Section ${_displayIdx+1} of ${_displayTotal}`;
   document.getElementById('progress-bar').style.width = pct + '%';
   const area = document.getElementById('question-area');
   let html = `<div class="question-section-header"><div class="section-number">Section ${idx+1} of ${total}</div><h2 class="section-title">${section.title}</h2><p class="section-desc">${section.desc}</p></div>`;
@@ -885,7 +892,17 @@ function updateCompletionNote() {
   note.style.color = done === total ? 'var(--green)' : 'var(--text-light)';
 }
 
-function prevSection() { renderSection(currentSection - 1); }
+function prevSection() {
+  var altPaths = ['gap_year','community_college','trade','entrepreneurship',
+                  'military_academy','military_enlist','work','undecided'];
+  var plan = intakeData.posthsplan || '';
+  // If on section 2 (identity) and alt path — skip back to section 0 (intake)
+  if (currentSection === 2 && altPaths.indexOf(plan) > -1) {
+    renderSection(0);
+    return;
+  }
+  renderSection(currentSection - 1);
+}
 function nextSection() {
   try {
     saveCollegeFit(); // save chip selections too
@@ -906,6 +923,15 @@ function nextSection() {
       var banner = document.getElementById('ms-mode-banner');
       if (banner) banner.classList.add('visible');
       showScreen('screen-ms-intro');
+      return;
+    }
+    // ── Skip college preferences section for non-college paths ──
+    var altPaths = ['gap_year','community_college','trade','entrepreneurship',
+                    'military_academy','military_enlist','work','undecided'];
+    var plan = intakeData.posthsplan || '';
+    if (altPaths.indexOf(plan) > -1) {
+      // Skip section 1 (college_fit) — go straight to section 2 (identity)
+      renderSection(2);
       return;
     }
   }
