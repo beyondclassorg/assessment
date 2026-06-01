@@ -4772,6 +4772,7 @@ window.generateInterviewPrep = generateInterviewPrep;
 async function generatePeerArchetypes(archProfile, pArch, intake) {
   var el = document.getElementById('prem-peer');
   if (!el) return;
+  try {
   var arch = archProfile.split(' ')[0];
 
   var peerData = {
@@ -4839,6 +4840,10 @@ async function generatePeerArchetypes(archProfile, pArch, intake) {
     + peerRow('challenging', 'Most Challenging', '#9b2226', '▲')
     + peerRow('learn', 'Most to Learn From', '#A07840', '→')
     + '</div>';
+  } catch(e) {
+    el.innerHTML = '<div class="ai-badge">✦ How you work with every archetype</div><div class="ai-content"><p style="font-size:13px;color:var(--text-mid)">Your peer archetype dynamics are being prepared. Please refresh if this message persists.</p></div>';
+    console.warn('[BC] generatePeerArchetypes error:', e);
+  }
 }
 window.generatePeerArchetypes = generatePeerArchetypes;
 
@@ -4940,6 +4945,7 @@ window.generateRecLetterGuide = generateRecLetterGuide;
 async function generateSummerPrograms(archProfile, pArch, intake) {
   var el = document.getElementById('prem-summer');
   if (!el) return;
+  try {
   var arch = archProfile.split(' ')[0];
   var grade = 12;
   if (intake && intake.gradyear) {
@@ -5032,6 +5038,10 @@ async function generateSummerPrograms(archProfile, pArch, intake) {
     + cards
     + '<p style="font-size:12px;color:var(--text-light);margin-top:14px;font-style:italic;line-height:1.6">Cost and availability change annually. Financial aid is available at most programs — always inquire before ruling a program out on cost. Your counselor can identify additional local and state-specific programs.</p>'
     + '</div>';
+  } catch(e) {
+    el.innerHTML = '<div class="ai-badge">✦ Summer Programs</div><div class="ai-content"><p style="font-size:13px;color:var(--text-mid)">Summer program recommendations are being prepared. Please refresh if this message persists.</p></div>';
+    console.warn('[BC] generateSummerPrograms error:', e);
+  }
 }
 window.generateSummerPrograms = generateSummerPrograms;
 
