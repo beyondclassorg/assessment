@@ -3805,6 +3805,11 @@ function renderCopyrightFooter() {
       if (typeof generateSummerPrograms === 'function') generateSummerPrograms(arch, pa, int).catch(function(){});
       if (typeof generateCounselorGuide === 'function') generateCounselorGuide(arch, pa, int).catch(function(){});
     }
+    // Scroll to top of premium report
+    setTimeout(function() {
+      var prs = document.getElementById('premium-report-section');
+      if (prs) { prs.style.display = ''; prs.scrollIntoView({behavior:'smooth', block:'start'}); }
+    }, 500);
   }
   // Legacy alias
   function unlockPremiumSections() { revealPremiumContent(); }
