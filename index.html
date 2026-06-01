@@ -654,12 +654,11 @@ function saveIntake() {
 }
 
 function renderCollegeFitForm() {
-  var _altCheck = (typeof intakeData!=='undefined' && ['gap_year','community_college','trade','entrepreneurship','military_academy','military_enlist','work','undecided'].indexOf(intakeData.posthsplan)>-1);
   return `
   <div class="question-block" style="max-width:700px">
     <div class="q-dimension-tag dim-college">college preferences</div>
     <div class="q-text" style="font-size:15px">Tell us what matters to you in a college</div>
-    ${_altCheck ? '<div style="background:rgba(200,169,110,0.1);border:1.5px solid rgba(200,169,110,0.4);border-radius:10px;padding:14px 18px;margin-bottom:16px;display:flex;gap:12px"><span style=\"font-size:18px\">&#128161;</span><div><div style=\"font-size:13px;font-weight:600;color:#0F1F3D;margin-bottom:4px\">You selected an alternative path &mdash; this section is optional</div><div style=\"font-size:12px;color:#5A5A5A;line-height:1.5\">These questions are for students applying to four-year colleges. Since you chose a different path, click <strong>Continue</strong> to skip ahead. Or fill it in to include college options in your report too.</div></div></div>' : '<p style=\"font-size:13px;color:var(--text-light);margin-bottom:20px;line-height:1.6\">Your answers shape your matched college list. Be honest &mdash; there are no wrong answers and more answers means better matches.</p>'}
+    <p style="font-size:13px;color:var(--text-light);margin-bottom:20px;line-height:1.6">Your answers shape your matched college list. Be honest — there are no wrong answers and more answers means better matches.</p>
 
     <div class="form-grid">
 
